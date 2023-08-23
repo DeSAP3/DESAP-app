@@ -22,6 +22,7 @@ import {
 	ChevronDownIcon,
 	ChevronRightIcon,
 } from "@chakra-ui/icons";
+import Logo from "./Logo";
 
 export default function Navbar() {
 	const { isOpen, onToggle } = useDisclosure();
@@ -57,27 +58,24 @@ export default function Navbar() {
 						aria-label={"Toggle Navigation"}
 					/>
 				</Flex>
+				<Logo>
+					<Text
+						fontWeight='bold'
+						letterSpacing='tighter'
+						w='full'
+						textAlign='center'
+					>
+						DESAP@2022 Automated Calculation System
+					</Text>
+				</Logo>
 				<Flex
 					flex={{ base: 1 }}
 					justify={{ base: "center", md: "start" }}
 				>
-					<Text
-						textAlign={useBreakpointValue({
-							base: "center",
-							md: "left",
-						})}
-						fontFamily={"heading"}
-						color={useColorModeValue("gray.800", "white")}
-					>
-						Logo
-					</Text>
-
 					<Flex display={{ base: "none", md: "flex" }} ml={10}>
 						<DesktopNav />
 					</Flex>
 				</Flex>
-
-			
 			</Flex>
 
 			<Collapse in={isOpen} animateOpacity>
@@ -268,6 +266,6 @@ const NAV_ITEMS: Array<NavItem> = [
 		label: "Calculator",
 	},
 	{
-		label: "View Result",
+		label: "Calculation History",
 	},
 ];
