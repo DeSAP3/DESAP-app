@@ -1,0 +1,21 @@
+"use client";
+import { Center, Container, Text } from "@chakra-ui/react";
+
+export default function Error({ error }: { error: string }) {
+	return (
+		<Container>
+			<Center pt={3}>
+				<Text
+					as={"u"}
+					fontSize='2xl'
+					fontWeight='bold'
+					color={"red.500"}
+				>
+					Error
+				</Text>
+			</Center>
+
+			<Text color={"red.500"} >{error}</Text>
+		</Container>
+	);
+}

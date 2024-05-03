@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  userId            Int
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  expires      DateTime
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            Int                   @id @default(autoincrement())
+  userName      String
+  email         String                @unique
+  role          String                @default("User")
+  password      String
+  livingAddress String?
+  councilId     Int?
+  accounts      Account[]
+  screenings    DengueScreeningPost[]
+  sessions      Session[]
+  council       Council?              @relation(fields: [councilId], references: [id])
+}
+
+// Post hold the result of dengue screening
+model DengueScreeningPost {
+  title     String
+  result    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    String
+  userId    Int?
+  id        Int      @id @default(autoincrement())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Council {
+  id          Int      @id @default(autoincrement())
+  name        String
+  city        String
+  state       String
+  address     String
+  leaderEmail String
+  createdAt   DateTime @default(now())
+  createdBy   String
+  members     User[]
+}
+
+model Analytics {
+  createdAt DateTime @default(now())
+  checked   Boolean
+  larvaNum  Int
+  image     String?
+  id        Int      @id @default(autoincrement())
+}
