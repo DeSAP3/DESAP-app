@@ -23,21 +23,21 @@ import Loading from "../loading";
 const ProfileForm = () => {
 	const toast = useToast();
 	const { data: session } = useSession();
-	const { userData, setUserData, isLoadingUser } = useUser();
+	const { userData, setUserData, isLoadingUserResponse } = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 
 	if (
 		userData.userName === "" &&
 		userData.email === "" &&
 		userData.role === "" &&
-		!isLoadingUser
+		!isLoadingUserResponse
 	) {
 		return (
 			<Error error='User information missing. Please contact the support team.' />
 		);
 	}
 
-	if (!session && !isLoadingUser) {
+	if (!session && !isLoadingUserResponse) {
 		return (
 			<Center pt={3}>
 				<Text fontWeight='bold'>
@@ -73,7 +73,7 @@ const ProfileForm = () => {
 		setIsLoading(false);
 	};
 
-	return isLoadingUser ? (
+	return isLoadingUserResponse ? (
 		<Loading loading='Getting user information...' />
 	) : isLoading ? (
 		<Loading loading='Updating user information...' />

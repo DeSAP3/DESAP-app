@@ -14,12 +14,12 @@ export default function ImageForm(props: any) {
 		}
 	};
 
-	// This function will be triggered when the "Remove This Image" button is clicked
 	const removeSelectedImage = () => {
 		setSelectedImage();
 	};
 
 	const onSubmit = async (image: any) => {
+		console.log(image);
 		alert("Image Submitted");
 	};
 

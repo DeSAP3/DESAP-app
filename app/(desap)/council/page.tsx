@@ -5,6 +5,9 @@ import CouncilList from "@/shared/components/council-component/listCouncil";
 import ScreeningVerificationList from "@/shared/components/council-component/listScreenVerify";
 import { useUser } from "@/shared/providers/userProvider";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { ThemeProvider } from "@mui/material/styles";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import theme from "@/(desap)/theme";
 
 const leaderScope = [
 	{
@@ -17,11 +20,17 @@ const leaderScope = [
 	},
 	{
 		scopeName: "Council List",
-		component: <CouncilList />,
+		component: (
+			<AppRouterCacheProvider>
+				<ThemeProvider theme={theme}>
+					<CouncilList />
+				</ThemeProvider>
+			</AppRouterCacheProvider>
+		),
 	},
 	{
 		scopeName: "Screenings Verification List",
-        component: <ScreeningVerificationList />,
+		component: <ScreeningVerificationList />,
 	},
 ];
 const memberScope = [
@@ -31,7 +40,13 @@ const memberScope = [
 	},
 	{
 		scopeName: "Council List",
-		component: <CouncilList />,
+		component: (
+			<AppRouterCacheProvider>
+				<ThemeProvider theme={theme}>
+					<CouncilList />
+				</ThemeProvider>
+			</AppRouterCacheProvider>
+		),
 	},
 ];
 
@@ -42,20 +57,20 @@ const CouncilPage = () => {
 			<Tabs isFitted variant='soft-rounded' colorScheme='gray'>
 				<TabList mb='1em'>
 					{userData.role === "Community Leader"
-						? leaderScope.map((scope) => (
-								<Tab>{scope.scopeName}</Tab>
+						? leaderScope.map((scope, index) => (
+								<Tab key={index}>{scope.scopeName}</Tab>
 						  ))
-						: memberScope.map((scope) => (
-								<Tab>{scope.scopeName}</Tab>
+						: memberScope.map((scope, index) => (
+								<Tab key={index}>{scope.scopeName}</Tab>
 						  ))}
 				</TabList>
 				<TabPanels>
 					{userData.role === "Community Leader"
-						? leaderScope.map((scope) => (
-								<TabPanel>{scope.component}</TabPanel>
+						? leaderScope.map((scope, index) => (
+								<TabPanel key={index}>{scope.component}</TabPanel>
 						  ))
-						: memberScope.map((scope) => (
-								<TabPanel>{scope.component}</TabPanel>
+						: memberScope.map((scope, index) => (
+								<TabPanel key={index}>{scope.component}</TabPanel>
 						  ))}
 				</TabPanels>
 			</Tabs>

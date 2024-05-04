@@ -7,18 +7,27 @@ import {
 } from "material-react-table";
 import useSWR from "swr";
 import { Council } from "@prisma/client";
+import { ImEnter } from "react-icons/im";
+import { Box, IconButton } from "@mui/material";
+import { useUser } from "@/shared/providers/userProvider";
+import { useToast } from "@chakra-ui/react";
 
 const CouncilList = () => {
+	const toast = useToast();
 	const [councils, setCouncils] = useState<Council[]>([]);
-	const { data: councilsResponse, isLoading: isLoadingCouncilsResponse } = useSWR(
-		"/api/council/readAll",
-		(url) => fetch(url).then((res) => res.json())
-	);
+	const { userData, setUserData } = useUser();
+
+	const { data: councilsResponse, isLoading: isLoadingCouncilsResponse } =
+		useSWR("/api/council/readAll", (url) =>
+			fetch(url).then((res) => res.json())
+		);
 
 	useEffect(() => {
 		if (councilsResponse) {
-			setCouncils(councilsResponse);
-		} 
+			setCouncils(councilsResponse.councils);
+		} else {
+			setCouncils([]);
+		}
 	}, [councilsResponse]);
 
 	const columns = useMemo<MRT_ColumnDef<Council>[]>(
@@ -26,37 +35,26 @@ const CouncilList = () => {
 			{
 				accessorKey: "name",
 				header: "Council Name",
-				size: 150,
 			},
 			{
 				accessorKey: "address",
 				header: "Address",
-				size: 150,
 			},
 			{
 				accessorKey: "city",
 				header: "City",
-				size: 50,
 			},
 			{
 				accessorKey: "state",
 				header: "State",
-				size: 50,
 			},
 			{
 				accessorKey: "leaderEmail",
 				header: "State",
-				size: 100,
-			},
-			{
-				accessorKey: "createdAt",
-				header: "Created At",
-				size: 100,
 			},
 			{
 				accessorKey: "createdBy",
 				header: "Created By",
-				size: 100,
 			},
 		],
 		[]
@@ -65,6 +63,52 @@ const CouncilList = () => {
 	const table = useMaterialReactTable({
 		columns,
 		data: councils,
+		enableHiding: false,
+		enableDensityToggle: false,
+		defaultColumn: {
+			minSize: 20,
+			maxSize: 50,
+		},
+		initialState: {
+			density: "compact",
+		},
+		state: {
+			isLoading: isLoadingCouncilsResponse,
+		},
+		enableRowActions: userData.councilId === null ? true : false,
+		renderRowActions: (row) => (
+			<Box>
+				<IconButton
+					color='success'
+					onClick={async () => {
+						const updatedUserData = {
+							...userData,
+							councilId: row.row.original.id,
+						};
+						setUserData(updatedUserData);
+						const res = await fetch("/api/profile/update", {
+							method: "PUT",
+							headers: {
+								"Content-Type": "application/json",
+							},
+							body: JSON.stringify({
+								userData: updatedUserData,
+							}),
+						}).then((res) => res.json());
+						console.log(res);
+						toast({
+							title: res.status === 200 ? res.message : res.error,
+							status: res.status === 200 ? "success" : "error",
+							duration: 3000,
+							isClosable: true,
+							position: "bottom-right",
+						});
+					}}
+				>
+					<ImEnter />
+				</IconButton>
+			</Box>
+		),
 	});
 
 	return <MaterialReactTable table={table} />;

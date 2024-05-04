@@ -14,7 +14,7 @@ interface UserContextType {
 	userData: UserData;
 	setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 	isLoadingUserResponse: boolean;
-	
+	mutateUser: () => void;
 }
 
 const initialUserData: UserData = {
@@ -28,7 +28,7 @@ const UserContext = createContext<UserContextType>({
 	userData: initialUserData,
 	setUserData: () => {},
 	isLoadingUserResponse: false,
-	
+	mutateUser: () => {},
 });
 
 export const useUser = () => useContext(UserContext);
@@ -56,8 +56,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 	}, [userResponse]);
 
 	const value = React.useMemo(
-		() => ({ userData, setUserData, isLoadingUserResponse }),
-		[userData, setUserData, isLoadingUserResponse]
+		() => ({ userData, setUserData, isLoadingUserResponse, mutateUser }),
+		[userData, setUserData, isLoadingUserResponse, mutateUser]
 	);
 
 

@@ -50,6 +50,7 @@ model User {
 // Post hold the result of dengue screening
 model DengueScreeningPost {
   title     String
+  description String?
   result    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +64,7 @@ model Council {
   id          Int      @id @default(autoincrement())
   name        String
   city        String
-  state       String
+  state       String?
   address     String
   leaderEmail String
   createdAt   DateTime @default(now())

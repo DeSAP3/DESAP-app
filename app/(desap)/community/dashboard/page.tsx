@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 export default function Dashboard() {
 	const router = useRouter();
 	const { data: session } = useSession();
-	const { userData, isLoadingUser } = useUser();
+	const { userData, isLoadingUserResponse } = useUser();
 
 	if (!session) {
 		return (
@@ -39,7 +39,7 @@ export default function Dashboard() {
 					</Text>
 				</Center>
 			</Container>
-			{isLoadingUser ? (
+			{isLoadingUserResponse ? (
 				<Loading loading='Getting user information...' />
 			) : (
 				<Container maxW='90%' paddingY={5}>
@@ -73,7 +73,7 @@ export default function Dashboard() {
 											<Button
 												variant='solid'
 												colorScheme='blue'
-												onClick={() => router.push("/council/join")}
+												onClick={() => router.push("/council")}
 											>
 												Join Council
 											</Button>
@@ -83,7 +83,7 @@ export default function Dashboard() {
 											<Button
 												variant='ghost'
 												colorScheme='blue'
-												onClick={() => router.push("/council/create")}
+												onClick={() => router.push("/council")}
 											>
 												Create Council
 											</Button>

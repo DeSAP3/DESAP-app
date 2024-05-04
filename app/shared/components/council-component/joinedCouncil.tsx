@@ -19,14 +19,14 @@ import {
 	UseToastOptions,
 	useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoMdExit } from "react-icons/io";
 import useSWR from "swr";
 import Loading from "../loading";
 
 const JoinedCouncil = () => {
 	const toast = useToast();
-	const { userData, setUserData } = useUser();
+	const { userData, setUserData, mutateUser } = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 	const [council, setCouncil] = useState({
 		councilName: "",
@@ -38,9 +38,22 @@ const JoinedCouncil = () => {
 		councilLeaderEmail: "",
 	});
 
-	const { data: councilResponse, isLoading: isLoadingCouncil } = useSWR(
+	const { data, isLoading: isLoadingCouncil, mutate: mutateCouncilRes } = useSWR(
 		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
-		(url: string | URL | Request) => fetch(url).then((res) => res.json())
+		(url: string | URL | Request) =>
+			fetch(url)
+				.then((res) => res.json())
+				.then((data) =>
+					setCouncil({
+						councilName: data.name,
+						councilCity: data.city,
+						councilState: data.state,
+						councilAddress: data.address,
+						councilCreatedAt: data.createdAt,
+						councilCreatedBy: data.createdBy,
+						councilLeaderEmail: data.leaderEmail,
+					})
+				)
 	);
 
 	if (userData.councilId === null) {
@@ -52,26 +65,10 @@ const JoinedCouncil = () => {
 				marginY={5}
 			>
 				<Text>You have not joined any council.</Text>
-				<Text>
-					To join a council, please visit the council list.
-				</Text>
+				<Text>To join a council, please visit the council list.</Text>
 			</Center>
 		);
 	}
-
-	useEffect(() => {
-		if (councilResponse) {
-			setCouncil({
-				councilName: councilResponse.name,
-				councilCity: councilResponse.city,
-				councilState: councilResponse.state,
-				councilAddress: councilResponse.address,
-				councilCreatedAt: councilResponse.createdAt,
-				councilCreatedBy: councilResponse.createdBy,
-				councilLeaderEmail: councilResponse.leaderEmail,
-			});
-		}
-	}, [councilResponse]);
 
 	const handleQuitCouncil = async () => {
 		setIsLoading(true);
@@ -110,7 +107,9 @@ const JoinedCouncil = () => {
 			</Center>
 			{isLoadingCouncil ? (
 				<Loading loading='Getting council information...' />
-			) : isLoading ? <Loading loading='Updating council information...'/>: (
+			) : isLoading ? (
+				<Loading loading='Updating council information...' />
+			) : (
 				<Container
 					maxWidth={"80%"}
 					paddingY={5}
@@ -125,28 +124,28 @@ const JoinedCouncil = () => {
 							setCouncil,
 							toast,
 							setIsLoading,
+							mutateCouncilRes,
+							mutateUser,
 						})}
 
-					<Center>
-						
-							<Button
-								colorScheme='red'
-								_hover={{
-									bg: "#b30000",
-								}}
-								onClick={handleQuitCouncil}
+					<Center gap={3} display={"flex"} flexDirection={"column"}>
+						<Button
+							colorScheme='red'
+							_hover={{
+								bg: "#b30000",
+							}}
+							onClick={handleQuitCouncil}
+						>
+							<Flex
+								width='100%'
+								justifyContent='space-between'
+								align={"center"}
 							>
-								<Flex
-									width='100%'
-									justifyContent='space-between'
-									align={"center"}
-								>
-									Quit
-									<Box width='5px' />
-									<IoMdExit />
-								</Flex>
-							</Button>
-						
+								Quit
+								<Box width='5px' />
+								<IoMdExit />
+							</Flex>
+						</Button>
 					</Center>
 				</Container>
 			)}
@@ -241,14 +240,17 @@ const MyCouncilTableEdit = ({
 	setCouncil,
 	toast,
 	setIsLoading,
+	mutateCouncilRes,
+	mutateUser,
 }: {
 	council: any;
 	userData: any;
 	setCouncil: (council: any) => void;
 	toast: (options?: UseToastOptions) => string | number | undefined;
 	setIsLoading: (isLoading: boolean) => void;
+	mutateCouncilRes: () => void;
+	mutateUser: () => void;
 }) => {
-
 	const handleSave = async () => {
 		setIsLoading(true);
 		const updatedCouncil = {
@@ -264,7 +266,31 @@ const MyCouncilTableEdit = ({
 				council: updatedCouncil,
 			}),
 		}).then((res) => res.json());
-		
+
+		toast({
+			title: res.status === 200 ? res.message : res.error,
+			status: res.status === 200 ? "success" : "error",
+			duration: 3000,
+			isClosable: true,
+			position: "bottom-right",
+		});
+		setIsLoading(false);
+	};
+
+	const handleDelete = async () => {
+		setIsLoading(true);
+		const res = await fetch(
+			`/api/council/delete?councilId=${userData.councilId}`,
+			{
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		).then((res) => res.json());
+
+		mutateCouncilRes();
+		mutateUser();
 		toast({
 			title: res.status === 200 ? res.message : res.error,
 			status: res.status === 200 ? "success" : "error",
@@ -322,7 +348,7 @@ const MyCouncilTableEdit = ({
 						<Input type='text' value={council.councilCreatedBy} />
 					</FormControl>
 
-					<Stack spacing={10} pt={2}>
+					<Stack spacing={5} pt={2}>
 						<Button
 							loadingText='Submitting'
 							size='lg'
@@ -334,6 +360,17 @@ const MyCouncilTableEdit = ({
 							onClick={handleSave}
 						>
 							Save
+						</Button>
+						<Button
+							loadingText='Submitting'
+							size='lg'
+							colorScheme='red'
+							_hover={{
+								bg: "#b30000",
+							}}
+							onClick={handleDelete}
+						>
+							Delete Council
 						</Button>
 					</Stack>
 				</Stack>

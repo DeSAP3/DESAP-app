@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import Loading from "../loading";
 import { useRouter } from "next/navigation";
 
+
 const AddCouncil = () => {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
@@ -32,16 +33,6 @@ const AddCouncil = () => {
 		leaderEmail: "",
 	});
 
-	if (userData.councilId !== null) {
-		return (
-			<Center display={"flex"} flexDirection={"column"} gap={2} marginY={5}>
-				<Text>You are already a leader of a council.</Text>
-				<Text>To create a new council, please quit the previous council</Text>
-			</Center>
-		);
-	}
-
-	
 	useEffect(() => {
 		if (userData.email) {
 			setCouncil((prevCouncil) => ({
@@ -51,6 +42,22 @@ const AddCouncil = () => {
 			}));
 		}
 	}, [userData.email]);
+
+	if (userData.councilId !== null) {
+		return (
+			<Center
+				display={"flex"}
+				flexDirection={"column"}
+				gap={2}
+				marginY={5}
+			>
+				<Text>You are already a leader of a council.</Text>
+				<Text>
+					To create a new council, please quit the previous council
+				</Text>
+			</Center>
+		);
+	}
 
 	const handleSubmit = async () => {
 		setIsLoading(true);
@@ -64,14 +71,15 @@ const AddCouncil = () => {
 				council,
 			}),
 		}).then(async (res) => {
-			if (res.status === 201) {
+			console.log(res);
+			if (res.ok) {
 				const data = await res.json();
+				console.log(data);
 				const updatedUserData = {
 					...userData,
 					councilId: data.council.id,
 				};
 				setUserData(updatedUserData);
-
 				await fetch("/api/profile/update", {
 					method: "PUT",
 					headers: {
@@ -84,7 +92,6 @@ const AddCouncil = () => {
 			}
 		});
 		setIsLoading(false);
-		router.push("/council/detail");
 	};
 
 	return (
@@ -96,7 +103,8 @@ const AddCouncil = () => {
 					</Text>
 				</Center>
 				<Text as={"p"} fontSize='medium'>
-					As a community leader, you are able to create your council. Or you can proceed to join other's council.
+					As a community leader, you are able to create your council.
+					Or you can proceed to join other's council.
 				</Text>
 			</Container>
 			{isLoading ? (
@@ -124,35 +132,45 @@ const AddCouncil = () => {
 								</Select>
 							</FormControl>
 
-							<FormControl id='city' isRequired>
-								<FormLabel>City</FormLabel>
-								<Select
-									placeholder={"Select city"}
-									onChange={(e) =>
-										setCouncil({
-											...council,
-											city: e.target.value,
-										})
-									}
-								>
-									{council.state &&
-										cities
-											.filter(
-												(city) =>
-													city.state === council.state
-											)
-											.map((city, index) =>
-												city.cities.map((c, index) => (
-													<option
-														key={index}
-														value={c}
+							{council.state &&
+								cities
+									.filter(
+										(city) => city.state === council.state
+									)
+									.map(
+										(city, index) =>
+											city.cities.length !== 0 && (
+												<FormControl
+													id='city'
+													isRequired
+													key={index}
+												>
+													<FormLabel>City</FormLabel>
+													<Select
+														placeholder={
+															"Select city"
+														}
+														onChange={(e) =>
+															setCouncil({
+																...council,
+																city: e.target
+																	.value,
+															})
+														}
 													>
-														{c}
-													</option>
-												))
-											)}
-								</Select>
-							</FormControl>
+														{city.cities.map(
+															(c) => (
+																<option
+																	value={c}
+																>
+																	{c}
+																</option>
+															)
+														)}
+													</Select>
+												</FormControl>
+											)
+									)}
 
 							<FormControl id='address' isRequired>
 								<FormLabel>Address</FormLabel>

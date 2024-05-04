@@ -12,6 +12,7 @@ export default function Footer() {
 			color={useColorModeValue("gray.700", "gray.200")}
 			p={10} 
 			mt='auto' 
+			position={"relative"}
 		>
 			<Container
 				as={Stack}
