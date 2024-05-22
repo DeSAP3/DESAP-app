@@ -51,13 +51,13 @@ model User {
 model DengueScreeningPost {
   title     String
   description String?
-  result    String
+  result    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   status    String
-  userId    Int?
+  userId    String
   id        Int      @id @default(autoincrement())
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [email], onDelete: Cascade)
 }
 
 model Council {

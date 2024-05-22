@@ -1,5 +1,8 @@
 "use client";
 
+import Loading from "@/shared/components/loading";
+import { useUser } from "@/shared/providers/userProvider";
+import { questions } from "@/shared/static/screening_question";
 import {
 	Button,
 	Card,
@@ -14,23 +17,70 @@ import {
 	Radio,
 	RadioGroup,
 	Text,
+	useToast,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 export default function Screening() {
 	const { data: session } = useSession();
+	const toast = useToast();
+	const { userData } = useUser();
 	const [answers, setAnswers] = useState(Array(questions.length).fill(null));
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleAnswerChange = (index: number, answer: any) => {
 		const newAnswers = [...answers];
 		newAnswers[index] = answer;
+		newAnswers[index] = newAnswers[index] === "Yes" ? 1 : 0;
 		setAnswers(newAnswers);
 	};
 
-	const onSubmit = (e: any) => {
-		e.preventDefault();
-		console.log(answers);
+	const handleSubmit = async () => {
+		setIsLoading(true);
+		if (answers.includes(null)) {
+			toast({
+				title: "Error",
+				description: "Please answer all questions",
+				status: "error",
+				duration: 9000,
+				isClosable: true,
+			});
+			return;
+		}
+		const threshold = 0.6;
+		const score =
+			answers.reduce((acc, cur) => acc + cur, 0) / answers.length;
+		const result = score > threshold ? "positive" : "negative";
+		toast({
+			title: `Tested ${result}`,
+			description: `Your screening score is ${score * 100}%.`,
+			status: "success",
+			duration: 9000,
+			isClosable: true,
+			position: "bottom-right",
+		});
+		const res = await fetch("/api/screening/create", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				title: "Dengue Screening",
+				description: `Your screening score is ${score * 100}%`,
+				result: result,
+				status: "pending",
+				userId: userData.email,
+			}),
+		}).then((res) => res.json());
+		toast({
+			title: res.status === 201 ? res.message : res.error,
+			status: res.status === 201 ? "success" : "error",
+			duration: 3000,
+			isClosable: true,
+			position: "bottom-right",
+		});
+		setIsLoading(false);
 	};
 
 	if (!session) {
@@ -52,121 +102,79 @@ export default function Screening() {
 					</Text>
 				</Center>
 			</Container>
-			<Container maxW='90%' paddingY={5}>
-				<Flex>
-					<Text>
-						<b>DISCLAIMER:</b> &nbsp;
-					</Text>
-					<Text>
-						<i>
-							Mild symptoms of dengue can be confused with other
-							illnesses that cause fever, aches and pains, or a
-							rash. It is advised to consult a healthcare
-							professional for a more accurate diagnosis.
-						</i>
-					</Text>
-				</Flex>
-				<Divider />
-				<Flex paddingY={4}>
-					<Text>
-						Symptoms of dengue typically last 2-7 days. Most people
-						will recover after about a week.
-					</Text>
-				</Flex>
+			{isLoading ? (
+				<Loading loading='Submitting...' />
+			) : (
+				<Container maxW='90%' paddingY={5}>
+					<Flex gap={2}>
+						<Text>
+							<b>DISCLAIMER:</b> &nbsp;
+						</Text>
+						<Text>
+							<i>
+								Mild symptoms of dengue can be confused with
+								other illnesses that cause fever, aches and
+								pains, or a rash. It is advised to consult a
+								healthcare professional for a more accurate
+								diagnosis.
+							</i>
+						</Text>
+					</Flex>
+					<Divider />
+					<Flex paddingY={4}>
+						<Text>
+							Symptoms of dengue typically last 2-7 days. Most
+							people will recover after about a week.
+						</Text>
+					</Flex>
 
-				<Card variant='outline'>
-					<CardBody>
-						<form onSubmit={onSubmit}>
-							{questions.map((question, index) => (
-								<FormControl
-									key={index}
-									paddingY={4}
-									isRequired
-								>
-									<FormLabel>
-										<b>{index + 1}. </b>
-										{question.question}
-									</FormLabel>
-									<RadioGroup
-										onChange={(e) =>
-											handleAnswerChange(index, e)
-										}
+					<Card variant='outline'>
+						<CardBody>
+							<form onSubmit={handleSubmit}>
+								{questions.map((question, index) => (
+									<FormControl
+										key={index}
+										paddingY={4}
+										isRequired
 									>
-										<HStack spacing='24px'>
-											{question.options.map((option) => (
-												<Radio
-													key={option}
-													value={option}
-												>
-													{option}
-												</Radio>
-											))}
-										</HStack>
-									</RadioGroup>
-								</FormControl>
-							))}
-							<Button
-								colorScheme='blue'
-								width='100%'
-								marginTop={4}
-								type='submit'
-							>
-								Submit
-							</Button>
-						</form>
-					</CardBody>
-				</Card>
-			</Container>
+										<FormLabel>
+											<b>{index + 1}. </b>
+											{question.question}
+										</FormLabel>
+										<RadioGroup
+											onChange={(e) =>
+												handleAnswerChange(index, e)
+											}
+										>
+											<HStack spacing='24px'>
+												{question.options.map(
+													(option) => (
+														<Radio
+															size='lg'
+															key={option}
+															value={option}
+														>
+															{option}
+														</Radio>
+													)
+												)}
+											</HStack>
+										</RadioGroup>
+									</FormControl>
+								))}
+								<Button
+									colorScheme='blue'
+									width='100%'
+									marginTop={4}
+									type='submit'
+								>
+									Submit
+								</Button>
+							</form>
+						</CardBody>
+					</Card>
+				</Container>
+			)}
 		</>
 	);
 }
-
-const questions = [
-	{
-		question:
-			"Have you experienced mosquito bites within the previous 2 weeks?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you had a fever of 39°C or higher?",
-		options: ["Yes", "No"],
-	},
-	{
-		question:
-			"Have you experienced biphasic fever (fever that comes and goes)?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you noticed a rash on your skin?",
-		options: ["Yes", "No"],
-	},
-	{
-		question:
-			"Have you experienced petechiae (tiny red or purple spots on the skin)?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you had retroorbital pain (pain behind the eyes)?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you experienced bone pain (arthralgia)?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you been experiencing headaches?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you had muscle pain (myalgia)",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you had abdominal pain?",
-		options: ["Yes", "No"],
-	},
-	{
-		question: "Have you experienced anorexia (loss of appetite)?",
-		options: ["Yes", "No"],
-	},
-];

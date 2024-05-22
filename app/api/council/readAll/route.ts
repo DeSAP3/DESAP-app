@@ -6,8 +6,8 @@ export async function GET(request: Request) {
 		const councils = await db.council.findMany();
 		if (!councils) {
 			return NextResponse.json({
-				error: "Council not found",
-				status: 404,
+				error: "There are no councils",
+				status: 200,
 			});
 		}
 		return NextResponse.json({

@@ -30,7 +30,13 @@ const leaderScope = [
 	},
 	{
 		scopeName: "Screenings Verification List",
-		component: <ScreeningVerificationList />,
+		component: (
+			<AppRouterCacheProvider>
+				<ThemeProvider theme={theme}>
+					<ScreeningVerificationList />
+				</ThemeProvider>
+			</AppRouterCacheProvider>
+		),
 	},
 ];
 const memberScope = [
@@ -67,10 +73,14 @@ const CouncilPage = () => {
 				<TabPanels>
 					{userData.role === "Community Leader"
 						? leaderScope.map((scope, index) => (
-								<TabPanel key={index}>{scope.component}</TabPanel>
+								<TabPanel key={index}>
+									{scope.component}
+								</TabPanel>
 						  ))
 						: memberScope.map((scope, index) => (
-								<TabPanel key={index}>{scope.component}</TabPanel>
+								<TabPanel key={index}>
+									{scope.component}
+								</TabPanel>
 						  ))}
 				</TabPanels>
 			</Tabs>
