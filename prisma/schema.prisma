@@ -3,8 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url      = env("DIRECT_DATABASE_URL")
+  // url       = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -49,15 +51,15 @@ model User {
 
 // Post hold the result of dengue screening
 model DengueScreeningPost {
-  title     String
+  title       String
   description String?
-  result    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  status    String
-  userId    String
-  id        Int      @id @default(autoincrement())
-  user      User    @relation(fields: [userId], references: [email], onDelete: Cascade)
+  result      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status      String
+  userId      String
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [email], onDelete: Cascade)
 }
 
 model Council {

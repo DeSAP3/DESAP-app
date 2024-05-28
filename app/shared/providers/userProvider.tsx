@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import useSWR from "swr";
 
 interface UserData {
+	id: number|null;
 	userName: string;
 	email: string;
 	role: string;
@@ -18,6 +19,7 @@ interface UserContextType {
 }
 
 const initialUserData: UserData = {
+	id: null,
 	userName: "",
 	email: "",
 	role: "",
@@ -45,6 +47,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {
 		if (userResponse) {
 			setUserData({
+				id: userResponse?.id,
 				userName: userResponse?.username,
 				email: userResponse?.email,
 				role: userResponse?.role,

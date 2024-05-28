@@ -8,20 +8,28 @@ import {
 	FormControl,
 	Input,
 	Text,
+	useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import { VscCloudUpload } from "react-icons/vsc";
+import { FaFileUpload } from "react-icons/fa";
+import { ResponseImage } from "@/(desap)/ento/calculator/page";
 
 type ImageFormProps = {
-	onImageUpload: (image: any) => Promise<void>;
+	onImageUpload: (image: string, rawImage: File | null) => Promise<void>;
 	setResponseImage: Dispatch<SetStateAction<any>>;
+	responseImage?: ResponseImage;
 };
 
-const ImageForm = ({ onImageUpload, setResponseImage }: ImageFormProps) => {
+const ImageForm = ({
+	onImageUpload,
+	setResponseImage,
+	responseImage,
+}: ImageFormProps) => {
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [displayUpload, setDisplayUpload] = useState<File | null>(null);
-
+	const toast = useToast();
 	const convertBase64 = (file: Blob | null) => {
 		return new Promise<string>((resolve, reject) => {
 			const fileReader = new FileReader();
@@ -53,8 +61,18 @@ const ImageForm = ({ onImageUpload, setResponseImage }: ImageFormProps) => {
 	};
 
 	const handleSubmit = async () => {
+		if (!displayUpload) {
+			toast({
+				title: "Please upload an image",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
+			return;
+		}
 		const base64 = await convertBase64(displayUpload);
-		onImageUpload(base64);
+		onImageUpload(base64, displayUpload);
 	};
 
 	return (
@@ -68,6 +86,10 @@ const ImageForm = ({ onImageUpload, setResponseImage }: ImageFormProps) => {
 			>
 				{displayUpload ? (
 					<Box textAlign={"center"} padding={2}>
+						<Flex align='center' justify='center'>
+							<Text fontWeight='bold'>Uploaded Image</Text>
+							<FaFileUpload style={{ marginLeft: "0.5rem" }} />
+						</Flex>
 						<Image
 							src={URL.createObjectURL(displayUpload)}
 							width={500}
@@ -110,11 +132,13 @@ const ImageForm = ({ onImageUpload, setResponseImage }: ImageFormProps) => {
 					</>
 				)}
 			</Box>
-			<Center padding={10}>
-				<Button type='submit' onClick={handleSubmit}>
-					Analyze Image
-				</Button>
-			</Center>
+			{!responseImage && (
+				<Center padding={10}>
+					<Button type='submit' onClick={handleSubmit}>
+						Analyze Image
+					</Button>
+				</Center>
+			)}
 		</Flex>
 	);
 };
