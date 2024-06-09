@@ -1,11 +1,22 @@
 import db from "@/shared/providers/dbProvider";
 import { NextResponse } from "next/server";
 
+export type DashboardProps = {
+	postId: number;
+	title: string;
+	content: string;
+	result: string;
+	status: string;
+	createdAt: Date;
+	authorUsername: string;
+	authorEmail: string;
+	authorRole: string;
+};
+
 export async function GET(request: Request) {
 	try {
 		const urlParams = new URL(request.url).searchParams;
 		const councilId = urlParams.get("councilId");
-		console.log(councilId);
 		if (!councilId) {
 			return NextResponse.json({
 				error: "Missing councilId",
@@ -17,7 +28,7 @@ export async function GET(request: Request) {
 			where: {
 				councilId: parseInt(councilId),
 			},
-		})
+		});
 
 		if (!users) {
 			return NextResponse.json({
@@ -28,20 +39,45 @@ export async function GET(request: Request) {
 
 		const postList = await db.dengueScreeningPost.findMany({
 			where: {
-				userId: {
-					in: users.map((user) => user.email),
-				}
+				authorId: {
+					in: users.map((user) => user.id),
+				},
 			},
-		})
-	
+			include: {
+				author: true,
+			},
+		});
+
 		if (!postList) {
 			return NextResponse.json({
 				error: "There are no post in the council",
 				status: 200,
 			});
 		}
+
+		const posts = postList.map((post) => {
+			return {
+				postId: post.id,
+				title: post.title,
+				content: post.content,
+				result: post.result,
+				status: post.status,
+				createdAt: post.createdAt.toLocaleString("en-US", {
+					year: "numeric",
+					month: "2-digit",
+					day: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+					hour12: true,
+				}),
+				authorUsername: post.author.userName,
+				authorEmail: post.author.email,
+				authorRole: post.author.role,
+			};
+		});
+
 		return NextResponse.json({
-			dengueScreeningPosts: postList,
+			data: posts,
 			message: "All posts loaded",
 			status: 200,
 		});

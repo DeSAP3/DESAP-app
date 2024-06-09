@@ -23,6 +23,7 @@ import { useState } from "react";
 import { IoMdExit } from "react-icons/io";
 import useSWR from "swr";
 import Loading from "../loading";
+import { CouncilLayout } from "./councilLayout";
 
 const JoinedCouncil = () => {
 	const toast = useToast();
@@ -38,7 +39,11 @@ const JoinedCouncil = () => {
 		councilLeaderEmail: "",
 	});
 
-	const { data, isLoading: isLoadingCouncil, mutate: mutateCouncilRes } = useSWR(
+	const {
+		data,
+		isLoading: isLoadingCouncil,
+		mutate: mutateCouncilRes,
+	} = useSWR(
 		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
 		(url: string | URL | Request) =>
 			fetch(url)
@@ -218,14 +223,7 @@ const MyCouncilTableView = ({
 					<Tr>
 						<Td fontWeight={"bold"}>Member</Td>
 						<Td>
-							<SimpleGrid minChildWidth='100px' spacing='10px'>
-								<Box bg='tomato' height='8px'></Box>
-								<Box bg='tomato' height='8px'></Box>
-								<Box bg='tomato' height='8px'></Box>
-								<Box bg='tomato' height='8px'></Box>
-								<Box bg='tomato' height='8px'></Box>
-								<Box bg='tomato' height='8px'></Box>
-							</SimpleGrid>
+							<CouncilLayout />
 						</Td>
 					</Tr>
 				</Tbody>

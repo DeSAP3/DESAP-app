@@ -19,12 +19,15 @@ import {
 	Text,
 	useToast,
 } from "@chakra-ui/react";
+import { DengueScreeningPost } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Screening() {
 	const { data: session } = useSession();
 	const toast = useToast();
+	const router = useRouter();
 	const { userData } = useUser();
 	const [answers, setAnswers] = useState(Array(questions.length).fill(null));
 	const [isLoading, setIsLoading] = useState(false);
@@ -49,8 +52,11 @@ export default function Screening() {
 			return;
 		}
 		const threshold = 0.6;
-		const score =
-			answers.reduce((acc, cur) => acc + cur, 0) / answers.length;
+		const score = parseFloat(
+			(
+				answers.reduce((acc, cur) => acc + cur, 0) / answers.length
+			).toFixed(2)
+		);
 		const result = score > threshold ? "positive" : "negative";
 		toast({
 			title: `Tested ${result}`,
@@ -66,13 +72,16 @@ export default function Screening() {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				title: "Dengue Screening",
-				description: `Your screening score is ${score * 100}%`,
+				title: "Dengue Screening Result",
+				content: `I am tested ${result} from the dengue screening assessment. My screening score is ${
+					score * 100
+				}%`,
 				result: result,
-				status: "pending",
-				userId: userData.email,
+				status: "UNCHECKED",
+				authorEmail: userData.email,
 			}),
 		}).then((res) => res.json());
+		console.log(res);
 		toast({
 			title: res.status === 201 ? res.message : res.error,
 			status: res.status === 201 ? "success" : "error",
@@ -81,6 +90,7 @@ export default function Screening() {
 			position: "bottom-right",
 		});
 		setIsLoading(false);
+		router.push("/community/dashboard");
 	};
 
 	if (!session) {
@@ -130,47 +140,44 @@ export default function Screening() {
 
 					<Card variant='outline'>
 						<CardBody>
-							<form onSubmit={handleSubmit}>
-								{questions.map((question, index) => (
-									<FormControl
-										key={index}
-										paddingY={4}
-										isRequired
-									>
-										<FormLabel>
-											<b>{index + 1}. </b>
-											{question.question}
-										</FormLabel>
-										<RadioGroup
-											onChange={(e) =>
-												handleAnswerChange(index, e)
-											}
-										>
-											<HStack spacing='24px'>
-												{question.options.map(
-													(option) => (
-														<Radio
-															size='lg'
-															key={option}
-															value={option}
-														>
-															{option}
-														</Radio>
-													)
-												)}
-											</HStack>
-										</RadioGroup>
-									</FormControl>
-								))}
-								<Button
-									colorScheme='blue'
-									width='100%'
-									marginTop={4}
-									type='submit'
+							{questions.map((question, index) => (
+								<FormControl
+									key={index}
+									paddingY={4}
+									isRequired
 								>
-									Submit
-								</Button>
-							</form>
+									<FormLabel>
+										<b>{index + 1}. </b>
+										{question.question}
+									</FormLabel>
+									<RadioGroup
+										onChange={(e) =>
+											handleAnswerChange(index, e)
+										}
+									>
+										<HStack spacing='24px'>
+											{question.options.map((option) => (
+												<Radio
+													size='lg'
+													key={option}
+													value={option}
+												>
+													{option}
+												</Radio>
+											))}
+										</HStack>
+									</RadioGroup>
+								</FormControl>
+							))}
+							<Button
+								colorScheme='blue'
+								width='100%'
+								marginTop={4}
+								type='submit'
+								onClick={handleSubmit}
+							>
+								Submit
+							</Button>
 						</CardBody>
 					</Card>
 				</Container>

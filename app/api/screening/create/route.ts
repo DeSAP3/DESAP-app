@@ -4,22 +4,38 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
-		const { title, description, result, status, userId } =
-			body.dengueScreeningPost;
-		if (!title || !description || !result || !status || !userId) {
+		const { title, content, result, status, authorEmail } =
+			body;
+		if (!title || !content || !result || !status || !authorEmail) {
 			return NextResponse.json({
 				error: "Missing info",
 				status: 400,
+			});
+		}
+		const userId = await db.user
+			.findUnique({
+				where: {
+					email: authorEmail,
+				},
+			})
+			.then((user) => {
+				return user?.id;
+			});
+
+		if (!userId) {
+			return NextResponse.json({
+				error: "User not found",
+				status: 404,
 			});
 		}
 
 		const dengueScreeningPost = await db.dengueScreeningPost.create({
 			data: {
 				title: title,
-				description: description,
+				content: content,
 				result: result,
 				status: status,
-				userId: userId,
+				authorId: userId,
 			},
 		});
 

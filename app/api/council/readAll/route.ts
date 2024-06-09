@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 			});
 		}
 		return NextResponse.json({
-            councils: councils,
+            data: councils,
             message: "All councils loaded",
             status: 200,
 		});

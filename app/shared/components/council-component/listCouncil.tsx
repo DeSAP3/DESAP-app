@@ -11,6 +11,7 @@ import { ImEnter } from "react-icons/im";
 import { Box, IconButton } from "@mui/material";
 import { useUser } from "@/shared/providers/userProvider";
 import { useToast } from "@chakra-ui/react";
+import NotFound from "../notfound";
 
 const CouncilList = () => {
 	const toast = useToast();
@@ -23,8 +24,8 @@ const CouncilList = () => {
 		);
 
 	useEffect(() => {
-		if (councilsResponse) {
-			setCouncils(councilsResponse.councils);
+		if (councilsResponse && councilsResponse.data) {
+			setCouncils(councilsResponse.data);
 		} else {
 			setCouncils([]);
 		}
@@ -111,7 +112,11 @@ const CouncilList = () => {
 		),
 	});
 
-	return <MaterialReactTable table={table} />;
+	return councils ? (
+		<MaterialReactTable table={table} />
+	) : (
+		<NotFound notfound='No Councils' />
+	);
 };
 
 export default CouncilList;

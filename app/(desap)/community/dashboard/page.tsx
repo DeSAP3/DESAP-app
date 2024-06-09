@@ -12,13 +12,43 @@ import {
 	SimpleGrid,
 	Text,
 } from "@chakra-ui/react";
+import { DengueScreeningPost, User } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
+
+type DashboardProps = {
+	postId: number;
+	title: string;
+	content: string;
+	result: string;
+	status: string;
+	createdAt: string;
+	authorUsername: string;
+	authorEmail: string;
+	authorRole: string;
+};
 
 export default function Dashboard() {
 	const router = useRouter();
 	const { data: session } = useSession();
 	const { userData, isLoadingUserResponse } = useUser();
+	const [postList, setPostList] = useState<DashboardProps[]>([]);
+
+	const { data: postResponse, isLoading: isLoadingPostResponse } = useSWR(
+		`/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`,
+		(url: string | URL | Request): Promise<any> =>
+			fetch(url).then((res) => res.json())
+	);
+
+	useEffect(() => {
+		if (postResponse && postResponse.data) {
+			setPostList(postResponse.data);
+		} else {
+			setPostList([]);
+		}
+	}, [postResponse]);
 
 	if (!session) {
 		return (
@@ -35,7 +65,7 @@ export default function Dashboard() {
 			<Container maxW='container.md' paddingY={5}>
 				<Center pt={3}>
 					<Text as={"u"} fontSize='2xl' fontWeight='bold'>
-						Dashboard
+						Dashboard Council #{userData?.councilId}
 					</Text>
 				</Center>
 			</Container>
@@ -73,7 +103,9 @@ export default function Dashboard() {
 											<Button
 												variant='solid'
 												colorScheme='blue'
-												onClick={() => router.push("/council")}
+												onClick={() =>
+													router.push("/council")
+												}
 											>
 												Join Council
 											</Button>
@@ -83,7 +115,9 @@ export default function Dashboard() {
 											<Button
 												variant='ghost'
 												colorScheme='blue'
-												onClick={() => router.push("/council")}
+												onClick={() =>
+													router.push("/council")
+												}
 											>
 												Create Council
 											</Button>
@@ -91,6 +125,24 @@ export default function Dashboard() {
 									</ButtonGroup>
 								}
 							/>
+						)}
+						{isLoadingPostResponse ? (
+							<Loading loading='Loading posts...' />
+						) : (
+							userData.councilId !== null &&
+							postList.length > 0 &&
+							postList.map((post) => (
+								<InformationCard
+									key={post.postId}
+									showAvatar={true}
+									title={post.title}
+									description={post.content ?? ""}
+									authorName={post.authorUsername}
+									authorEmail={post.authorEmail}
+									status={post.status}
+									createdAt={post.createdAt}
+								/>
+							))
 						)}
 					</SimpleGrid>
 				</Container>

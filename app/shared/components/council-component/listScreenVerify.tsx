@@ -11,37 +11,37 @@ import { ImEnter } from "react-icons/im";
 import { Box, IconButton } from "@mui/material";
 import { useUser } from "@/shared/providers/userProvider";
 import { useToast } from "@chakra-ui/react";
+import NotFound from "../notfound";
 const ScreeningVerificationList = () => {
-    const toast = useToast();
+	const toast = useToast();
 	const [posts, setPosts] = useState<DengueScreeningPost[]>([]);
 	const { userData, setUserData } = useUser();
 
-    const {
+	const {
 		data: councilPostsResponse,
 		isLoading: isLoadingCouncilPostResponse,
-        error: councilPostError
 	} = useSWR(
 		`/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`,
 		(url: string | URL | Request) => fetch(url).then((res) => res.json())
 	);
 
-    useEffect(() => {
-        console.log(councilPostsResponse);
-		if (councilPostsResponse) {
-			setPosts(councilPostsResponse.dengueScreeningPosts);
+	useEffect(() => {
+		console.log(userData?.councilId);
+		if (councilPostsResponse && councilPostsResponse.data) {
+			setPosts(councilPostsResponse.data);
 		} else {
 			setPosts([]);
 		}
 	}, [councilPostsResponse]);
 
-    const columns = useMemo<MRT_ColumnDef<DengueScreeningPost>[]>(
+	const columns = useMemo<MRT_ColumnDef<DengueScreeningPost>[]>(
 		() => [
 			{
 				accessorKey: "title",
 				header: "Title",
 			},
 			{
-				accessorKey: "description",
+				accessorKey: "content",
 				header: "Description",
 			},
 			{
@@ -52,42 +52,41 @@ const ScreeningVerificationList = () => {
 				accessorKey: "createdAt",
 				header: "Created At",
 			},
-            {
-                accessorKey: "updatedAt",
-                header: "Updated At",
-            },
 			{
-				accessorKey: "userId",
+				accessorKey: "authorId",
 				header: "Belongs To",
 			},
-            {
-                accessorKey: "status",
-                header: "Status",
-            }
+			{
+				accessorKey: "status",
+				header: "Status",
+			},
 		],
 		[]
 	);
 
-    const table = useMaterialReactTable({
+	const table = useMaterialReactTable({
 		columns,
 		data: posts,
 		enableHiding: false,
 		enableDensityToggle: false,
-		// defaultColumn: {
-		// 	minSize: 20,
-		// 	maxSize: 50,
-		// },
+		defaultColumn: {
+			minSize: 20,
+			maxSize: 50,
+		},
 		initialState: {
 			density: "compact",
 		},
 		state: {
 			isLoading: isLoadingCouncilPostResponse,
 		},
-        //TODO: update the status of post
+		//TODO: update the status of post
 	});
 
-
-	return <MaterialReactTable table={table} />;
+	return posts ? (
+		<MaterialReactTable table={table} />
+	) : (
+		<NotFound notfound='No Councils' />
+	);
 };
 
 export default ScreeningVerificationList;

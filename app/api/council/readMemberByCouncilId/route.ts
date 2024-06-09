@@ -13,26 +13,29 @@ export async function GET(request: Request) {
 			});
 		}
 
-		const council = await db.council.findUnique({
-			where: {
-				id: parseInt(councilId),
-			},
-		});
+        const users = await db.user.findMany({
+            where: {
+                councilId: parseInt(councilId),
+            },
+            select: {
+                id: true,
+                userName: true,
+                email: true,
+                role: true,
+                livingAddress: true,
+            }
+        })
 
-		if (!council) {
+		if (!users) {
 			return NextResponse.json({
-				error: "Council not found",
-				status: 404,
+				error: "No users in the council",
+				status: 200,
 			});
 		}
 		return NextResponse.json({
-			name: council.name,
-			city: council.city,
-			state: council.state,
-			address: council.address,
-			createdAt: council.createdAt,
-			createdBy: council.createdBy,
-			leaderEmail: council.leaderEmail,
+            data: users,
+            message: "Council's users loaded",
+            status: 200,
 		});
 	} catch (error) {
 		return NextResponse.json({
