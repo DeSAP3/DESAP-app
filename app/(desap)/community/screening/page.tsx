@@ -1,6 +1,7 @@
 "use client";
 
-import Loading from "@/shared/components/loading";
+import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
+import LoadingComponent from "@/shared/components/loading";
 import { useUser } from "@/shared/providers/userProvider";
 import { questions } from "@/shared/static/screening_question";
 import {
@@ -17,9 +18,10 @@ import {
 	Radio,
 	RadioGroup,
 	Text,
+	theme,
 	useToast,
 } from "@chakra-ui/react";
-import { DengueScreeningPost } from "@prisma/client";
+import { CheckingStatus } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -77,11 +79,10 @@ export default function Screening() {
 					score * 100
 				}%`,
 				result: result,
-				status: "UNCHECKED",
+				status: CheckingStatus.UNCHECK,
 				authorEmail: userData.email,
 			}),
 		}).then((res) => res.json());
-		console.log(res);
 		toast({
 			title: res.status === 201 ? res.message : res.error,
 			status: res.status === 201 ? "success" : "error",
@@ -105,15 +106,9 @@ export default function Screening() {
 
 	return (
 		<>
-			<Container maxW='container.md' paddingY={5}>
-				<Center pt={3}>
-					<Text as={"u"} fontSize='2xl' fontWeight='bold'>
-						Dengue Screening
-					</Text>
-				</Center>
-			</Container>
+			<PageHeader title={`Dengue Screening`} />
 			{isLoading ? (
-				<Loading loading='Submitting...' />
+				<LoadingComponent text='Submitting...' />
 			) : (
 				<Container maxW='90%' paddingY={5}>
 					<Flex gap={2}>
@@ -170,7 +165,7 @@ export default function Screening() {
 								</FormControl>
 							))}
 							<Button
-								colorScheme='blue'
+								bg={"brand.acceptbutton"}
 								width='100%'
 								marginTop={4}
 								type='submit'

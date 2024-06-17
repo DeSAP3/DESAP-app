@@ -4,9 +4,7 @@ import { NextResponse } from "next/server";
 export async function PUT(request: Request) {
 	try {
 		const body = await request.json();
-		console.log(body);
-		const { userName, email, role, councilId } = body.userData;
-		console.log(userName, email, role, councilId);
+		const { userName, email, role, councilId, livingAddress } = body.userData;
 
 		if (!userName || !email) {
 			return NextResponse.json({
@@ -23,11 +21,12 @@ export async function PUT(request: Request) {
 				userName: userName,
 				role: role,
 				councilId: councilId,
+				 livingAddress: livingAddress
 			},
 		});
 
 		return NextResponse.json({
-			user: user,
+			data: user,
 			message: "User updated successfully",
 			status: 200,
 		});

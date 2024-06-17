@@ -1,7 +1,7 @@
 "use client";
 import { Center, Spinner, Text, Container } from "@chakra-ui/react";
 
-export default function Loading({ loading }: { loading: string }) {
+export default function LoadingComponent({ text }: Readonly<{ text: string }>) {
 	return (
 		<Container>
 			<Center pt={3}>
@@ -14,7 +14,7 @@ export default function Loading({ loading }: { loading: string }) {
 				/>
 			</Center>
 			<Center pt={3}>
-				<Text color={"blue.500"}>{loading}</Text>
+				<Text color={"blue.500"}>{text}</Text>
 			</Center>
 		</Container>
 	);

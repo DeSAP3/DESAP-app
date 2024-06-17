@@ -1,16 +1,27 @@
 "use client";
-import { Box, Center, Container, Flex, Spacer, Text } from "@chakra-ui/react";
-import ImageForm from "@/shared/components/calculator-component/ImageForm";
-import { useState } from "react";
+import ImageForm from "@/shared/components/ento-calculator/ImageForm";
+import {
+	Box,
+	Center,
+	Container,
+	Flex,
+	Spacer,
+	Text,
+	useToast,
+} from "@chakra-ui/react";
 import axios from "axios";
+import { useState } from "react";
 
-import ResultForm from "@/shared/components/calculator-component/ResultForm";
+import ResultForm from "@/shared/components/ento-calculator/ResultForm";
+import LoadingComponent from "@/shared/components/loading";
 import { FaArrowAltCircleRight } from "react-icons/fa";
-import Loading from "@/shared/components/loading";
 
 import supabase from "@/shared/providers/supabase";
 import { useUser } from "@/shared/providers/userProvider";
+import { JsonObject } from "@prisma/client/runtime/library";
 import { v4 as uuidv4 } from "uuid";
+import { Role } from "@prisma/client";
+import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
 
 export type ResponseImage = {
 	imageDisplay?: string;
@@ -33,7 +44,12 @@ export type ResponseImage = {
 
 export default function Calculator() {
 	const { userData } = useUser();
+	const toast = useToast();
 	const [isLoading, setIsLoading] = useState(false);
+	const [isLoadingSaving, setIsLoadingSaving] = useState(false);
+	const [rawImage, setRawImage] = useState<File | null>(null);
+	const [predictionsResponse, setPredictionsResponse] =
+		useState<JsonObject>();
 	const [responseImage, setResponseImage] = useState<ResponseImage>();
 
 	const analyseImage = async (image: string, rawImage: File | null) => {
@@ -50,8 +66,8 @@ export default function Calculator() {
 					"Content-Type": "application/x-www-form-urlencoded",
 				},
 			});
+			setPredictionsResponse(predictions.data);
 			if (rawImage === null) {
-				console.log("No image to send");
 				return;
 			}
 			const formData = new FormData();
@@ -66,7 +82,6 @@ export default function Calculator() {
 				},
 				responseType: "blob",
 			});
-			console.log(annotatedImage);
 			const imageUrl = URL.createObjectURL(annotatedImage.data);
 			setResponseImage({
 				imageDisplay: imageUrl,
@@ -77,27 +92,79 @@ export default function Calculator() {
 				},
 				predictions: predictions.data.predictions,
 			});
-
-			const { data, error } = await supabase.storage
-				.from("image")
-				.upload(userData.id + "/" + uuidv4(), rawImage, {
-					contentType: "image/jpeg",
-				});
-			console.log(data, error);
 		} catch (error) {
 			alert("Error analyzing image");
 		}
 		setIsLoading(false);
 	};
 
+	const handleSaveImage = async () => {
+		setIsLoadingSaving(true);
+		if (
+			userData.email === undefined &&
+			Role.OPERATION_TEAM.match(userData.role)
+			// userData.role !== "Operation Team"
+		) {
+			toast({
+				title: "Please login first",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
+			return;
+		}
+		const { data } = await supabase.storage
+			.from("image")
+			.upload("public/" + userData.id + "/" + uuidv4(), rawImage as File);
+		if (data) {
+			const res = await fetch("/api/calculator/create", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					createdByEmail: userData.email,
+					predictions: predictionsResponse,
+					imageURL: data.path,
+				}),
+			}).then((res) => res.json());
+			if (res.status === 201) {
+				toast({
+					title: "Image saved successfully",
+					status: "success",
+					duration: 3000,
+					isClosable: true,
+					position: "bottom-right",
+				});
+				window.location.reload();
+			} else {
+				toast({
+					title: "Save image failed",
+					status: "error",
+					duration: 3000,
+					isClosable: true,
+					position: "bottom-right",
+				});
+			}
+		} else {
+			toast({
+				title: "Save image failed",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
+		}
+		setIsLoadingSaving(false);
+	};
+
 	return (
 		<>
-			<Center pt={3}>
-				<Text as={"u"} fontSize='2xl' fontWeight='bold'>
-					Calculate Number of MosquitoeEggs, Larvae and Aedes
-					Mosquitoes
-				</Text>
-			</Center>
+			<PageHeader
+				title='Calculate Number of MosquitoeEggs, Larvae and Aedes
+					Mosquitoes'
+			/>
 			<Container maxW='container.md' paddingY={5}>
 				<Flex justifyContent={"center"} alignItems={"flex-start"}>
 					<Box
@@ -108,6 +175,8 @@ export default function Calculator() {
 					>
 						<ImageForm
 							onImageUpload={analyseImage}
+							rawImage={rawImage}
+							setRawImage={setRawImage}
 							setResponseImage={setResponseImage}
 							responseImage={responseImage}
 						/>
@@ -126,7 +195,7 @@ export default function Calculator() {
 								textAlign='center'
 								padding={2}
 							>
-								<Loading loading='Analyzing image...' />
+								<LoadingComponent text='Analyzing Image...' />
 							</Box>
 						</>
 					) : (
@@ -144,7 +213,12 @@ export default function Calculator() {
 									textAlign='center'
 									padding={2}
 								>
-									<ResultForm response={responseImage} />
+									<ResultForm
+										response={responseImage}
+										predictionResponse={predictionsResponse}
+										onImageSave={handleSaveImage}
+										isLoadingSaving={isLoadingSaving}
+									/>
 								</Box>
 							</>
 						)

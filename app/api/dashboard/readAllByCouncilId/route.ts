@@ -43,8 +43,21 @@ export async function GET(request: Request) {
 					in: users.map((user) => user.id),
 				},
 			},
-			include: {
-				author: true,
+			select: {
+				id: true,
+				title: true,
+				content: true,
+				result: true,
+				status: true,
+				createdAt: true,
+				updatedAt: true,
+				author: {
+					select: {
+						email: true,
+						userName: true,
+						role: true,
+					},
+				},
 			},
 		});
 
@@ -63,6 +76,14 @@ export async function GET(request: Request) {
 				result: post.result,
 				status: post.status,
 				createdAt: post.createdAt.toLocaleString("en-US", {
+					year: "numeric",
+					month: "2-digit",
+					day: "2-digit",
+					hour: "2-digit",
+					minute: "2-digit",
+					hour12: true,
+				}),
+				updatedAt: post.updatedAt.toLocaleString("en-US", {
 					year: "numeric",
 					month: "2-digit",
 					day: "2-digit",

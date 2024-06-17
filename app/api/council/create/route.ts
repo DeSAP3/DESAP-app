@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 		});
 
 		return NextResponse.json({
-			council: council,
+			data: council,
 			message: "Council created successfully",
 			status: 201,
 		});

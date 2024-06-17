@@ -1,7 +1,7 @@
 "use client";
 import { Center, Container, Text } from "@chakra-ui/react";
 
-export default function Error({ error }: { error: string }) {
+export default function ErrorComponent({ error }: Readonly<{ error: string }>) {
 	return (
 		<Container>
 			<Center pt={3}>
