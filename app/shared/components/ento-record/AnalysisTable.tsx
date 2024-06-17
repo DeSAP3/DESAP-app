@@ -1,3 +1,4 @@
+"use client";
 import supabase from "@/shared/providers/supabase";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
@@ -33,7 +34,6 @@ import NotFoundComponet from "../notfound";
 type AnalysisTableProps = {
 	id: number;
 	createdAt: string;
-	larvaeNumber: number;
 	status: string;
 	predictions: {
 		image: {
@@ -54,11 +54,11 @@ type AnalysisTableProps = {
 		];
 		time: string;
 	};
+	imageURL: string;
 	createdBy: {
 		userName: string;
 		email: string;
 	};
-	imageURL: string;
 };
 
 const AnalysisTable = () => {
@@ -155,6 +155,7 @@ const AnalysisTable = () => {
 	};
 
 	useEffect(() => {
+		console.log(analysisResponse);
 		if (analysisResponse) {
 			setAnalysis(analysisResponse.data);
 		} else {
@@ -165,9 +166,11 @@ const AnalysisTable = () => {
 	const columns = useMemo<MRT_ColumnDef<AnalysisTableProps>[]>(
 		() => [
 			{
-				accessorFn: (row) => new Date(row.createdAt).toLocaleString(),
+				accessorKey: "createdAt",
 				header: "Analysis Datetime",
-				enableEditing: false,
+				Cell : ({ cell }) => {
+					return new Date(cell.getValue() as string).toLocaleString();
+				}
 			},
 			{
 				accessorKey: "predictions.predictions.length",
@@ -180,12 +183,10 @@ const AnalysisTable = () => {
 			{
 				accessorKey: "createdBy.userName",
 				header: "Analyzed By (Username)",
-				enableEditing: false,
 			},
 			{
 				accessorKey: "createdBy.email",
 				header: "Analyzed By (Email)",
-				enableEditing: false,
 			},
 		],
 		[]
@@ -205,7 +206,7 @@ const AnalysisTable = () => {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingAnalyticsResponse && isLoadingSaving,
+			isLoading: isLoadingAnalyticsResponse || isLoadingSaving,
 		},
 		renderRowActionMenuItems: ({ row }) => [
 			<MenuItem
@@ -368,7 +369,7 @@ const AnalysisTable = () => {
 							</DialogContentText>
 						</>
 					) : (
-						<></>
+						<NotFoundComponet notfound='Image not found' />
 					)}
 				</DialogContent>
 			</Dialog>
