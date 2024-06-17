@@ -6,7 +6,7 @@ import db from "@/shared/providers/dbProvider";
 const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(db),
 	pages: {
-		signIn: "/community/login",
+		signIn: "/app/(desap)/community/login",
 	},
 	secret: process.env.NEXTAUTH_SECRET,
 	providers: [
