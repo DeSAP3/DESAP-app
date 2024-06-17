@@ -24,10 +24,10 @@ export const NAV_ITEMS: Array<NavItem> = [
 		],
 	},
 	{
-		label: "Community",
+		label: "Account",
 		children: [
 			{
-				label: "Register",
+				label: "Register Now",
 				subLabel: "Register your community account",
 				href: "/community/register",
 			},
