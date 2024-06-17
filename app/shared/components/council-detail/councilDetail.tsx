@@ -9,30 +9,21 @@ import {
 	TableContainer,
 	Tbody,
 	Td,
-	Text,
 	Tr,
 	useToast,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { IoMdExit } from "react-icons/io";
 import useSWR from "swr";
 import LoadingComponent from "../loading";
 import { CouncilLayout } from "./councilLayout";
-import { Role } from "@prisma/client";
-import { IoMdExit } from "react-icons/io";
-import { useRouter } from "next/navigation";
+import { Council } from "@prisma/client";
 
 export default function CouncilDetail() {
 	const toast = useToast();
 	const router = useRouter();
-	const [council, setCouncil] = useState({
-		councilName: "",
-		councilCity: "",
-		councilState: "",
-		councilAddress: "",
-		councilCreatedAt: "",
-		councilCreatedBy: "",
-		councilLeaderEmail: "",
-	});
+	const [council, setCouncil] = useState<Council>();
 	const [isLoading, setIsLoading] = useState(false);
 	const { userData, setUserData, mutateUser } = useUser();
 
@@ -55,7 +46,7 @@ export default function CouncilDetail() {
 			});
 			mutateUser();
 			toast({
-				title: `You have successfully quit the council: ${council.councilName}.`,
+				title: `You have successfully quit the council: ${council?.name}.`,
 				status: "success",
 				duration: 3000,
 				isClosable: true,
@@ -71,20 +62,11 @@ export default function CouncilDetail() {
 		(url: string | URL | Request) =>
 			fetch(url)
 				.then((res) => res.json())
-				.then((data) =>
-					setCouncil({
-						councilName: data.name,
-						councilCity: data.city,
-						councilState: data.state,
-						councilAddress: data.address,
-						councilCreatedAt: data.createdAt,
-						councilCreatedBy: data.createdBy,
-						councilLeaderEmail: data.leaderEmail,
-					})
-				)
+				.then((data) => {
+					setCouncil(data.data);
+				})
 	);
 
-	
 	return (
 		<Container maxWidth={"80%"} paddingY={5} justifyContent={"center"}>
 			<TableContainer marginY={5}>
@@ -96,31 +78,31 @@ export default function CouncilDetail() {
 							<Tbody>
 								<Tr>
 									<Td fontWeight={"bold"}>Council Name</Td>
-									<Td>{council.councilName}</Td>
+									<Td>{council?.name}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>
 										Council Area Address
 									</Td>
-									<Td>{council.councilAddress}</Td>
+									<Td>{council?.address}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>Council City</Td>
-									<Td>{council.councilCity}</Td>
+									<Td>{council?.city}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>Council State</Td>
-									<Td>{council.councilState}</Td>
+									<Td>{council?.state}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>
 										Council Leader Contact
 									</Td>
 									<Td>
-										{council.councilLeaderEmail}
+										{council?.leaderEmail}
 										&nbsp;
 										{userData.email ===
-											council.councilCreatedBy && (
+											council?.leaderEmail && (
 											<b>(YOU)</b>
 										)}
 									</Td>
@@ -130,27 +112,19 @@ export default function CouncilDetail() {
 										Council Created At
 									</Td>
 									<Td>
-										{new Date(
-											council.councilCreatedAt
-										).toLocaleDateString(undefined, {
-											day: "numeric",
-											month: "long",
-											year: "numeric",
-											hour: "numeric",
-											minute: "numeric",
-											second: "numeric",
-										})}
+										{council?.createdAt &&
+											new Date(
+												council?.createdAt
+											).toLocaleString()}
 									</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>Created By</Td>
 									<Td>
-										{council.councilCreatedBy}
+										{council?.createdBy}
 										&nbsp;
 										{userData.email ===
-											council.councilCreatedBy && (
-											<b>(YOU)</b>
-										)}
+											council?.createdBy && <b>(YOU)</b>}
 									</Td>
 								</Tr>
 								<Tr>

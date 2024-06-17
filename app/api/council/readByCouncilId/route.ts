@@ -17,6 +17,15 @@ export async function GET(request: Request) {
 			where: {
 				id: parseInt(councilId),
 			},
+			select: {
+				name: true,
+				city: true,
+				state: true,
+				address: true,
+				createdAt: true,
+				createdBy: true,
+				leaderEmail: true,
+			}
 		});
 
 		if (!council) {
@@ -26,13 +35,9 @@ export async function GET(request: Request) {
 			});
 		}
 		return NextResponse.json({
-			name: council.name,
-			city: council.city,
-			state: council.state,
-			address: council.address,
-			createdAt: council.createdAt,
-			createdBy: council.createdBy,
-			leaderEmail: council.leaderEmail,
+			data: council,
+			message: "Council loaded",
+			status: 200,
 		});
 	} catch (error) {
 		return NextResponse.json({

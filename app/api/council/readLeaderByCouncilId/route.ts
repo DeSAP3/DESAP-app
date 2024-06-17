@@ -14,29 +14,39 @@ export async function GET(request: Request) {
 			});
 		}
 
-        const users = await db.user.findMany({
-            where: {
-                councilId: parseInt(councilId),
-				role: Role.COMMUNITY_MEMBER
-            },
-            select: {
-                id: true,
-                userName: true,
-                email: true,
-                role: true,
-                livingAddress: true,
-            }
-        })
+        const ledaerInCouncil = await db.council.findUnique({
+			where: {
+				id: parseInt(councilId),
+			},
+			select: {
+				leaderEmail: true,
+			}
+		})
 
-		if (!users) {
+
+		const leader = await db.user.findUnique({
+			where: {
+				email: ledaerInCouncil?.leaderEmail,
+			},
+			select: {
+				id: true,
+				userName: true,
+				email: true,
+				role: true,
+				livingAddress: true,
+			}
+		})
+
+
+		if (!leader) {
 			return NextResponse.json({
 				error: "No users in the council",
 				status: 200,
 			});
 		}
 		return NextResponse.json({
-            data: users,
-            message: "Council's Members loaded",
+            data: leader,
+            message: "Council's Leader loaded",
             status: 200,
 		});
 	} catch (error) {

@@ -1,21 +1,20 @@
 import { useUser } from "@/shared/providers/userProvider";
 import {
 	Box,
+	Center,
 	Popover,
 	PopoverArrow,
-	Text,
 	PopoverBody,
 	PopoverCloseButton,
 	PopoverContent,
 	PopoverTrigger,
 	Portal,
 	SimpleGrid,
-	Center,
+	Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import LoadingComponent from "../loading";
 import useSWR from "swr";
-import { Role } from "@prisma/client";
+import LoadingComponent from "../loading";
 
 type CouncilLayoutProps = {
 	userName: string;
@@ -26,36 +25,45 @@ type CouncilLayoutProps = {
 
 export const CouncilLayout = () => {
 	const { userData } = useUser();
-	const [isLoading, setIsLoading] = useState(false);
 	const [councilLeader, setCouncilLeader] = useState<CouncilLayoutProps>();
 	const [councilMembers, setCouncilMembers] = useState<CouncilLayoutProps[]>(
 		[]
 	);
-	const [userList, setUserList] = useState<CouncilLayoutProps[]>([]);
-	const { data: usersResponse, isLoading: isLoadingUsers } = useSWR(
-		`/api/council/readMemberByCouncilId?councilId=${userData?.councilId}`,
-		(url: string | URL | Request): Promise<any> =>
-			fetch(url).then((res) => res.json())
-	);
-
-	useEffect(() => {
-		if (usersResponse) {
-			setUserList(usersResponse.data);
-		}
-	}, [usersResponse]);
-
-	useEffect(() => {
-		setIsLoading(true);
-		const leader = userList.find(
-			(user) => user.role === Role.COMMUNITY_LEADER
+	const { data: usersMemberResponse, isLoading: isLoadingUsersMember } =
+		useSWR(
+			`/api/council/readMemberByCouncilId?councilId=${userData?.councilId}`,
+			(url: string | URL | Request): Promise<any> =>
+				fetch(url)
+					.then((res) => res.json())
+					.then((res) => setCouncilMembers(res.data))
 		);
-		const newUserList = userList.filter(
-			(user) => user.role !== Role.COMMUNITY_LEADER
+
+	const { data: usersLeaderResponse, isLoading: isLoadingUsersLeader } =
+		useSWR(
+			`/api/council/readLeaderByCouncilId?councilId=${userData?.councilId}`,
+			(url: string | URL | Request): Promise<any> =>
+				fetch(url)
+					.then((res) => res.json())
+					.then((res) => setCouncilLeader(res.data))
 		);
-		setCouncilLeader(leader);
-		setCouncilMembers(newUserList);
-		setIsLoading(false);
-	}, [userList]);
+
+	// useEffect(() => {
+	// 	console.log(usersLeaderResponse);
+	// 	if (usersLeaderResponse) {
+	// 		setCouncilLeader(usersLeaderResponse);
+	// 	} else {
+	// 		setCouncilLeader([]);
+	// 	}
+	// }, [usersLeaderResponse]);
+
+	// useEffect(() => {
+	// 	console.log(usersMemberResponse);
+	// 	if (usersMemberResponse) {
+	// 		setCouncilMembers(usersMemberResponse);
+	// 	} else {
+	// 		setCouncilMembers([]);
+	// 	}
+	// }, [usersMemberResponse]);
 
 	return (
 		<Box
@@ -64,7 +72,7 @@ export const CouncilLayout = () => {
 			gap={"10px"}
 			justifyContent={"center"}
 		>
-			{isLoadingUsers && isLoading ? (
+			{isLoadingUsersMember && isLoadingUsersLeader ? (
 				<LoadingComponent text='Loading Council Layout...' />
 			) : (
 				<>
@@ -109,7 +117,7 @@ export const CouncilLayout = () => {
 							spacing='10px'
 							display={"flex"}
 						>
-							{councilMembers.length > 0 &&
+							{councilMembers.length > 0 ? (
 								councilMembers.map((user) => (
 									<Popover key={user.email}>
 										<PopoverTrigger>
@@ -143,7 +151,10 @@ export const CouncilLayout = () => {
 											</PopoverContent>
 										</Portal>
 									</Popover>
-								))}
+								))
+							) : (
+								<></>
+							)}
 						</SimpleGrid>
 					</Center>
 				</>
