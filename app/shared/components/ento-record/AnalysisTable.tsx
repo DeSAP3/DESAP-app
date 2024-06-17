@@ -83,14 +83,6 @@ const AnalysisTable = () => {
 			fetch(url).then((res) => res.json())
 	);
 
-	useEffect(() => {
-		if (analysisResponse) {
-			setAnalysis(analysisResponse.data);
-		} else {
-			setAnalysis([]);
-		}
-	}, [analysisResponse, mutateAnalytics]);
-
 	const handleClose = () => {
 		setOpenViewDetails(false);
 		setOpenViewImage(false);
@@ -162,6 +154,14 @@ const AnalysisTable = () => {
 		setIsLoadingSaving(false);
 	};
 
+	useEffect(() => {
+		if (analysisResponse) {
+			setAnalysis(analysisResponse.data);
+		} else {
+			setAnalysis([]);
+		}
+	}, [analysisResponse]);
+
 	const columns = useMemo<MRT_ColumnDef<AnalysisTableProps>[]>(
 		() => [
 			{
@@ -172,7 +172,7 @@ const AnalysisTable = () => {
 				enableEditing: false,
 			},
 			{
-				accessorKey: "larvaeNumber",
+				accessorKey: "predictions.predictions",
 				header: "Larvae Count",
 				Cell: ({ row }) =>
 					row.original.predictions?.predictions?.length || 0,
@@ -209,7 +209,7 @@ const AnalysisTable = () => {
 			density: "compact",
 		},
 		state: {
-			isLoading: isLoadingAnalyticsResponse || isLoadingSaving,
+			isLoading: isLoadingAnalyticsResponse && isLoadingSaving,
 		},
 		renderRowActionMenuItems: ({ row }) => [
 			<MenuItem
@@ -264,7 +264,7 @@ const AnalysisTable = () => {
 		],
 	});
 
-	return analysis ? (
+	return analysis.length > 0 ? (
 		<>
 			<MaterialReactTable table={table} />
 			{/* View Prediction Detail */}
