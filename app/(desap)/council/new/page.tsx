@@ -11,7 +11,6 @@ const AddNewCouncilPage = () => {
 				<PageHeader title={`Add New Council`} />
 				<Text as={"p"} fontSize='medium'>
 					As a community leader, you are able to create your council.
-					Or you can proceed to join other's council.
 				</Text>
 			</Container>
 			<AddCouncil />

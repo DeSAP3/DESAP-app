@@ -6,7 +6,7 @@ import {
 	MRT_ColumnDef,
 } from "material-react-table";
 import useSWR from "swr";
-import { Council } from "@prisma/client";
+import { Council, Role } from "@prisma/client";
 import { ImEnter } from "react-icons/im";
 import { Box, Button } from "@mui/material";
 import { useUser } from "@/shared/providers/userProvider";
@@ -78,7 +78,7 @@ const CouncilList = () => {
 		state: {
 			isLoading: isLoadingCouncilsResponse,
 		},
-		enableRowActions: userData.councilId === null ? true : false,
+		enableRowActions: userData.councilId === null && userData.role !== Role.COMMUNITY_LEADER ? true : false,
 		renderRowActions: (row) => (
 			<Box sx={{ display: "flex", gap: "1rem"}}>
 				<Button

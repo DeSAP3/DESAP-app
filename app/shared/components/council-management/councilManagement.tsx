@@ -13,10 +13,10 @@ import {
 	useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import LoadingComponent from "../loading";
-import { Role } from "@prisma/client";
+import { Council, Role } from "@prisma/client";
 
 export default function CouncilManagement() {
 	const toast = useToast();
@@ -24,32 +24,37 @@ export default function CouncilManagement() {
 	const { userData, mutateUser } = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 	const [council, setCouncil] = useState({
-		councilName: "",
-		councilCity: "",
-		councilState: "",
-		councilAddress: "",
-		councilCreatedAt: "",
-		councilCreatedBy: "",
-		councilLeaderEmail: "",
+		name: "",
+		state: "",
+		city: "",
+		address: "",
+		createdBy: "",
+		leaderEmail: "",
 	});
 
-	const { isLoading: isLoadingCouncil, mutate: mutateCouncilRes } = useSWR(
+	const {
+		data: councilResponse,
+		isLoading: isLoadingCouncil,
+		mutate: mutateCouncilRes,
+	} = useSWR(
 		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
-		(url: string | URL | Request) =>
-			fetch(url)
-				.then((res) => res.json())
-				.then((data) => {
-					setCouncil({
-						councilName: data.name,
-						councilCity: data.city,
-						councilState: data.state,
-						councilAddress: data.address,
-						councilCreatedAt: data.createdAt,
-						councilCreatedBy: data.createdBy,
-						councilLeaderEmail: data.leaderEmail,
-					});
-				})
+		(url: string | URL | Request) => fetch(url).then((res) => res.json())
 	);
+
+	useEffect(() => {
+		if (councilResponse) {
+			setCouncil(councilResponse.data);
+		} else {
+			setCouncil({
+				name: "",
+				state: "",
+				city: "",
+				address: "",
+				createdBy: "",
+				leaderEmail: "",
+			});
+		}
+	}, [councilResponse]);
 
 	if (userData.councilId === null) {
 		return (
@@ -84,8 +89,6 @@ export default function CouncilManagement() {
 			</Center>
 		);
 	}
-
-	
 
 	const handleSave = async () => {
 		setIsLoading(true);
@@ -167,11 +170,11 @@ export default function CouncilManagement() {
 									<FormLabel>Council Name</FormLabel>
 									<Input
 										type='text'
-										value={council.councilName}
+										value={council?.name}
 										onChange={(e) =>
 											setCouncil({
 												...council,
-												councilName: e.target.value,
+												name: e.target.value,
 											})
 										}
 									/>
@@ -180,41 +183,35 @@ export default function CouncilManagement() {
 									<FormLabel>Council Address</FormLabel>
 									<Input
 										type='text'
-										value={council.councilAddress}
+										value={council.address}
 										onChange={(e) =>
 											setCouncil({
 												...council,
-												councilAddress: e.target.value,
+												address: e.target.value,
 											})
 										}
 									/>
 								</FormControl>
 								<FormControl id='city' isDisabled>
 									<FormLabel>City</FormLabel>
-									<Input
-										type='text'
-										value={council.councilCity}
-									/>
+									<Input type='text' value={council.city} />
 								</FormControl>
 								<FormControl id='state' isDisabled>
 									<FormLabel>State</FormLabel>
-									<Input
-										type='text'
-										value={council.councilState}
-									/>
+									<Input type='text' value={council.state} />
 								</FormControl>
 								<FormControl id='leaderEmail;' isDisabled>
 									<FormLabel>Leader Email</FormLabel>
 									<Input
 										type='text'
-										value={council.councilLeaderEmail}
+										value={council.leaderEmail}
 									/>
 								</FormControl>
 								<FormControl id='createdBy;' isDisabled>
 									<FormLabel>Council Created By</FormLabel>
 									<Input
 										type='text'
-										value={council.councilCreatedBy}
+										value={council.createdBy}
 									/>
 								</FormControl>
 
@@ -222,7 +219,7 @@ export default function CouncilManagement() {
 									<Button
 										loadingText='Submitting'
 										size='lg'
-										bg="brand.acceptbutton"
+										bg='brand.acceptbutton'
 										color={"white"}
 										onClick={handleSave}
 									>
@@ -230,10 +227,8 @@ export default function CouncilManagement() {
 									</Button>
 									<Button
 										size='lg'
+										bg='brand.rejectbutton'
 										colorScheme='red'
-										_hover={{
-											bg: "#b30000",
-										}}
 										onClick={handleDelete}
 									>
 										Delete Council

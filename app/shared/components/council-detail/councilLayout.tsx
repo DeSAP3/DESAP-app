@@ -25,7 +25,7 @@ type CouncilLayoutProps = {
 
 export const CouncilLayout = () => {
 	const { userData } = useUser();
-	const [councilLeader, setCouncilLeader] = useState<CouncilLayoutProps>();
+	const [councilLeader, setCouncilLeader] = useState<CouncilLayoutProps | null>(null);
 	const [councilMembers, setCouncilMembers] = useState<CouncilLayoutProps[]>(
 		[]
 	);
@@ -35,7 +35,7 @@ export const CouncilLayout = () => {
 			(url: string | URL | Request): Promise<any> =>
 				fetch(url)
 					.then((res) => res.json())
-					.then((res) => setCouncilMembers(res.data))
+					// .then((res) => setCouncilMembers(res.data))
 		);
 
 	const { data: usersLeaderResponse, isLoading: isLoadingUsersLeader } =
@@ -44,26 +44,24 @@ export const CouncilLayout = () => {
 			(url: string | URL | Request): Promise<any> =>
 				fetch(url)
 					.then((res) => res.json())
-					.then((res) => setCouncilLeader(res.data))
+					// .then((res) => setCouncilLeader(res.data))
 		);
 
-	// useEffect(() => {
-	// 	console.log(usersLeaderResponse);
-	// 	if (usersLeaderResponse) {
-	// 		setCouncilLeader(usersLeaderResponse);
-	// 	} else {
-	// 		setCouncilLeader([]);
-	// 	}
-	// }, [usersLeaderResponse]);
+	useEffect(() => {
+		if (usersLeaderResponse) {
+			setCouncilLeader(usersLeaderResponse.data);
+		} else {
+			setCouncilLeader(null);
+		}
+	}, [usersLeaderResponse]);
 
-	// useEffect(() => {
-	// 	console.log(usersMemberResponse);
-	// 	if (usersMemberResponse) {
-	// 		setCouncilMembers(usersMemberResponse);
-	// 	} else {
-	// 		setCouncilMembers([]);
-	// 	}
-	// }, [usersMemberResponse]);
+	useEffect(() => {
+		if (usersMemberResponse) {
+			setCouncilMembers(usersMemberResponse.data);
+		} else {
+			setCouncilMembers([]);
+		}
+	}, [usersMemberResponse]);
 
 	return (
 		<Box

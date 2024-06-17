@@ -5,9 +5,12 @@ import LoadingComponent from "@/shared/components/loading";
 import { useUser } from "@/shared/providers/userProvider";
 import { SmallAddIcon } from "@chakra-ui/icons";
 import {
+	Alert,
+	AlertDescription,
+	AlertIcon,
+	AlertTitle,
 	Button,
 	ButtonGroup,
-	Center,
 	Container,
 	Flex,
 	SimpleGrid,
@@ -45,7 +48,7 @@ export default function Dashboard() {
 	);
 
 	useEffect(() => {
-		if (postResponse && postResponse.data) {
+		if (postResponse) {
 			setPostList(postResponse.data);
 		} else {
 			setPostList([]);
@@ -59,6 +62,22 @@ export default function Dashboard() {
 	return (
 		<>
 			<PageHeader title={`Dashboard`} />
+			{userData.livingAddress === null && (
+				<Alert status='warning'>
+					<AlertIcon />
+					<AlertTitle>Living Address Not Added!</AlertTitle>
+					<AlertDescription>
+						Please procees to{" "}
+						<a href='/community/profile'>
+							<i>
+								<u>user management</u>
+							</i>
+						</a>{" "}
+						to upload your living address to allow leader to track
+						you.
+					</AlertDescription>
+				</Alert>
+			)}
 			{isLoadingUserResponse ? (
 				<LoadingComponent text='Getting user information...' />
 			) : (
@@ -73,10 +92,7 @@ export default function Dashboard() {
 						</Text>
 						<Button
 							colorScheme={"green"}
-							bg={"black"}
-							_hover={{
-								bg: "#222831",
-							}}
+							bg={"brand.acceptbutton"}
 							onClick={() => router.push("/community/screening")}
 						>
 							<SmallAddIcon />
@@ -104,8 +120,9 @@ export default function Dashboard() {
 										{userData.role ===
 											Role.COMMUNITY_LEADER && (
 											<Button
-												variant='ghost'
-												bg={"brand.defaultbutton"}
+												variant='solid'
+												bg={"brand.acceptbutton"}
+												color={"white"}
 												onClick={() =>
 													router.push("/council/new")
 												}
@@ -119,9 +136,8 @@ export default function Dashboard() {
 						)}
 						{isLoadingPostResponse ? (
 							<LoadingComponent text='Loading Posts...' />
-						) : (
-							userData.councilId !== null &&
-							postList.length > 0 &&
+						) : userData.councilId !== null &&
+						  postList.length > 0 ? (
 							postList.map((post) => (
 								<InformationCard
 									key={post.postId}
@@ -136,6 +152,8 @@ export default function Dashboard() {
 									updatedAt={post.updatedAt}
 								/>
 							))
+						) : (
+							<></>
 						)}
 					</SimpleGrid>
 				</Container>

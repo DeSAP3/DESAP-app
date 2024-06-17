@@ -20,16 +20,22 @@ const CouncilDetailPage = () => {
 				>
 					<Text>You have not joined any council.</Text>
 					<Text>
-						To join a council, please visit the{" "}
-						<i>
-							<u>
-								<a href='/council/list'>council list</a>
-							</u>
-						</i>
-						{userData.role === Role.COMMUNITY_LEADER ? (
+						{userData.role === Role.COMMUNITY_MEMBER && (
+							<>
+								To join a council as Community Member, please
+								visit the{" "}
+								<i>
+									<u>
+										<a href='/council/list'>council list</a>
+									</u>
+								</i>
+							</>
+						)}
+						{userData.role === Role.COMMUNITY_LEADER && (
 							<>
 								{" "}
-								or create a new council via{" "}
+								To join a council as Community Leader, please
+								create your council via{" "}
 								<i>
 									<u>
 										<a href='/council/new'>
@@ -38,9 +44,8 @@ const CouncilDetailPage = () => {
 									</u>
 								</i>
 							</>
-						) : (
-							"."
 						)}
+						.
 					</Text>
 				</Center>
 			</>
