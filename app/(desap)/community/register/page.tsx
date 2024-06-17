@@ -10,7 +10,6 @@ import {
 	Flex,
 	FormControl,
 	FormLabel,
-	Heading,
 	Input,
 	InputGroup,
 	InputRightElement,
@@ -18,8 +17,7 @@ import {
 	Select,
 	Stack,
 	Text,
-	useColorModeValue,
-	useToast,
+	useToast
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -75,7 +73,7 @@ export default function Register() {
 			minH={"100vh"}
 			align={"center"}
 			justify={"center"}
-			bg={useColorModeValue("gray.50", "gray.800")}
+			bg={"gray.50"}
 		>
 			<Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
 				<Stack align={"center"}>
@@ -86,7 +84,7 @@ export default function Register() {
 				</Stack>
 				<Box
 					rounded={"lg"}
-					bg={useColorModeValue("white", "gray.700")}
+					bg={"white"}
 					boxShadow={"lg"}
 					p={8}
 				>
