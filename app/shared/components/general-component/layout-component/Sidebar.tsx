@@ -32,7 +32,7 @@ export default function UserAccountNav() {
 
 	return (
 		<>
-			{session?.user ? (
+			{session?.user?.email ? (
 				<>
 					<Button
 						colorScheme={"green"}
@@ -96,7 +96,8 @@ export default function UserAccountNav() {
 									bg={"brand.rejectbutton"}
 									onClick={() =>
 										signOut({
-											callbackUrl: "/app/(desap)/community/login",
+											callbackUrl:
+												"/community/login",
 										})
 									}
 								>

@@ -222,11 +222,8 @@ export default function CouncilManagement() {
 									<Button
 										loadingText='Submitting'
 										size='lg'
-										bg={"blue.400"}
+										bg="brand.acceptbutton"
 										color={"white"}
-										_hover={{
-											bg: "blue.500",
-										}}
 										onClick={handleSave}
 									>
 										Save
