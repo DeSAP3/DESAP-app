@@ -100,7 +100,7 @@ export default function Calculator() {
 		setIsLoadingSaving(true);
 		if (
 			userData.email === undefined &&
-			Role.OPERATION_TEAM.match(userData.role)
+			userData.role === Role.OPERATION_TEAM.valueOf()
 			// userData.role !== "Operation Team"
 		) {
 			toast({
