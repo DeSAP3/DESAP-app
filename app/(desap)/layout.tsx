@@ -1,5 +1,5 @@
-import Footer from "@/shared/components/general-component/Footer";
-import Navbar from "@/shared/components/general-component/Navbar";
+import Footer from "@/shared/components/general-component/layout-component/Footer";
+import Navbar from "@/shared/components/general-component/layout-component/Navbar";
 import { Providers } from "@/shared/providers/providers";
 import { Box, Flex } from "@chakra-ui/react";
 import type { Metadata } from "next";

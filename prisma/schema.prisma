@@ -1,82 +1,109 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // url       = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  userId            Int
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+// model Account {
+//   id                String  @id @default(cuid())
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refresh_token     String?
+//   access_token      String?
+//   expires_at        Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String?
+//   session_state     String?
+//   userId            Int
+//   user              User    @relation(fields: [userId], references: [id])
 
-  @@unique([provider, providerAccountId])
-}
+//   @@unique([provider, providerAccountId])
+// }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  expires      DateTime
-  userId       Int
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+// model Session {
+//   id           String   @id @default(cuid())
+//   sessionToken String   @unique
+//   expires      DateTime
+//   userId       Int
+//   user         User     @relation(fields: [userId], references: [id])
+// }
 
 model User {
   id            Int                   @id @default(autoincrement())
   userName      String
   email         String                @unique
-  role          String                @default("User")
+  role          Role                  
   password      String
   livingAddress String?
   councilId     Int?
-  accounts      Account[]
   screenings    DengueScreeningPost[]
-  sessions      Session[]
-  council       Council?              @relation(fields: [councilId], references: [id], onDelete: Cascade)
+  analytics     Analytics[]
+  council       Council?              @relation(fields: [councilId], references: [id])
+  elections     LeaderElection[]      @relation("CandidateToElection")
 }
 
-// Post hold the result of dengue screening
 model DengueScreeningPost {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   title     String
   content   String?
   result    String?
-  createdAt DateTime @default(now())
-  status    String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  status    CheckingStatus @default(UNCHECK)
+  author    User           @relation(fields: [authorId], references: [id])
   authorId  Int
 }
 
 model Council {
-  id          Int      @id @default(autoincrement())
+  id          Int              @id @default(autoincrement())
   name        String
   city        String
   state       String?
   address     String
   leaderEmail String
-  createdAt   DateTime @default(now())
+  createdAt   DateTime         @default(now())
   createdBy   String
-  members     User[]
+  members     User[]        
+  elections   LeaderElection[]
 }
 
 model Analytics {
-  createdAt DateTime @default(now())
-  checked   Boolean
-  larvaNum  Int
-  image     String?
-  id        Int      @id @default(autoincrement())
+  createdAt   DateTime       @default(now())
+  status      CheckingStatus @default(UNCHECK)
+  predictions Json
+  imageURL    String
+  id          Int            @id @default(autoincrement())
+  createdBy   User           @relation(fields: [createdById], references: [id])
+  createdById Int
+}
+
+model LeaderElection {
+  id          Int      @id @default(autoincrement())
+  electionEnd DateTime
+  councilId   Int
+  council     Council  @relation(fields: [councilId], references: [id])
+  candidates  User[]   @relation("CandidateToElection")
+}
+
+enum Role {
+  COMMUNITY_LEADER
+  COMMUNITY_MEMBER
+  OPERATION_TEAM
+}
+
+enum ElectionStatus {
+  OPEN
+  CLOSED
+  ONGOING
+}
+
+enum CheckingStatus {
+  UNCHECK
+  CHECKED
 }

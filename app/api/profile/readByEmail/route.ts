@@ -5,7 +5,6 @@ export async function GET(request: Request) {
 	try {
 		const urlParams = new URL(request.url).searchParams;
 		const email = urlParams.get("email");
-
 		if (!email) {
 			return NextResponse.json({
 				error: "Missing email",
@@ -16,6 +15,14 @@ export async function GET(request: Request) {
 		const user = await db.user.findUnique({
 			where: {
 				email: email,
+			},
+			select: {
+				id: true,
+				userName: true,
+				email: true,
+				role: true,
+				livingAddress: true,
+				councilId: true,
 			},
 		});
 
@@ -30,6 +37,7 @@ export async function GET(request: Request) {
 			username: user.userName,
 			email: user.email,
 			role: user.role,
+			livingAddress: user?.livingAddress,
 			councilId: user?.councilId,
 		});
 	} catch (error) {

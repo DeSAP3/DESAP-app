@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 		});
 
 		return NextResponse.json({
-			dengueScreeningPost: dengueScreeningPost,
+			data: dengueScreeningPost,
 			message: "Post created successfully",
 			status: 201,
 		});

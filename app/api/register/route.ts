@@ -1,4 +1,5 @@
 import db from "@/shared/providers/dbProvider";
+import supabase from "@/shared/providers/supabase";
 import { NextResponse } from "next/server";
 
 
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
 		if (exist) {
 			return NextResponse.json(
 				{
-					error: "User already exists",
+					error: "User already exists OR Email already used",
 					status: 400,
 				},
 	
@@ -39,11 +40,9 @@ export async function POST(request: Request) {
 			},
 		});
 
-		// const { password: newPassword, ...rest } = user;
-
 		return NextResponse.json(
 			{
-				user: user,
+				data: user,
 				message: "User created successfully",
 				status: 201,
 			},

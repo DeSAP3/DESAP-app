@@ -19,7 +19,7 @@ export async function DELETE(request: Request) {
         });
 
         return NextResponse.json({
-            council: council,
+            data: council,
             message: "Council deleted successfully",
             status: 200,
         });

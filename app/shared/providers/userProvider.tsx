@@ -3,11 +3,12 @@ import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import useSWR from "swr";
 
-interface UserData {
+export interface UserData {
 	id: number|null;
 	userName: string;
 	email: string;
 	role: string;
+	livingAddress?: string;
 	councilId?: number | null;
 }
 
@@ -23,6 +24,7 @@ const initialUserData: UserData = {
 	userName: "",
 	email: "",
 	role: "",
+	livingAddress: "",
 	councilId: null,
 };
 
@@ -51,6 +53,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 				userName: userResponse?.username,
 				email: userResponse?.email,
 				role: userResponse?.role,
+				livingAddress: userResponse?.livingAddress,
 				councilId: userResponse?.councilId,
 			});
 		} else {

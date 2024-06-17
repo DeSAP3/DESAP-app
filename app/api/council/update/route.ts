@@ -44,7 +44,7 @@ export async function PUT(request: Request) {
 		});
 
 		return NextResponse.json({
-			council: council,
+			data: council,
 			message: "Council updated successfully",
 			status: 200,
 		});

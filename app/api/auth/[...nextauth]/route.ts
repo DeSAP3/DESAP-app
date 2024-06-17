@@ -3,7 +3,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import db from "@/shared/providers/dbProvider";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(db),
 	pages: {
 		signIn: "/community/login",
@@ -29,6 +29,13 @@ export const authOptions: NextAuthOptions = {
 					where: {
 						email: credentials?.email,
 					},
+					select: {
+						id: true,
+						userName: true,
+						email: true,
+						role: true,
+						password: true,
+					}
 				});
 				
 				if (!existingUser) {
@@ -39,19 +46,11 @@ export const authOptions: NextAuthOptions = {
 					return null;
 				}
 				
-				let council = null;
-				if (existingUser?.councilId) {
-					council = await db.council.findUnique({
-						where: {
-							id: existingUser?.councilId,
-						},
-					});
-				}
 				return {
 					id: `${existingUser.id}`,
 					username: existingUser.userName,
 					email: existingUser.email,
-					councilName: council?.name,
+					role: existingUser.role,
 				};
 			},
 		}),

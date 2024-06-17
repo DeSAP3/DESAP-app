@@ -1,0 +1,252 @@
+import { useUser } from "@/shared/providers/userProvider";
+import {
+	Box,
+	Button,
+	Center,
+	Container,
+	Flex,
+	FormControl,
+	FormLabel,
+	Input,
+	Stack,
+	Text,
+	useToast,
+} from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import useSWR from "swr";
+import LoadingComponent from "../loading";
+import { Role } from "@prisma/client";
+
+export default function CouncilManagement() {
+	const toast = useToast();
+	const router = useRouter();
+	const { userData, mutateUser } = useUser();
+	const [isLoading, setIsLoading] = useState(false);
+	const [council, setCouncil] = useState({
+		councilName: "",
+		councilCity: "",
+		councilState: "",
+		councilAddress: "",
+		councilCreatedAt: "",
+		councilCreatedBy: "",
+		councilLeaderEmail: "",
+	});
+
+	const { isLoading: isLoadingCouncil, mutate: mutateCouncilRes } = useSWR(
+		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
+		(url: string | URL | Request) =>
+			fetch(url)
+				.then((res) => res.json())
+				.then((data) => {
+					setCouncil({
+						councilName: data.name,
+						councilCity: data.city,
+						councilState: data.state,
+						councilAddress: data.address,
+						councilCreatedAt: data.createdAt,
+						councilCreatedBy: data.createdBy,
+						councilLeaderEmail: data.leaderEmail,
+					});
+				})
+	);
+
+	if (userData.councilId === null) {
+		return (
+			<Center
+				display={"flex"}
+				flexDirection={"column"}
+				gap={2}
+				marginY={5}
+			>
+				<Text>You have not joined any council.</Text>
+				<Text>
+					To join a council, please visit the{" "}
+					<i>
+						<u>
+							<a href='/council/list'>council list</a>
+						</u>
+					</i>
+					{Role.COMMUNITY_LEADER.match(userData.role) ? (
+						<>
+							{" "}
+							or create a new council via{" "}
+							<i>
+								<u>
+									<a href='/council/new'>create council</a>
+								</u>
+							</i>
+						</>
+					) : (
+						"."
+					)}
+				</Text>
+			</Center>
+		);
+	}
+
+	
+
+	const handleSave = async () => {
+		setIsLoading(true);
+		const updatedCouncil = {
+			...council,
+			councilId: userData.councilId,
+		};
+		const res = await fetch("/api/council/update", {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				council: updatedCouncil,
+			}),
+		}).then((res) => res.json());
+
+		toast({
+			title: res.status === 200 ? res.message : res.error,
+			status: res.status === 200 ? "success" : "error",
+			duration: 3000,
+			isClosable: true,
+			position: "bottom-right",
+		});
+		setIsLoading(false);
+	};
+
+	const handleDelete = async () => {
+		setIsLoading(true);
+		const res = await fetch(
+			`/api/council/delete?councilId=${userData.councilId}`,
+			{
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		).then((res) => res.json());
+
+		mutateCouncilRes();
+		mutateUser();
+		toast({
+			title: res.status === 200 ? res.message : res.error,
+			status: res.status === 200 ? "success" : "error",
+			duration: 3000,
+			isClosable: true,
+			position: "bottom-right",
+		});
+		setIsLoading(false);
+		router.push("/council/new");
+	};
+
+	return (
+		<>
+			<Center pt={3}>
+				<Text as={"u"} fontSize='2xl' fontWeight='bold'>
+					Council Information
+				</Text>
+			</Center>
+			{isLoadingCouncil ? (
+				<LoadingComponent text='Getting council information...' />
+			) : isLoading ? (
+				<LoadingComponent text='Updating council information...' />
+			) : (
+				<Container
+					maxWidth={"80%"}
+					paddingY={5}
+					justifyContent={"center"}
+				>
+					<Flex
+						align={"center"}
+						justify={"center"}
+						width={"100%"}
+						marginY={5}
+					>
+						<Box rounded={"lg"} boxShadow={"lg"} p={8}>
+							<Stack spacing={3}>
+								<FormControl id='name' isRequired>
+									<FormLabel>Council Name</FormLabel>
+									<Input
+										type='text'
+										value={council.councilName}
+										onChange={(e) =>
+											setCouncil({
+												...council,
+												councilName: e.target.value,
+											})
+										}
+									/>
+								</FormControl>
+								<FormControl id='address' isRequired>
+									<FormLabel>Council Address</FormLabel>
+									<Input
+										type='text'
+										value={council.councilAddress}
+										onChange={(e) =>
+											setCouncil({
+												...council,
+												councilAddress: e.target.value,
+											})
+										}
+									/>
+								</FormControl>
+								<FormControl id='city' isDisabled>
+									<FormLabel>City</FormLabel>
+									<Input
+										type='text'
+										value={council.councilCity}
+									/>
+								</FormControl>
+								<FormControl id='state' isDisabled>
+									<FormLabel>State</FormLabel>
+									<Input
+										type='text'
+										value={council.councilState}
+									/>
+								</FormControl>
+								<FormControl id='leaderEmail;' isDisabled>
+									<FormLabel>Leader Email</FormLabel>
+									<Input
+										type='text'
+										value={council.councilLeaderEmail}
+									/>
+								</FormControl>
+								<FormControl id='createdBy;' isDisabled>
+									<FormLabel>Council Created By</FormLabel>
+									<Input
+										type='text'
+										value={council.councilCreatedBy}
+									/>
+								</FormControl>
+
+								<Stack spacing={5} pt={2}>
+									<Button
+										loadingText='Submitting'
+										size='lg'
+										bg={"blue.400"}
+										color={"white"}
+										_hover={{
+											bg: "blue.500",
+										}}
+										onClick={handleSave}
+									>
+										Save
+									</Button>
+									<Button
+										size='lg'
+										colorScheme='red'
+										_hover={{
+											bg: "#b30000",
+										}}
+										onClick={handleDelete}
+									>
+										Delete Council
+									</Button>
+								</Stack>
+							</Stack>
+						</Box>
+					</Flex>
+				</Container>
+			)}
+		</>
+	);
+}

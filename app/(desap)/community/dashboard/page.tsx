@@ -1,6 +1,7 @@
 "use client";
-import InformationCard from "@/shared/components/dashboard-component/InformationCard";
-import Loading from "@/shared/components/loading";
+import InformationCard from "@/shared/components/community-dashboard/InformationCard";
+import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
+import LoadingComponent from "@/shared/components/loading";
 import { useUser } from "@/shared/providers/userProvider";
 import { SmallAddIcon } from "@chakra-ui/icons";
 import {
@@ -12,7 +13,7 @@ import {
 	SimpleGrid,
 	Text,
 } from "@chakra-ui/react";
-import { DengueScreeningPost, User } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ type DashboardProps = {
 	result: string;
 	status: string;
 	createdAt: string;
+	updatedAt: string;
 	authorUsername: string;
 	authorEmail: string;
 	authorRole: string;
@@ -51,26 +53,14 @@ export default function Dashboard() {
 	}, [postResponse]);
 
 	if (!session) {
-		return (
-			<Center pt={3}>
-				<Text as={"u"} fontSize='2xl' fontWeight='bold'>
-					Dashboard
-				</Text>
-			</Center>
-		);
+		return <PageHeader title={`Dashboard`} />;
 	}
 
 	return (
 		<>
-			<Container maxW='container.md' paddingY={5}>
-				<Center pt={3}>
-					<Text as={"u"} fontSize='2xl' fontWeight='bold'>
-						Dashboard Council #{userData?.councilId}
-					</Text>
-				</Center>
-			</Container>
+			<PageHeader title={`Dashboard`} />
 			{isLoadingUserResponse ? (
-				<Loading loading='Getting user information...' />
+				<LoadingComponent text='Getting user information...' />
 			) : (
 				<Container maxW='90%' paddingY={5}>
 					<Flex
@@ -98,25 +88,28 @@ export default function Dashboard() {
 								description='Click the button below to create or join a council.'
 								component={
 									<ButtonGroup spacing='2'>
-										{userData.role ===
-											"Community Member" && (
+										{Role.COMMUNITY_MEMBER.match(
+											userData.role
+										) && (
 											<Button
 												variant='solid'
-												colorScheme='blue'
+												colorScheme='green'
+												bg={"brand.acceptbutton"}
 												onClick={() =>
-													router.push("/council")
+													router.push("/council/list")
 												}
 											>
 												Join Council
 											</Button>
 										)}
-										{userData.role ===
-											"Community Leader" && (
+										{Role.COMMUNITY_LEADER.match(
+											userData.role
+										) && (
 											<Button
 												variant='ghost'
-												colorScheme='blue'
+												bg={"brand.defaultbutton"}
 												onClick={() =>
-													router.push("/council")
+													router.push("/council/new")
 												}
 											>
 												Create Council
@@ -127,7 +120,7 @@ export default function Dashboard() {
 							/>
 						)}
 						{isLoadingPostResponse ? (
-							<Loading loading='Loading posts...' />
+							<LoadingComponent text='Loading Posts...' />
 						) : (
 							userData.councilId !== null &&
 							postList.length > 0 &&
@@ -140,7 +133,9 @@ export default function Dashboard() {
 									authorName={post.authorUsername}
 									authorEmail={post.authorEmail}
 									status={post.status}
+									result={post.result}
 									createdAt={post.createdAt}
+									updatedAt={post.updatedAt}
 								/>
 							))
 						)}

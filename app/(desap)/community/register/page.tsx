@@ -1,6 +1,7 @@
 "use client";
 
-import { roles } from "@/shared/static/application_role";
+import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
+import { roleOptions } from "@/shared/static/app_role";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
 	Box,
@@ -72,9 +73,7 @@ export default function Register() {
 		>
 			<Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
 				<Stack align={"center"}>
-					<Heading fontSize={"4xl"} textAlign={"center"}>
-						Register
-					</Heading>
+					<PageHeader title={`Register`} />
 					<Text fontSize={"lg"} color={"gray.600"}>
 						To enjoy DESAP cool features ✌️
 					</Text>
@@ -152,9 +151,9 @@ export default function Register() {
 									})
 								}
 							>
-								{roles.map((role) => (
-									<option key={role} value={role}>
-										{role}
+								{roleOptions.map(({ value, label }) => (
+									<option key={value} value={value}>
+										{label}
 									</option>
 								))}
 							</Select>
@@ -163,11 +162,8 @@ export default function Register() {
 							<Button
 								loadingText='Submitting'
 								size='lg'
-								bg={"blue.400"}
-								color={"white"}
-								_hover={{
-									bg: "blue.500",
-								}}
+								bg={"brand.acceptbutton"}
+								colorScheme="green"
 								onClick={handleRegister}
 							>
 								Register
