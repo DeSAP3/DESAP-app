@@ -172,10 +172,10 @@ const AnalysisTable = () => {
 				enableEditing: false,
 			},
 			{
-				accessorKey: "predictions.predictions",
+				accessorKey: "predictions.predictions.length",
 				header: "Larvae Count",
-				Cell: ({ row }) =>
-					row.original.predictions?.predictions?.length || 0,
+				// Cell: ({ row }) =>
+				// 	row.original.predictions?.predictions?.length || 0,
 			},
 			{
 				accessorKey: "status",
@@ -206,7 +206,7 @@ const AnalysisTable = () => {
 			maxSize: 50,
 		},
 		initialState: {
-			density: "compact",
+			density: "comfortable",
 		},
 		state: {
 			isLoading: isLoadingAnalyticsResponse && isLoadingSaving,
@@ -378,7 +378,7 @@ const AnalysisTable = () => {
 			</Dialog>
 		</>
 	) : (
-		<NotFoundComponet notfound='No Analysis' />
+		<NotFoundComponet notfound='No Analysis. Please refresh the page.' />
 	);
 };
 
