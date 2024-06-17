@@ -165,10 +165,8 @@ const AnalysisTable = () => {
 	const columns = useMemo<MRT_ColumnDef<AnalysisTableProps>[]>(
 		() => [
 			{
-				accessorKey: "createdAt",
+				accessorFn: (row) => new Date(row.createdAt).toLocaleString(),
 				header: "Analysis Datetime",
-				Cell: ({ cell }) =>
-					new Date(cell.getValue() as string).toLocaleString(),
 				enableEditing: false,
 			},
 			{
