@@ -89,7 +89,7 @@ const AnalysisTable = () => {
 		} else {
 			setAnalysis([]);
 		}
-	}, [analysisResponse]);
+	}, [analysisResponse, mutateAnalytics]);
 
 	const handleClose = () => {
 		setOpenViewDetails(false);
