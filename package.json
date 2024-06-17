@@ -42,7 +42,6 @@
     "material-react-table": "^2.13.0",
     "next": "^14.0.2",
     "next-auth": "^4.24.5",
-    "next-cloudinary": "^4.18.0",
     "next-images": "^1.8.5",
     "postcss": "^8.4.38",
     "react": "^18",
