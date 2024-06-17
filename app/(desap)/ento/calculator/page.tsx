@@ -2,12 +2,10 @@
 import ImageForm from "@/shared/components/ento-calculator/ImageForm";
 import {
 	Box,
-	Center,
 	Container,
 	Flex,
 	Spacer,
-	Text,
-	useToast,
+	useToast
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
@@ -16,12 +14,12 @@ import ResultForm from "@/shared/components/ento-calculator/ResultForm";
 import LoadingComponent from "@/shared/components/loading";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 
+import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
 import supabase from "@/shared/providers/supabase";
 import { useUser } from "@/shared/providers/userProvider";
+import { Role } from "@prisma/client";
 import { JsonObject } from "@prisma/client/runtime/library";
 import { v4 as uuidv4 } from "uuid";
-import { Role } from "@prisma/client";
-import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
 
 export type ResponseImage = {
 	imageDisplay?: string;
