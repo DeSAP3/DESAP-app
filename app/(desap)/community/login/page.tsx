@@ -2,27 +2,24 @@
 
 import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
 import LoadingComponent from "@/shared/components/loading";
-import { useUser } from "@/shared/providers/userProvider";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
-	Text,
 	Box,
 	Button,
 	Flex,
 	FormControl,
 	FormLabel,
-	Heading,
 	Input,
 	InputGroup,
 	InputRightElement,
 	Link,
 	Stack,
+	Text,
 	useColorModeValue,
-	useToast,
+	useToast
 } from "@chakra-ui/react";
-import { Role } from "@prisma/client";
 
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

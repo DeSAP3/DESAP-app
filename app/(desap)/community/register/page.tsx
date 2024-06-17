@@ -1,6 +1,7 @@
 "use client";
 
 import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
+import LoadingComponent from "@/shared/components/loading";
 import { roleOptions } from "@/shared/static/app_role";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
@@ -26,6 +27,7 @@ import { useState } from "react";
 export default function Register() {
 	const toast = useToast();
 	const [showPassword, setShowPassword] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const [data, setData] = useState({
 		userName: "",
@@ -35,6 +37,7 @@ export default function Register() {
 	});
 
 	const handleRegister = async (e: any) => {
+		setIsLoading(true);
 		e.preventDefault();
 		const res = await fetch("/api/register", {
 			method: "POST",
@@ -62,9 +65,12 @@ export default function Register() {
 			});
 			router.push("/community/login");
 		}
+		setIsLoading(false);
 	};
 
-	return (
+	return isLoading ? (
+		<LoadingComponent text='Registering...' />
+	) : (
 		<Flex
 			minH={"100vh"}
 			align={"center"}
@@ -163,7 +169,7 @@ export default function Register() {
 								loadingText='Submitting'
 								size='lg'
 								bg={"brand.acceptbutton"}
-								colorScheme="green"
+								colorScheme='green'
 								onClick={handleRegister}
 							>
 								Register
