@@ -264,7 +264,7 @@ const AnalysisTable = () => {
 		],
 	});
 
-	return analysis.length > 0 ? (
+	return analysis ? (
 		<>
 			<MaterialReactTable table={table} />
 			{/* View Prediction Detail */}
