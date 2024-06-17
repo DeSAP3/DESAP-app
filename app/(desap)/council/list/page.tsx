@@ -30,7 +30,7 @@ const CouncilListPage = () => {
 								<a href='/council/list'>council list</a>
 							</u>
 						</i>
-						{Role.COMMUNITY_LEADER.match(userData.role) ? (
+						{userData.role === Role.COMMUNITY_LEADER ? (
 							<>
 								{" "}
 								or create a new council via{" "}

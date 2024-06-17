@@ -61,7 +61,7 @@ const ResultForm = ({
 				)}
 				{predictionResponse &&
 					userData.email !== undefined &&
-					Role.OPERATION_TEAM.match(userData.role) && (
+					userData.role === Role.OPERATION_TEAM && (
 						<Center padding={10}>
 							{isLoadingSaving ? (
 								<LoadingComponent text='Saving Image...' />

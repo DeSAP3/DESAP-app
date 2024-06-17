@@ -13,7 +13,7 @@ import {
 	DrawerOverlay,
 	Stack,
 	Text,
-	useDisclosure
+	useDisclosure,
 } from "@chakra-ui/react";
 import { Role } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
@@ -62,24 +62,29 @@ export default function UserAccountNav() {
 									<Accordion allowMultiple>
 										<GeneralSidebarContent />
 
-										{Role.COMMUNITY_LEADER.match(
-											userData.role
-										) && <CommunityToolsSidebarContent />}
-										{Role.COMMUNITY_MEMBER.match(
-											userData.role
-										) && <CommunityToolsSidebarContent />}
+										{userData.role ===
+											Role.COMMUNITY_LEADER && (
+											<CommunityToolsSidebarContent />
+										)}
+										{userData.role ===
+											Role.COMMUNITY_MEMBER && (
+											<CommunityToolsSidebarContent />
+										)}
 
-										{Role.COMMUNITY_LEADER.match(
-											userData.role
-										) && <CouncilLeaderSidebarContent />}
+										{userData.role ===
+											Role.COMMUNITY_LEADER && (
+											<CouncilLeaderSidebarContent />
+										)}
 
-										{Role.COMMUNITY_MEMBER.match(
-											userData.role
-										) && <CouncilMemberSidebarContent />}
+										{userData.role ===
+											Role.COMMUNITY_MEMBER && (
+											<CouncilMemberSidebarContent />
+										)}
 
-										{Role.OPERATION_TEAM.match(
-											userData.role
-										) && <OperationTeamSidebarContent />}
+										{userData.role ===
+											Role.OPERATION_TEAM && (
+											<OperationTeamSidebarContent />
+										)}
 									</Accordion>
 								</Stack>
 							</DrawerBody>

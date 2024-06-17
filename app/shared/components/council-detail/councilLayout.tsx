@@ -47,10 +47,10 @@ export const CouncilLayout = () => {
 	useEffect(() => {
 		setIsLoading(true);
 		const leader = userList.find(
-			(user) => user.role === Role.COMMUNITY_LEADER.valueOf()
+			(user) => user.role === Role.COMMUNITY_LEADER
 		);
 		const newUserList = userList.filter(
-			(user) => user.role !== Role.COMMUNITY_LEADER.valueOf()
+			(user) => user.role !== Role.COMMUNITY_LEADER
 		);
 		setCouncilLeader(leader);
 		setCouncilMembers(newUserList);

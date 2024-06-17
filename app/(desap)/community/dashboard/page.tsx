@@ -88,9 +88,8 @@ export default function Dashboard() {
 								description='Click the button below to create or join a council.'
 								component={
 									<ButtonGroup spacing='2'>
-										{Role.COMMUNITY_MEMBER.match(
-											userData.role
-										) && (
+										{userData.role ===
+											Role.COMMUNITY_MEMBER && (
 											<Button
 												variant='solid'
 												colorScheme='green'
@@ -102,9 +101,8 @@ export default function Dashboard() {
 												Join Council
 											</Button>
 										)}
-										{Role.COMMUNITY_LEADER.match(
-											userData.role
-										) && (
+										{userData.role ===
+											Role.COMMUNITY_LEADER && (
 											<Button
 												variant='ghost'
 												bg={"brand.defaultbutton"}
