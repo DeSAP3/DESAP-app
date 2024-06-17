@@ -29,11 +29,10 @@ export default function UserAccountNav() {
 	const { data: session } = useSession();
 	const { userData } = useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const router = useRouter();
 
 	return (
 		<>
-			{session?.user && userData.userName ? (
+			{session?.user ? (
 				<>
 					<Button
 						colorScheme={"green"}
@@ -97,7 +96,7 @@ export default function UserAccountNav() {
 									bg={"brand.rejectbutton"}
 									onClick={() =>
 										signOut({
-											callbackUrl: "/community/login",
+											callbackUrl: "/app/(desap)/community/login",
 										})
 									}
 								>

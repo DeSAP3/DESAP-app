@@ -167,8 +167,7 @@ export default function LandingPage() {
 									bg: "#222831",
 								}}
 							>
-								Register for Dengue Surveillance Community
-								Version
+								Register An Account for DESAP@2022
 							</Button>
 						</>
 					)}
