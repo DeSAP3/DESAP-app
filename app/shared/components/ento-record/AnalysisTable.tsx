@@ -174,8 +174,6 @@ const AnalysisTable = () => {
 			{
 				accessorKey: "predictions.predictions.length",
 				header: "Larvae Count",
-				// Cell: ({ row }) =>
-				// 	row.original.predictions?.predictions?.length || 0,
 			},
 			{
 				accessorKey: "status",
