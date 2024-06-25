@@ -16,9 +16,15 @@ export const NAV_ITEMS: Array<NavItem> = [
 		label: "Larvae Calculator",
 		children: [
 			{
-				label: "Calculator",
+				label: "Mosquito Egg Calculator",
 				subLabel:
-					"Calculate the mosquitoe eggs, larvae and mosquitoes aedes in the image",
+					"Calculate the mosquitoe eggs in the image",
+				href: "/ento/opencv",
+			},
+			{
+				label: "Larvae Calculator",
+				subLabel:
+					"Calculate the larvae in the image",
 				href: "/ento/calculator",
 			},
 		],

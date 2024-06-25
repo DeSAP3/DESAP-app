@@ -26,6 +26,7 @@ export type ResponseOpenCv = {
 	singlesCalculated: number;
 	eggEstimate: number;
 	totalEggs: number;
+	original: File;
 	objects: string;
 	overlay: string;
 	outlines: string;
@@ -39,6 +40,25 @@ const OpenCvForm = () => {
 	const [openCvResponse, setOpenCvResponse] = useState<ResponseOpenCv>();
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	
+	const convertBase64 = (file: Blob | null) => {
+		return new Promise<string>((resolve, reject) => {
+			const fileReader = new FileReader();
+			if (file) {
+				fileReader.readAsDataURL(file);
+			} else {
+				reject(new Error("Invalid file"));
+			}
+
+			fileReader.onload = () => {
+				resolve(fileReader.result as string);
+			};
+
+			fileReader.onerror = (error) => {
+				reject(error);
+			};
+		});
+	};
+
 	const imageChange = async (e: any) => {
 		const file = e.target.files ? e.target.files[0] : null;
 		setRawImage(file);
@@ -72,7 +92,11 @@ const OpenCvForm = () => {
 					"Content-Type": "multipart/form-data",
 				},
 			}).then((res) => res.data);
-			setOpenCvResponse(response);
+			
+			setOpenCvResponse({
+				...response,
+				original: rawImage
+			});
 			console.log(response);
 			onOpen();
 		} catch (error) {
@@ -120,7 +144,6 @@ const OpenCvForm = () => {
 									style={{ marginLeft: "0.5rem" }}
 								/>
 							</Flex>
-							<Text>File should be of format .JPG</Text>
 						</Box>
 						<FormControl isRequired padding={2}>
 							<Flex justify={"center"}>

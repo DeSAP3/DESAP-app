@@ -15,6 +15,7 @@ import {
 	ModalFooter,
 	ModalHeader,
 	ModalOverlay,
+	Text,
 	Spacer,
 	Table,
 	TableContainer,
@@ -23,12 +24,16 @@ import {
 	Th,
 	Thead,
 	Tr,
-	useDisclosure,
+	Tooltip,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { ResponseOpenCv } from "./OpenCvForm";
 import { useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
+import {
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	InfoOutlineIcon,
+} from "@chakra-ui/icons";
 
 const OpenCVResponseModal = ({
 	isOpen,
@@ -42,6 +47,10 @@ const OpenCVResponseModal = ({
 	const [imageIndex, setImageIndex] = useState(0);
 	const [imageSet, setImageSet] = useState([
 		{
+			title: "Original Image",
+			image: data.original,
+		},
+		{
 			title: "Threshold Image",
 			image: data.threshold,
 		},
@@ -50,11 +59,11 @@ const OpenCVResponseModal = ({
 			image: data.objects,
 		},
 		{
-			title: "Outline Image",
+			title: "Egg Outlined Image",
 			image: data.outlines,
 		},
 		{
-			title: "Overlay Image",
+			title: "Overlay Result Image",
 			image: data.overlay,
 		},
 	]);
@@ -69,7 +78,7 @@ const OpenCVResponseModal = ({
 					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
-						<Card >
+						<Card>
 							<CardHeader>
 								<Heading size={"md"}>
 									{imageSet[imageIndex].title}
@@ -81,17 +90,22 @@ const OpenCVResponseModal = ({
 							templateRows='repeat(1, 1fr)'
 							templateColumns='3fr 1fr'
 							gap={4}
-                            mt={5}
+							mt={5}
 						>
 							<GridItem colSpan={1} position={"relative"}>
 								<Box>
 									<Image
-										src={`data:image/jpeg;base64,${imageSet[imageIndex].image}`}
+										src={
+											imageIndex === 0
+												? URL.createObjectURL(
+														imageSet[0]
+															.image as File
+												  )
+												: `data:image/jpeg;base64,${imageSet[imageIndex].image}`
+										}
 										alt={imageSet[imageIndex].title}
 										objectFit='contain'
 										fill
-										// width={300}
-										// height={450}
 									/>
 								</Box>
 							</GridItem>
@@ -115,13 +129,42 @@ const OpenCVResponseModal = ({
 										</Thead>
 										<Tbody>
 											<Tr>
-												<Td>Avergae Cluster Area</Td>
+												<Td>
+													<Tooltip
+														hasArrow
+														label='Represent the average area of a group of closely packed mosquito eggs'
+													>
+														<Box
+															display={"flex"}
+															alignItems={
+																"center"
+															}
+															width={"100%"}
+														>
+															Average Cluster Area
+														</Box>
+													</Tooltip>
+												</Td>
 												<Td>:</Td>
 												<Td>{data?.avgClusterArea}</Td>
 											</Tr>
 											<Tr>
 												<Td>
-													Avergae Eggs Per Cluster
+													<Tooltip
+														hasArrow
+														label='Represent the average number of mosquito eggs in a cluster'
+													>
+														<Box
+															display={"flex"}
+															alignItems={
+																"center"
+															}
+															width={"100%"}
+														>
+															Average Eggs per
+															Cluster
+														</Box>
+													</Tooltip>
 												</Td>
 												<Td>:</Td>
 												<Td>
@@ -130,25 +173,86 @@ const OpenCVResponseModal = ({
 											</Tr>
 											<Tr>
 												<Td>
-													AverageSingles Bound Area
+													<Tooltip
+														hasArrow
+														label='Represent the average area of individual mosquito eggs'
+													>
+														<Box
+															display={"flex"}
+															alignItems={
+																"center"
+															}
+															width={"100%"}
+														>
+															Average Single Egg
+															Area
+														</Box>
+													</Tooltip>
 												</Td>
 												<Td>:</Td>
 												<Td>{data?.singlesAvg}</Td>
 											</Tr>
 											<Tr>
-												<Td>Number Singles Bound</Td>
+												<Td>
+													<Tooltip
+														hasArrow
+														label='Represent the number of individual mosquito eggs identified based on static (pre-define) area estimation'
+													>
+														<Box
+															display={"flex"}
+															alignItems={
+																"center"
+															}
+															width={"100%"}
+														>
+															Total Single Eggs
+														</Box>
+													</Tooltip>
+												</Td>
 												<Td>:</Td>
 												<Td>
 													{data?.singlesCalculated}
 												</Td>
 											</Tr>
 											<Tr>
-												<Td>Number Estimated Eggs</Td>
+												<Td>
+													<Tooltip
+														hasArrow
+														label='Represent the estimated total number of mosquito eggs based on dynamic area estimation'
+													>
+														<Box
+															display={"flex"}
+															alignItems={
+																"center"
+															}
+															width={"100%"}
+															fontWeight={"bold"}
+														>
+															Estimated Total Eggs
+														</Box>
+													</Tooltip>
+												</Td>
 												<Td>:</Td>
 												<Td>{data?.eggEstimate}</Td>
 											</Tr>
 											<Tr>
-												<Td>Total Eggs</Td>
+												<Td>
+													<Tooltip
+														hasArrow
+														label='Represent the total counted mosquito eggs, including both single eggs and clusters'
+													>
+														<Box
+															display={"flex"}
+															alignItems={
+																"center"
+															}
+															width={"100%"}
+															fontWeight={"bold"}
+														>
+															Total Eggs
+														</Box>
+													</Tooltip>
+												</Td>
 												<Td>:</Td>
 												<Td>{data?.totalEggs}</Td>
 											</Tr>
@@ -157,29 +261,39 @@ const OpenCVResponseModal = ({
 								</TableContainer>
 							</GridItem>
 						</Grid>
-						<Center width={"15%"} marginX={"auto"}>
-							<IconButton
-								aria-label='previous'
-								icon={<ChevronLeftIcon />}
-								bg={"brand.acceptbutton"}
-								isRound={true}
-								onClick={() => {
-									setImageIndex(imageIndex - 1);
-								}}
-								hidden={imageIndex === 0}
-							/>
-							<Spacer />
-							<IconButton
-								aria-label='next'
-								icon={<ChevronRightIcon />}
-								bg={"brand.acceptbutton"}
-								isRound={true}
-								onClick={() => {
-									setImageIndex(imageIndex + 1);
-								}}
-								hidden={imageIndex === imageSet.length - 1}
-							/>
-						</Center>
+						<Card>
+							<CardHeader>
+								<Center
+									width={"15%"}
+									marginX={"auto"}
+									marginTop={5}
+								>
+									<IconButton
+										aria-label='previous'
+										icon={<ChevronLeftIcon />}
+										bg={"brand.acceptbutton"}
+										isRound={true}
+										onClick={() => {
+											setImageIndex(imageIndex - 1);
+										}}
+										hidden={imageIndex === 0}
+									/>
+									<Spacer />
+									<IconButton
+										aria-label='next'
+										icon={<ChevronRightIcon />}
+										bg={"brand.acceptbutton"}
+										isRound={true}
+										onClick={() => {
+											setImageIndex(imageIndex + 1);
+										}}
+										hidden={
+											imageIndex === imageSet.length - 1
+										}
+									/>
+								</Center>
+							</CardHeader>
+						</Card>
 					</ModalBody>
 					<ModalFooter>
 						<Button onClick={onClose}>Close</Button>

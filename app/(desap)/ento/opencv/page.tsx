@@ -6,7 +6,7 @@ import { Box, Container, Flex } from "@chakra-ui/react";
 export default function OpenCV() {
 	return (
 		<>
-			<PageHeader title='Calculate Number Larvae' />
+			<PageHeader title='Analyze Image for Mosquito Eggs' />
 			<Container maxW='container.md' paddingY={5}>
 				<Flex justifyContent={"center"} alignItems={"flex-start"}>
 					<Box

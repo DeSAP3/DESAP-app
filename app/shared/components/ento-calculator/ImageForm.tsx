@@ -135,7 +135,7 @@ const ImageForm = ({
 					</>
 				)}
 			</Box>
-			{!responseImage && (
+			{!responseImage && rawImage && (
 				<Center padding={10}>
 					<Button
 						type='submit'

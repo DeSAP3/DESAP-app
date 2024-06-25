@@ -159,9 +159,7 @@ export default function Calculator() {
 
 	return (
 		<>
-			<PageHeader
-				title='Calculate Number Larvae'
-			/>
+			<PageHeader title='Analyze Image for Larvae' />
 			<Container maxW='container.md' paddingY={5}>
 				<Flex justifyContent={"center"} alignItems={"flex-start"}>
 					<Box
