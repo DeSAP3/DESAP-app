@@ -55,6 +55,10 @@ export const memberCouncilRoutes = [
 
 export const operationTeamRoutes = [
 	{
+		name: "Mosquito Eggs Calculator",
+		route: "/ento/opencv",
+	},
+	{
 		name: "Larvae Calculator",
 		route: "/ento/calculator",
 	},

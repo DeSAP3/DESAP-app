@@ -1,56 +1,44 @@
 "use client";
 import { DeleteIcon, ViewIcon } from "@chakra-ui/icons";
+
 import {
 	Box,
 	Button,
-	Center,
 	Flex,
 	FormControl,
 	Input,
 	Text,
-	useToast,
+	useDisclosure,
+	useToast
 } from "@chakra-ui/react";
+import axios from "axios";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { VscCloudUpload } from "react-icons/vsc";
+import { useState } from "react";
 import { FaFileUpload } from "react-icons/fa";
-import { ResponseImage } from "@/(desap)/ento/calculator/page";
+import { VscCloudUpload } from "react-icons/vsc";
+import LoadingComponent from "../loading";
+import OpenCVResponseModal from "./OpenCvResponseModal";
 
-type ImageFormProps = {
-	onImageUpload: (image: string, rawImage: File | null) => Promise<void>;
-	rawImage: File | null;
-	setRawImage: Dispatch<SetStateAction<File | null>>;
-	setResponseImage: Dispatch<SetStateAction<any>>;
-	responseImage?: ResponseImage;
+export type ResponseOpenCv = {
+	avgClusterArea: number;
+	avgEggsPerCluster: number;
+	singlesAvg: number;
+	singlesCalculated: number;
+	eggEstimate: number;
+	totalEggs: number;
+	objects: string;
+	overlay: string;
+	outlines: string;
+	threshold: string;
 };
 
-const ImageForm = ({
-	onImageUpload,
-	rawImage,
-	setRawImage,
-	setResponseImage,
-	responseImage,
-}: ImageFormProps) => {
+const OpenCvForm = () => {
 	const toast = useToast();
-	const convertBase64 = (file: Blob | null) => {
-		return new Promise<string>((resolve, reject) => {
-			const fileReader = new FileReader();
-			if (file) {
-				fileReader.readAsDataURL(file);
-			} else {
-				reject(new Error("Invalid file"));
-			}
-
-			fileReader.onload = () => {
-				resolve(fileReader.result as string);
-			};
-
-			fileReader.onerror = (error) => {
-				reject(error);
-			};
-		});
-	};
-
+	const [rawImage, setRawImage] = useState<File | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [openCvResponse, setOpenCvResponse] = useState<ResponseOpenCv>();
+	const { isOpen, onOpen, onClose } = useDisclosure()
+	
 	const imageChange = async (e: any) => {
 		const file = e.target.files ? e.target.files[0] : null;
 		setRawImage(file);
@@ -58,10 +46,10 @@ const ImageForm = ({
 
 	const removeSelectedImage = () => {
 		setRawImage(null);
-		setResponseImage(null);
 	};
 
 	const handleSubmit = async () => {
+		setIsLoading(true);
 		if (!rawImage) {
 			toast({
 				title: "Please upload an image",
@@ -72,8 +60,25 @@ const ImageForm = ({
 			});
 			return;
 		}
-		const base64 = await convertBase64(rawImage);
-		onImageUpload(base64, rawImage);
+		try {
+			const formData = new FormData();
+			formData.append("imageType", "0");
+			formData.append("src", rawImage);
+			const response = await axios({
+				method: "POST",
+				url: "https://larvae-calculator-api.onrender.com/calculate-eggs",
+				data: formData,
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			}).then((res) => res.data);
+			setOpenCvResponse(response);
+			console.log(response);
+			onOpen();
+		} catch (error) {
+			alert("Error analyzing image");
+		}
+		setIsLoading(false);
 	};
 
 	return (
@@ -135,20 +140,36 @@ const ImageForm = ({
 					</>
 				)}
 			</Box>
-			{!responseImage && (
-				<Center padding={10}>
+			{rawImage && !isLoading && (
+				<Box textAlign={"center"} padding={2}>
 					<Button
-						type='submit'
-						rightIcon={<ViewIcon />}
 						onClick={handleSubmit}
+						rightIcon={<ViewIcon />}
+						marginTop={2}
 						bg={"brand.acceptbutton"}
 					>
 						Analyze Image
 					</Button>
-				</Center>
+				</Box>
 			)}
+
+			{isLoading && <LoadingComponent text='Analyzing Image...' />}
+			{openCvResponse && <OpenCVResponseModal
+				isOpen={isOpen}
+				onClose={onClose}
+				data={openCvResponse}
+			/>}
+
+			{/* {testImage && (
+				<Image
+					src={`data:image/jpeg;base64,${testImage}`}
+					alt='Base64 Encoded'
+					width={500} // Specify a width
+					height={300} // And a height
+				/>
+			)} */}
 		</Flex>
 	);
 };
 
-export default ImageForm;
+export default OpenCvForm;

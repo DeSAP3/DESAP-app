@@ -73,7 +73,7 @@ export default function Calculator() {
 			formData.append("predictions", JSON.stringify(predictions.data));
 			const annotatedImage = await axios({
 				method: "POST",
-				url: "https://larvae-calculator-api.vercel.app/calculate/larvae",
+				url: "https://larvae-calculator-api.onrender.com/calculate/larvae",
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",
@@ -160,8 +160,7 @@ export default function Calculator() {
 	return (
 		<>
 			<PageHeader
-				title='Calculate Number of MosquitoeEggs, Larvae and Aedes
-					Mosquitoes'
+				title='Calculate Number Larvae'
 			/>
 			<Container maxW='container.md' paddingY={5}>
 				<Flex justifyContent={"center"} alignItems={"flex-start"}>
