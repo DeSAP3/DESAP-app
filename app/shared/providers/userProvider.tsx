@@ -17,6 +17,7 @@ interface UserContextType {
 	setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 	isLoadingUserResponse: boolean;
 	mutateUser: () => void;
+	dataLoaded: boolean;
 }
 
 const initialUserData: UserData = {
@@ -32,6 +33,7 @@ const UserContext = createContext<UserContextType>({
 	userData: initialUserData,
 	setUserData: () => {},
 	isLoadingUserResponse: false,
+	dataLoaded: false,
 	mutateUser: () => {},
 });
 
@@ -39,6 +41,7 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 	const [userData, setUserData] = useState<UserData>(initialUserData);
+	const [dataLoaded, setDataLoaded] = useState(false);
 	const { data: session } = useSession();
 
 	const { data: userResponse, isLoading: isLoadingUserResponse, mutate: mutateUser } = useSWR(
@@ -56,13 +59,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 				livingAddress: userResponse?.livingAddress,
 				councilId: userResponse?.councilId,
 			});
+			setDataLoaded(true)
 		} else {
 			setUserData(initialUserData);
+			setDataLoaded(false)
 		}
 	}, [userResponse]);
 
 	const value = React.useMemo(
-		() => ({ userData, setUserData, isLoadingUserResponse, mutateUser }),
+		() => ({ userData, setUserData, isLoadingUserResponse, mutateUser, dataLoaded }),
 		[userData, setUserData, isLoadingUserResponse, mutateUser]
 	);
 
