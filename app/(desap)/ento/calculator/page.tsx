@@ -2,10 +2,11 @@
 import ImageForm from "@/shared/components/ento-calculator/ImageForm";
 import {
 	Box,
+	Button,
 	Container,
 	Flex,
 	Spacer,
-	useToast
+	useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
@@ -20,6 +21,7 @@ import { useUser } from "@/shared/providers/userProvider";
 import { Role } from "@prisma/client";
 import { JsonObject } from "@prisma/client/runtime/library";
 import { v4 as uuidv4 } from "uuid";
+import { AttachmentIcon } from "@chakra-ui/icons";
 
 export type ResponseImage = {
 	imageDisplay?: string;
@@ -50,6 +52,28 @@ export default function Calculator() {
 		useState<JsonObject>();
 	const [responseImage, setResponseImage] = useState<ResponseImage>();
 
+	const useDemoImage = async () => {
+		try {
+			const response = await fetch("/003.jpg");
+			console.log(response);
+			const blob = await response.blob();
+
+			const file = new File([blob], "demo.jpg", {
+				type: "image/jpeg",
+			});
+
+			setRawImage(file);
+		} catch (error) {
+			console.error("Error loading demo image:", error);
+			toast({
+				title: "Error loading demo image",
+				description: "Unable to load the demo image.",
+				status: "error",
+				duration: 9000,
+				isClosable: true,
+			});
+		}
+	};
 	const analyseImage = async (image: string, rawImage: File | null) => {
 		setIsLoading(true);
 		try {
@@ -161,40 +185,35 @@ export default function Calculator() {
 		<>
 			<PageHeader title='Analyze Image for Larvae' />
 			<Container maxW='container.md' paddingY={5}>
-				<Flex justifyContent={"center"} alignItems={"flex-start"}>
-					<Box
-						maxW='800px'
-						minW='400px'
-						borderRadius='lg'
-						overflow='hidden'
-					>
-						<ImageForm
-							onImageUpload={analyseImage}
-							rawImage={rawImage}
-							setRawImage={setRawImage}
-							setResponseImage={setResponseImage}
-							responseImage={responseImage}
-						/>
-					</Box>
-					{isLoading ? (
-						<>
-							<Spacer paddingX={3} marginY={"auto"}>
-								<FaArrowAltCircleRight size={"2em"} />
-							</Spacer>
-							<Box
-								maxW='800px'
-								minW='400px'
-								borderWidth='1px'
-								borderRadius='lg'
-								overflow='hidden'
-								textAlign='center'
-								padding={2}
-							>
-								<LoadingComponent text='Analyzing Image...' />
-							</Box>
-						</>
-					) : (
-						responseImage && (
+				<Flex direction={"column"} gap={2} justifyContent={"center"}>
+					{rawImage === null && !userData && <Box display={"flex"} justifyContent={"flex-end"}>
+						<Button
+							onClick={useDemoImage}
+							gap={2}
+							size={"xs"}
+							bg={"brand.infobutton"}
+						>
+							Use Demo Image
+							<AttachmentIcon />
+						</Button>
+					</Box>}
+
+					<Flex justifyContent={"center"} alignItems={"flex-start"}>
+						<Box
+							maxW='800px'
+							minW='400px'
+							borderRadius='lg'
+							overflow='hidden'
+						>
+							<ImageForm
+								onImageUpload={analyseImage}
+								rawImage={rawImage}
+								setRawImage={setRawImage}
+								setResponseImage={setResponseImage}
+								responseImage={responseImage}
+							/>
+						</Box>
+						{isLoading ? (
 							<>
 								<Spacer paddingX={3} marginY={"auto"}>
 									<FaArrowAltCircleRight size={"2em"} />
@@ -208,16 +227,37 @@ export default function Calculator() {
 									textAlign='center'
 									padding={2}
 								>
-									<ResultForm
-										response={responseImage}
-										predictionResponse={predictionsResponse}
-										onImageSave={handleSaveImage}
-										isLoadingSaving={isLoadingSaving}
-									/>
+									<LoadingComponent text='Analyzing Image...' />
 								</Box>
 							</>
-						)
-					)}
+						) : (
+							responseImage && (
+								<>
+									<Spacer paddingX={3} marginY={"auto"}>
+										<FaArrowAltCircleRight size={"2em"} />
+									</Spacer>
+									<Box
+										maxW='800px'
+										minW='400px'
+										borderWidth='1px'
+										borderRadius='lg'
+										overflow='hidden'
+										textAlign='center'
+										padding={2}
+									>
+										<ResultForm
+											response={responseImage}
+											predictionResponse={
+												predictionsResponse
+											}
+											onImageSave={handleSaveImage}
+											isLoadingSaving={isLoadingSaving}
+										/>
+									</Box>
+								</>
+							)
+						)}
+					</Flex>
 				</Flex>
 			</Container>
 		</>

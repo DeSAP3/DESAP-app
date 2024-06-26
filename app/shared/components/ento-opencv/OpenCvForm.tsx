@@ -43,17 +43,14 @@ const OpenCvForm = () => {
 
 	const useDemoImage = async () => {
 		try {
-			// Fetch the image as a Blob
 			const response = await fetch("/002.jpg");
 			console.log(response);
 			const blob = await response.blob();
 
-			// Convert the Blob to a File object
 			const file = new File([blob], "demo.jpg", {
 				type: "image/jpeg",
 			});
 
-			// Use setRawImage to update the state
 			setRawImage(file);
 		} catch (error) {
 			console.error("Error loading demo image:", error);

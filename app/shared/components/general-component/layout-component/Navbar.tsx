@@ -86,15 +86,12 @@ export default function Navbar() {
 						<Spacer />
 					</>
 				)}
-				{isLoadingUserResponse ? (
+				{isLoadingUserResponse && dataLoaded ? (
 					<Spinner />
 				) : (
-					dataLoaded &&
-					session?.user && (
-						<Flex display={{ base: "flex" }}>
-							<UserAccountNav />
-						</Flex>
-					)
+					<Flex display={{ base: "flex" }}>
+						<UserAccountNav />
+					</Flex>
 				)}
 			</Flex>
 
