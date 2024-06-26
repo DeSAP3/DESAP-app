@@ -1,4 +1,5 @@
 "use client";
+import { useUser } from "@/shared/providers/userProvider";
 import { NAV_ITEMS, NavItem } from "@/shared/static/navigation_link";
 import {
 	ChevronDownIcon,
@@ -16,6 +17,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 	Spacer,
+	Spinner,
 	Stack,
 	Text,
 	useColorModeValue,
@@ -24,10 +26,10 @@ import {
 import { useSession } from "next-auth/react";
 import Logo from "./Logo";
 import UserAccountNav from "./Sidebar";
-
 export default function Navbar() {
 	const { isOpen, onToggle } = useDisclosure();
 	const { data: session } = useSession();
+	const { isLoadingUserResponse } = useUser();
 
 	return (
 		<Box>
@@ -78,14 +80,19 @@ export default function Navbar() {
 						<Spacer />
 					</>
 				)}
-				{session?.user && <>
-					<Logo />
-					<Spacer />
-				</>
-				}
-				<Flex display={{ base: "flex" }}>
-					<UserAccountNav />
-				</Flex>
+				{session?.user && (
+					<>
+						<Logo />
+						<Spacer />
+					</>
+				)}
+				{isLoadingUserResponse ? (
+					<Spinner />
+				) : (
+					<Flex display={{ base: "flex" }}>
+						<UserAccountNav />
+					</Flex>
+				)}
 			</Flex>
 
 			<Collapse in={isOpen} animateOpacity>
