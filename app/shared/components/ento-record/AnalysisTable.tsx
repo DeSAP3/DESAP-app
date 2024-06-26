@@ -155,7 +155,7 @@ const AnalysisTable = () => {
 	};
 
 	useEffect(() => {
-		console.log(analysisResponse);
+	
 		if (analysisResponse) {
 			setAnalysis(analysisResponse.data);
 		} else {

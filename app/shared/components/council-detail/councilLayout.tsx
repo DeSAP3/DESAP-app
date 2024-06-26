@@ -35,7 +35,7 @@ export const CouncilLayout = () => {
 			(url: string | URL | Request): Promise<any> =>
 				fetch(url)
 					.then((res) => res.json())
-					// .then((res) => setCouncilMembers(res.data))
+					
 		);
 
 	const { data: usersLeaderResponse, isLoading: isLoadingUsersLeader } =
@@ -44,7 +44,7 @@ export const CouncilLayout = () => {
 			(url: string | URL | Request): Promise<any> =>
 				fetch(url)
 					.then((res) => res.json())
-					// .then((res) => setCouncilLeader(res.data))
+					
 		);
 
 	useEffect(() => {
@@ -75,39 +75,45 @@ export const CouncilLayout = () => {
 			) : (
 				<>
 					<Center>
-						<Popover>
-							<PopoverTrigger>
-								<Text
-									fontWeight={"bold"}
-									border='1px'
-									padding='3px'
-									as='button'
-								>
-									{councilLeader?.userName ?? "No"}
-								</Text>
-							</PopoverTrigger>
-							<Portal>
-								<PopoverContent>
-									<PopoverArrow />
-									<PopoverCloseButton />
-									<PopoverBody>
-										<Text>
-											<b>Role : </b>
-											{councilLeader?.role ?? "null"}
-										</Text>
-										<Text>
-											<b>Email : </b>
-											{councilLeader?.email ?? "null"}
-										</Text>
-										<Text>
-											<b>Living Address : </b>
-											{councilLeader?.livingAddress ??
-												"null"}
-										</Text>
-									</PopoverBody>
-								</PopoverContent>
-							</Portal>
-						</Popover>
+						{councilLeader ? (
+							<Popover>
+								<PopoverTrigger>
+									<Text
+										fontWeight={"bold"}
+										border='1px'
+										padding='3px'
+										as='button'
+									>
+										{councilLeader?.userName ?? "No"}
+									</Text>
+								</PopoverTrigger>
+								<Portal>
+									<PopoverContent>
+										<PopoverArrow />
+										<PopoverCloseButton />
+										<PopoverBody>
+											<Text>
+												<b>Role : </b>
+												{councilLeader?.role ?? "null"}
+											</Text>
+											<Text>
+												<b>Email : </b>
+												{councilLeader?.email ?? "null"}
+											</Text>
+											<Text>
+												<b>Living Address : </b>
+												{councilLeader?.livingAddress ??
+													"null"}
+											</Text>
+										</PopoverBody>
+									</PopoverContent>
+								</Portal>
+							</Popover>
+						) : (
+							<Text border='1px' padding='3px' as='button'>
+								Council Leader not found
+							</Text>
+						)}
 					</Center>
 					<Center>
 						<SimpleGrid
@@ -115,7 +121,7 @@ export const CouncilLayout = () => {
 							spacing='10px'
 							display={"flex"}
 						>
-							{councilMembers.length > 0 ? (
+							{councilMembers ? (
 								councilMembers.map((user) => (
 									<Popover key={user.email}>
 										<PopoverTrigger>
@@ -151,7 +157,9 @@ export const CouncilLayout = () => {
 									</Popover>
 								))
 							) : (
-								<></>
+								<Text border='1px' padding='3px' as='button'>
+									Council Members not found
+								</Text>
 							)}
 						</SimpleGrid>
 					</Center>
