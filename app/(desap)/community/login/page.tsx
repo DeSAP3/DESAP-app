@@ -16,7 +16,7 @@ import {
 	Stack,
 	Text,
 	useColorModeValue,
-	useToast
+	useToast,
 } from "@chakra-ui/react";
 
 import { signIn } from "next-auth/react";
@@ -40,7 +40,7 @@ export default function Login() {
 			password: data.password,
 			redirect: false,
 		});
-		
+
 		if (signInData?.error) {
 			toast({
 				title: "Logged in failed",
@@ -83,13 +83,11 @@ export default function Login() {
 								<Input
 									type='email'
 									value={data.email}
-									onChange={
-										(e) =>
-											setData({
-												...data,
-												email: e.target.value,
-											})
-										// setEmail(e.target.value)
+									onChange={(e) =>
+										setData({
+											...data,
+											email: e.target.value,
+										})
 									}
 								/>
 							</FormControl>
@@ -101,13 +99,11 @@ export default function Login() {
 											showPassword ? "text" : "password"
 										}
 										value={data.password}
-										onChange={
-											(e) =>
-												setData({
-													...data,
-													password: e.target.value,
-												})
-											// setPassword(e.target.value)
+										onChange={(e) =>
+											setData({
+												...data,
+												password: e.target.value,
+											})
 										}
 									/>
 									<InputRightElement h={"full"}>
@@ -134,7 +130,7 @@ export default function Login() {
 									loadingText='Submitting'
 									size='lg'
 									bg={"brand.acceptbutton"}
-									colorScheme="green"
+									colorScheme='green'
 									onClick={handleLogin}
 								>
 									Login

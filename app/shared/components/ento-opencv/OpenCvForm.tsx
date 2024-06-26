@@ -1,5 +1,5 @@
 "use client";
-import { DeleteIcon, ViewIcon } from "@chakra-ui/icons";
+import { AttachmentIcon, DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 
 import {
 	Box,
@@ -7,9 +7,10 @@ import {
 	Flex,
 	FormControl,
 	Input,
+	Spacer,
 	Text,
 	useDisclosure,
-	useToast
+	useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import Image from "next/image";
@@ -18,6 +19,7 @@ import { FaFileUpload } from "react-icons/fa";
 import { VscCloudUpload } from "react-icons/vsc";
 import LoadingComponent from "../loading";
 import OpenCVResponseModal from "./OpenCvResponseModal";
+import DemoImage from "@/shared/image/001.jpg";
 
 export type ResponseOpenCv = {
 	avgClusterArea: number;
@@ -38,25 +40,28 @@ const OpenCvForm = () => {
 	const [rawImage, setRawImage] = useState<File | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [openCvResponse, setOpenCvResponse] = useState<ResponseOpenCv>();
-	const { isOpen, onOpen, onClose } = useDisclosure()
-	
-	const convertBase64 = (file: Blob | null) => {
-		return new Promise<string>((resolve, reject) => {
-			const fileReader = new FileReader();
-			if (file) {
-				fileReader.readAsDataURL(file);
-			} else {
-				reject(new Error("Invalid file"));
-			}
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
-			fileReader.onload = () => {
-				resolve(fileReader.result as string);
-			};
-
-			fileReader.onerror = (error) => {
-				reject(error);
-			};
-		});
+	const useDemoImage = async () => {
+		try {
+			const response = await fetch("https://github.com/Ethanlyt/DESAP-app/blob/main/app/shared/image/002.jpg");
+			const blob = await response.blob();
+			const file = new File([blob], "demoImage.jpg", {
+				type: "image/jpeg",
+			});
+			setRawImage(file);
+		} catch (error) {
+			console.error("Error loading demo image:", error);
+			toast({
+				title: "Error loading demo image",
+				description: "Unable to load the demo image.",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
+		}
+		
 	};
 
 	const imageChange = async (e: any) => {
@@ -92,10 +97,10 @@ const OpenCvForm = () => {
 					"Content-Type": "multipart/form-data",
 				},
 			}).then((res) => res.data);
-			
+
 			setOpenCvResponse({
 				...response,
-				original: rawImage
+				original: rawImage,
 			});
 			console.log(response);
 			onOpen();
@@ -107,6 +112,13 @@ const OpenCvForm = () => {
 
 	return (
 		<Flex direction={"column"}>
+			<Box>
+				<Button onClick={() => useDemoImage()}>
+					Use Demo Image
+					<Spacer />
+					<AttachmentIcon />
+				</Button>
+			</Box>
 			<Box
 				maxW='800px'
 				minW='400px'
@@ -177,11 +189,13 @@ const OpenCvForm = () => {
 			)}
 
 			{isLoading && <LoadingComponent text='Analyzing Image...' />}
-			{openCvResponse && <OpenCVResponseModal
-				isOpen={isOpen}
-				onClose={onClose}
-				data={openCvResponse}
-			/>}
+			{openCvResponse && (
+				<OpenCVResponseModal
+					isOpen={isOpen}
+					onClose={onClose}
+					data={openCvResponse}
+				/>
+			)}
 
 			{/* {testImage && (
 				<Image
