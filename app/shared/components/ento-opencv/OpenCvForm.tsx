@@ -116,7 +116,12 @@ const OpenCvForm = () => {
 	return (
 		<Flex direction={"column"} gap={2}>
 			<Box display={"flex"} justifyContent={"flex-end"}>
-				<Button onClick={() => useDemoImage()} gap={2} size={"xs"} bg={"brand.infobutton"}>
+				<Button
+					onClick={useDemoImage}
+					gap={2}
+					size={"xs"}
+					bg={"brand.infobutton"}
+				>
 					Use Demo Image
 					<AttachmentIcon />
 				</Button>
@@ -198,15 +203,6 @@ const OpenCvForm = () => {
 					data={openCvResponse}
 				/>
 			)}
-
-			{/* {testImage && (
-				<Image
-					src={`data:image/jpeg;base64,${testImage}`}
-					alt='Base64 Encoded'
-					width={500} // Specify a width
-					height={300} // And a height
-				/>
-			)} */}
 		</Flex>
 	);
 };
