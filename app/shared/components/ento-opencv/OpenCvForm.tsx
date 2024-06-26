@@ -19,7 +19,6 @@ import { FaFileUpload } from "react-icons/fa";
 import { VscCloudUpload } from "react-icons/vsc";
 import LoadingComponent from "../loading";
 import OpenCVResponseModal from "./OpenCvResponseModal";
-import DemoImage from "@/shared/image/001.jpg";
 
 export type ResponseOpenCv = {
 	avgClusterArea: number;
@@ -44,11 +43,17 @@ const OpenCvForm = () => {
 
 	const useDemoImage = async () => {
 		try {
-			const response = await fetch("https://github.com/Ethanlyt/DESAP-app/blob/main/app/shared/image/002.jpg");
+			// Fetch the image as a Blob
+			const response = await fetch("/002.jpg");
+			console.log(response);
 			const blob = await response.blob();
-			const file = new File([blob], "demoImage.jpg", {
+
+			// Convert the Blob to a File object
+			const file = new File([blob], "demo.jpg", {
 				type: "image/jpeg",
 			});
+
+			// Use setRawImage to update the state
 			setRawImage(file);
 		} catch (error) {
 			console.error("Error loading demo image:", error);
@@ -56,12 +61,10 @@ const OpenCvForm = () => {
 				title: "Error loading demo image",
 				description: "Unable to load the demo image.",
 				status: "error",
-				duration: 3000,
+				duration: 9000,
 				isClosable: true,
-				position: "bottom-right",
 			});
 		}
-		
 	};
 
 	const imageChange = async (e: any) => {
@@ -111,11 +114,10 @@ const OpenCvForm = () => {
 	};
 
 	return (
-		<Flex direction={"column"}>
-			<Box>
-				<Button onClick={() => useDemoImage()}>
+		<Flex direction={"column"} gap={2}>
+			<Box display={"flex"} justifyContent={"flex-end"}>
+				<Button onClick={() => useDemoImage()} gap={2} size={"xs"} bg={"brand.infobutton"}>
 					Use Demo Image
-					<Spacer />
 					<AttachmentIcon />
 				</Button>
 			</Box>

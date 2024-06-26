@@ -20,9 +20,10 @@ const appTheme = extendTheme({
 			avatar: "#31363F",
 
 			defaultbutton: "#000000",
-			acceptbutton: "#76ABAE",
+			acceptbutton: "#4d8f8f",
 			rejectbutton: "#e53e3e",
 			uploadbutton: "#d9e9e9",
+			infobutton: "#b1c8c8",
 
 			shadow: "#eeeeee",
 		},

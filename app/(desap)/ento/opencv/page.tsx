@@ -1,7 +1,6 @@
 "use client";
 import OpenCvForm from "@/shared/components/ento-opencv/OpenCvForm";
 import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
-import Image1 from "@/shared/image/001.jpg";
 import {
 	Box,
 	Button,
@@ -16,10 +15,11 @@ import {
 	ModalHeader,
 	ModalOverlay,
 	Text,
-	useDisclosure
+	useDisclosure,
 } from "@chakra-ui/react";
 
-import Image2 from "@/shared/image/002.jpg";
+import Image1 from "/public/001.jpg";
+import Image2 from "/public/002.jpg";
 import { InfoIcon } from "@chakra-ui/icons";
 import Image from "next/image";
 
@@ -31,8 +31,7 @@ export default function OpenCV() {
 			<PageHeader title='Analyze Image for Mosquito Eggs' />
 			<Box display={"flex"} justifyContent={"flex-end"} width={"90%"}>
 				<IconButton
-					bg={"brand.acceptbutton"}
-					color={"white"}
+					variant={"ghost"}
 					aria-label='Help'
 					icon={<InfoIcon />}
 					onClick={onOpen}
