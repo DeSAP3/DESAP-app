@@ -20,7 +20,7 @@ const CouncilList = () => {
 	const [councils, setCouncils] = useState<Council[]>([]);
 	const { userData, setUserData } = useUser();
 
-	const { data: councilsResponse, isLoading: isLoadingCouncilsResponse } =
+	const { data: councilsResponse, isLoading: isLoadingCouncilsResponse, isValidating: isValidatingCouncils } =
 		useSWR("/api/council/readAll", (url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
 		);
@@ -76,7 +76,7 @@ const CouncilList = () => {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingCouncilsResponse,
+			isLoading: isLoadingCouncilsResponse || isValidatingCouncils,
 		},
 		enableRowActions: userData.councilId === null && userData.role !== Role.COMMUNITY_LEADER ? true : false,
 		renderRowActions: (row) => (
@@ -89,7 +89,7 @@ const CouncilList = () => {
 					onClick={async () => {
 						const updatedUserData = {
 							...userData,
-							councilId: row.row.original.id,
+							councilId: row.row.original.id.toString(),
 						};
 						setUserData(updatedUserData);
 						const res = await fetch("/api/profile/update", {

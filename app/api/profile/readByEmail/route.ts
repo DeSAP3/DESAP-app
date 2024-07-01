@@ -29,16 +29,13 @@ export async function GET(request: Request) {
 		if (!user) {
 			return NextResponse.json({
 				error: "User not found",
-				status: 404,
+				status: 200,
 			});
 		}
 		return NextResponse.json({
-			id: `${user.id}`,
-			username: user.userName,
-			email: user.email,
-			role: user.role,
-			livingAddress: user?.livingAddress,
-			councilId: user?.councilId,
+			data: user,
+			message: "User loaded",
+			status: 200,
 		});
 	} catch (error) {
 		return NextResponse.json({

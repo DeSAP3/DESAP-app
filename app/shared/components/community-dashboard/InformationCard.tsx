@@ -1,6 +1,7 @@
 import { useUser } from "@/shared/providers/userProvider";
 import {
 	Avatar,
+	Badge,
 	Box,
 	Card,
 	CardBody,
@@ -10,6 +11,7 @@ import {
 	Heading,
 	Text,
 } from "@chakra-ui/react";
+import { CheckingStatus } from "@prisma/client";
 
 interface InformationCardProps {
 	showAvatar?: boolean;
@@ -41,55 +43,53 @@ const InformationCard = ({
 		<Card variant={"filled"}>
 			<CardHeader>
 				{showAvatar && (
-					<Flex>
-						<Flex
-							flex='1'
-							gap='4'
-							alignItems='center'
-							flexWrap='wrap'
-						>
-							<Avatar bg='#31363F' />
-							<Box>
-								<Heading size='sm'>
-									{authorName}{" "}
-									{userData.email === authorEmail && "(YOU)"}
-								</Heading>
-								<Text>{authorEmail}</Text>
+					<Flex flex='1' gap='4' alignItems='center' flexWrap='wrap'>
+						<Avatar bg='#31363F' />
+						<Box>
+							<Heading size='sm'>
+								{authorName}{" "}
+								{userData.email === authorEmail && "(YOU)"}
+							</Heading>
+
+							<Text>{authorEmail}</Text>
+							<Text>
+								<b>Created At : </b>
+								{createdAt}
+							</Text>
+							{updatedAt === createdAt ? null : (
 								<Text>
-									<b>Created At : </b>
-									{createdAt}
+									<b>Updated At : </b>
+									{updatedAt}
 								</Text>
-								{updatedAt === createdAt ? null : (
-									<Text>
-										<b>Updated At : </b>
-										{updatedAt}
-									</Text>
-								)}
-							</Box>
-						</Flex>
+							)}
+						</Box>
 					</Flex>
 				)}
-				{status && (
-					<Heading
-						size='md'
-						color={status === "CHECKED" ? "green.500" : "red.500"}
-					>
-						{title} - {status}
-					</Heading>
-				)}
+
 				{result && (
 					<Heading
 						size='md'
 						color={result === "negative" ? "green.500" : "red.500"}
+						textTransform={"capitalize"}
 					>
-						Latest Infection Result - {result}
+						Infection Result - {result}
 					</Heading>
 				)}
 			</CardHeader>
 			<CardBody>
 				<Text>{description}</Text>
 			</CardBody>
-			<CardFooter>{component}</CardFooter>
+			<CardFooter justify='end'>
+				{status && (
+					<Badge
+						colorScheme={
+							status === CheckingStatus.CHECKED ? "green" : "red"
+						}
+					>
+						{status}
+					</Badge>
+				)}
+			</CardFooter>
 		</Card>
 	);
 };

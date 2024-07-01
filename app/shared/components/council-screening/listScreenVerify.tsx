@@ -33,6 +33,7 @@ export default function ScreeningVerificationList() {
 		data: councilPostsResponse,
 		isLoading: isLoadingCouncilPostResponse,
 		mutate: mutatePostsResponse,
+		isValidating: isValidatingCouncilPostResponse,
 	} = useSWR(
 		`/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`,
 		(url: string | URL | Request) => fetch(url).then((res) => res.json())
@@ -116,7 +117,7 @@ export default function ScreeningVerificationList() {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingCouncilPostResponse || isLoadingSaving,
+			isLoading: isLoadingCouncilPostResponse || isLoadingSaving || isValidatingCouncilPostResponse,
 		},
 		renderRowActionMenuItems: ({ row }) => [
 			<MenuItem

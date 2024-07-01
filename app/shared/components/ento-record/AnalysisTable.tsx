@@ -30,6 +30,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FaArrowAltCircleDown } from "react-icons/fa";
 import useSWR from "swr";
 import NotFoundComponet from "../notfound";
+import ErrorComponent from "../error";
 
 type AnalysisTableProps = {
 	id: number;
@@ -77,6 +78,8 @@ const AnalysisTable = () => {
 		data: analysisResponse,
 		isLoading: isLoadingAnalyticsResponse,
 		mutate: mutateAnalytics,
+		error: analysisError,
+		isValidating: isValidatingAnalyticsResponse,
 	} = useSWR(
 		"/api/calculator/readAll",
 		(url: string | URL | Request): Promise<any> =>
@@ -206,7 +209,7 @@ const AnalysisTable = () => {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingAnalyticsResponse || isLoadingSaving,
+			isLoading: isLoadingAnalyticsResponse || isLoadingSaving || isValidatingAnalyticsResponse,
 		},
 		renderRowActionMenuItems: ({ row }) => [
 			<MenuItem

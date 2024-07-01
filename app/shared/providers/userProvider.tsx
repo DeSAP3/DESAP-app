@@ -1,15 +1,15 @@
-"use client";
-import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import useSWR from "swr";
 
-export interface UserData {
-	id: number|null;
+// Assuming UserData and UserContextType are defined elsewhere
+interface UserData {
+	id: string | null;
 	userName: string;
 	email: string;
 	role: string;
-	livingAddress?: string;
-	councilId?: number | null;
+	livingAddress: string;
+	councilId: string | null;
 }
 
 interface UserContextType {
@@ -17,7 +17,6 @@ interface UserContextType {
 	setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 	isLoadingUserResponse: boolean;
 	mutateUser: () => void;
-	dataLoaded: boolean;
 }
 
 const initialUserData: UserData = {
@@ -33,7 +32,6 @@ const UserContext = createContext<UserContextType>({
 	userData: initialUserData,
 	setUserData: () => {},
 	isLoadingUserResponse: false,
-	dataLoaded: false,
 	mutateUser: () => {},
 });
 
@@ -41,40 +39,41 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 	const [userData, setUserData] = useState<UserData>(initialUserData);
-	const [dataLoaded, setDataLoaded] = useState(false);
 	const { data: session } = useSession();
 
-	const { data: userResponse, isLoading: isLoadingUserResponse, mutate: mutateUser } = useSWR(
-		`/api/profile/readByEmail?email=${session?.user?.email}`,
+	const {
+		data: userResponse,
+		isLoading: isLoadingUserResponse,
+		mutate: mutateUser,
+	} = useSWR(
+		session?.user?.email
+			? `/api/profile/readByEmail?email=${session.user.email}`
+			: null,
 		(url) => fetch(url).then((res) => res.json())
 	);
 
 	useEffect(() => {
 		if (userResponse) {
-			setUserData({
-				id: userResponse?.id,
-				userName: userResponse?.username,
-				email: userResponse?.email,
-				role: userResponse?.role,
-				livingAddress: userResponse?.livingAddress,
-				councilId: userResponse?.councilId,
-			});
-			setDataLoaded(true)
+			setUserData(userResponse.data);
 		} else {
 			setUserData(initialUserData);
-			setDataLoaded(false)
 		}
 	}, [userResponse]);
 
-	const value = React.useMemo(
-		() => ({ userData, setUserData, isLoadingUserResponse, mutateUser, dataLoaded }),
-		[userData, setUserData, isLoadingUserResponse, mutateUser]
-	);
+	useEffect(() => {
+		if (session?.user?.email) {
+			mutateUser();
+		}
+	}, [session?.user?.email, mutateUser]);
 
+	const value = {
+		userData,
+		setUserData,
+		isLoadingUserResponse,
+		mutateUser,
+	};
 
 	return (
-		<UserContext.Provider value={value}>
-			{children}
-		</UserContext.Provider>
+		<UserContext.Provider value={value}>{children}</UserContext.Provider>
 	);
 };
