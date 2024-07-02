@@ -104,7 +104,6 @@ const ProfileForm = () => {
 		<LoadingComponent text='Updating user information...' />
 	) : (
 		<>
-			
 			<Flex align={"center"} justify={"center"} width={"100%"}>
 				<Box rounded={"lg"} boxShadow={"lg"} p={8}>
 					<Stack spacing={4}>

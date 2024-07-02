@@ -71,7 +71,7 @@ export default function LandingPage() {
 						<>
 							<Button
 								as={"a"}
-								href='/community/dashboard'
+								href='/community/dahsboard'
 								colorScheme={"green"}
 								bg={"#393E46"}
 								rounded={"full"}

@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 		if (!analytics) {
 			return NextResponse.json({
 				error: "There are no analytics",
-				status: 404,
+				status: 200,
 			});
 		}
 

@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 			});
 		}
 
-        const members = await db.user.findMany({
+        const users = await db.user.findMany({
             where: {
                 councilId: parseInt(councilId),
 				role: Role.COMMUNITY_MEMBER
@@ -28,16 +28,16 @@ export async function GET(request: Request) {
             }
         })
 
-		if (!members) {
+		if (!users) {
 			return NextResponse.json({
 				error: "No users in the council",
 				status: 200,
 			});
 		}
 		return NextResponse.json({
-			data: members,
-			message: "Council's Members loaded",
-			status: 200,
+            data: users,
+            message: "Council's Members loaded",
+            status: 200,
 		});
 	} catch (error) {
 		return NextResponse.json({

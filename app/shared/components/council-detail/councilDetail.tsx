@@ -19,37 +19,13 @@ import useSWR from "swr";
 import LoadingComponent from "../loading";
 import { CouncilLayout } from "./councilLayout";
 import { Council } from "@prisma/client";
-import ErrorComponent from "../error";
-
-interface ApiResponse {
-	data: Council;
-	status: number;
-	message: string;
-}
 
 export default function CouncilDetail() {
 	const toast = useToast();
 	const router = useRouter();
+	const [council, setCouncil] = useState<Council>();
 	const [isLoading, setIsLoading] = useState(false);
 	const { userData, setUserData, mutateUser } = useUser();
-
-	const {
-		data: councilResponse,
-		isLoading: isLoadingCouncil,
-		isValidating,
-		error,
-	} = useSWR<ApiResponse>(
-		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
-		(url: string | URL | Request) => fetch(url).then((res) => res.json())
-	);
-
-	if (!councilResponse || isLoadingCouncil || isValidating) {
-		return <LoadingComponent text='Retrieving councoul posts...' />;
-	}
-
-	if (error || councilResponse.status !== 200) {
-		return <ErrorComponent error={councilResponse.message} />;
-	}
 
 	const handleQuitCouncil = async () => {
 		setIsLoading(true);
@@ -70,7 +46,7 @@ export default function CouncilDetail() {
 			});
 			mutateUser();
 			toast({
-				title: `You have successfully quit the council: ${councilResponse.data.name}.`,
+				title: `You have successfully quit the council: ${council?.name}.`,
 				status: "success",
 				duration: 3000,
 				isClosable: true,
@@ -80,6 +56,16 @@ export default function CouncilDetail() {
 		router.push("/community/dashboard");
 		setIsLoading(false);
 	};
+
+	const { isLoading: isLoadingCouncil } = useSWR(
+		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
+		(url: string | URL | Request) =>
+			fetch(url)
+				.then((res) => res.json())
+				.then((data) => {
+					setCouncil(data.data);
+				})
+	);
 
 	return (
 		<Container maxWidth={"80%"} paddingY={5} justifyContent={"center"}>
@@ -92,32 +78,33 @@ export default function CouncilDetail() {
 							<Tbody>
 								<Tr>
 									<Td fontWeight={"bold"}>Council Name</Td>
-									<Td>{councilResponse.data.name}</Td>
+									<Td>{council?.name}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>
 										Council Area Address
 									</Td>
-									<Td>{councilResponse.data.address}</Td>
+									<Td>{council?.address}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>Council City</Td>
-									<Td>{councilResponse.data.city}</Td>
+									<Td>{council?.city}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>Council State</Td>
-									<Td>{councilResponse.data.state}</Td>
+									<Td>{council?.state}</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>
 										Council Leader Contact
 									</Td>
 									<Td>
-										{councilResponse.data.leaderEmail}
+										{council?.leaderEmail}
 										&nbsp;
 										{userData.email ===
-											councilResponse.data
-												.leaderEmail && <b>(YOU)</b>}
+											council?.leaderEmail && (
+											<b>(YOU)</b>
+										)}
 									</Td>
 								</Tr>
 								<Tr>
@@ -125,21 +112,19 @@ export default function CouncilDetail() {
 										Council Created At
 									</Td>
 									<Td>
-										{councilResponse.data.createdAt &&
+										{council?.createdAt &&
 											new Date(
-												councilResponse.data.createdAt
+												council?.createdAt
 											).toLocaleString()}
 									</Td>
 								</Tr>
 								<Tr>
 									<Td fontWeight={"bold"}>Created By</Td>
 									<Td>
-										{councilResponse.data.createdBy}
+										{council?.createdBy}
 										&nbsp;
 										{userData.email ===
-											councilResponse.data.createdBy && (
-											<b>(YOU)</b>
-										)}
+											council?.createdBy && <b>(YOU)</b>}
 									</Td>
 								</Tr>
 								<Tr>

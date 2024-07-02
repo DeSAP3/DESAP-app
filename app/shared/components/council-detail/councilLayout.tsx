@@ -15,69 +15,53 @@ import {
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import LoadingComponent from "../loading";
-import ErrorComponent from "../error";
 
-interface CouncilLayoutProps {
+type CouncilLayoutProps = {
 	userName: string;
 	email: string;
 	role: string;
 	livingAddress: string;
-}
-
-interface ApiResponseMembers {
-	data: CouncilLayoutProps[];
-	status: number;
-	message: string;
-}
-
-interface ApiResponseLeaders {
-	data: CouncilLayoutProps;
-	status: number;
-	message: string;
-}
+};
 
 export const CouncilLayout = () => {
 	const { userData } = useUser();
-	const {
-		data: membersResponse,
-		isLoading: isLoadingMembersResponse,
-		isValidating: isValidatingMembersResponse,
-		error: membersError,
-	} = useSWR<ApiResponseMembers>(
-		`/api/council/readMemberByCouncilId?councilId=${userData?.councilId}`,
-		(url: string | URL | Request): Promise<any> =>
-			fetch(url).then((res) => res.json())
+	const [councilLeader, setCouncilLeader] = useState<CouncilLayoutProps | null>(null);
+	const [councilMembers, setCouncilMembers] = useState<CouncilLayoutProps[]>(
+		[]
 	);
+	const { data: usersMemberResponse, isLoading: isLoadingUsersMember } =
+		useSWR(
+			`/api/council/readMemberByCouncilId?councilId=${userData?.councilId}`,
+			(url: string | URL | Request): Promise<any> =>
+				fetch(url)
+					.then((res) => res.json())
+					
+		);
 
-	const {
-		data: leaderResponse,
-		isLoading: isLoadingLeaderResponse,
-		isValidating: isValidatingLeaderResponse,
-		error: leaderError,
-	} = useSWR<ApiResponseLeaders>(
-		`/api/council/readLeaderByCouncilId?councilId=${userData?.councilId}`,
-		(url: string | URL | Request): Promise<any> =>
-			fetch(url).then((res) => res.json())
-	);
+	const { data: usersLeaderResponse, isLoading: isLoadingUsersLeader } =
+		useSWR(
+			`/api/council/readLeaderByCouncilId?councilId=${userData?.councilId}`,
+			(url: string | URL | Request): Promise<any> =>
+				fetch(url)
+					.then((res) => res.json())
+					
+		);
 
-	if (
-		!membersResponse ||
-		!leaderResponse ||
-		isLoadingMembersResponse ||
-		isLoadingLeaderResponse ||
-		isValidatingMembersResponse ||
-		isValidatingLeaderResponse
-	) {
-		return <LoadingComponent text='Constructing Council Layout...' />;
-	}
+	useEffect(() => {
+		if (usersLeaderResponse) {
+			setCouncilLeader(usersLeaderResponse.data);
+		} else {
+			setCouncilLeader(null);
+		}
+	}, [usersLeaderResponse]);
 
-	if (membersError || membersResponse.status !== 200) {
-		return <ErrorComponent error={membersResponse.message} />;
-	}
-
-	if (leaderError || leaderResponse.status !== 200) {
-		return <ErrorComponent error={leaderResponse.message} />;
-	}
+	useEffect(() => {
+		if (usersMemberResponse) {
+			setCouncilMembers(usersMemberResponse.data);
+		} else {
+			setCouncilMembers([]);
+		}
+	}, [usersMemberResponse]);
 
 	return (
 		<Box
@@ -86,62 +70,21 @@ export const CouncilLayout = () => {
 			gap={"10px"}
 			justifyContent={"center"}
 		>
-			<>
-				<Center>
-					{leaderResponse.data ? (
-						<Popover>
-							<PopoverTrigger>
-								<Text
-									fontWeight={"bold"}
-									border='1px'
-									padding='3px'
-									as='button'
-								>
-									{leaderResponse.data.userName}
-								</Text>
-							</PopoverTrigger>
-							<Portal>
-								<PopoverContent>
-									<PopoverArrow />
-									<PopoverCloseButton />
-									<PopoverBody>
-										<Text>
-											<b>Role : </b>
-											{leaderResponse.data.role}
-										</Text>
-										<Text>
-											<b>Email : </b>
-											{leaderResponse.data.email}
-										</Text>
-										<Text>
-											<b>Living Address : </b>
-											{leaderResponse.data.livingAddress}
-										</Text>
-									</PopoverBody>
-								</PopoverContent>
-							</Portal>
-						</Popover>
-					) : (
-						<Text border='1px' padding='3px' as='button'>
-							Council Leader not found
-						</Text>
-					)}
-				</Center>
-				<Center>
-					<SimpleGrid
-						minChildWidth='120px'
-						spacing='10px'
-						display={"flex"}
-					>
-						{membersResponse.data.map((user) => (
-							<Popover key={user.email}>
+			{isLoadingUsersMember && isLoadingUsersLeader ? (
+				<LoadingComponent text='Loading Council Layout...' />
+			) : (
+				<>
+					<Center>
+						{councilLeader ? (
+							<Popover>
 								<PopoverTrigger>
 									<Text
+										fontWeight={"bold"}
 										border='1px'
 										padding='3px'
 										as='button'
 									>
-										{user.userName}
+										{councilLeader?.userName ?? "No"}
 									</Text>
 								</PopoverTrigger>
 								<Portal>
@@ -151,24 +94,77 @@ export const CouncilLayout = () => {
 										<PopoverBody>
 											<Text>
 												<b>Role : </b>
-												{user.role ?? "null"}
+												{councilLeader?.role ?? "null"}
 											</Text>
 											<Text>
 												<b>Email : </b>
-												{user.email ?? "null"}
+												{councilLeader?.email ?? "null"}
 											</Text>
 											<Text>
 												<b>Living Address : </b>
-												{user.livingAddress ?? "null"}
+												{councilLeader?.livingAddress ??
+													"null"}
 											</Text>
 										</PopoverBody>
 									</PopoverContent>
 								</Portal>
 							</Popover>
-						))}
-					</SimpleGrid>
-				</Center>
-			</>
+						) : (
+							<Text border='1px' padding='3px' as='button'>
+								Council Leader not found
+							</Text>
+						)}
+					</Center>
+					<Center>
+						<SimpleGrid
+							minChildWidth='120px'
+							spacing='10px'
+							display={"flex"}
+						>
+							{councilMembers ? (
+								councilMembers.map((user) => (
+									<Popover key={user.email}>
+										<PopoverTrigger>
+											<Text
+												border='1px'
+												padding='3px'
+												as='button'
+											>
+												{user.userName}
+											</Text>
+										</PopoverTrigger>
+										<Portal>
+											<PopoverContent>
+												<PopoverArrow />
+												<PopoverCloseButton />
+												<PopoverBody>
+													<Text>
+														<b>Role : </b>
+														{user?.role ?? "null"}
+													</Text>
+													<Text>
+														<b>Email : </b>
+														{user?.email ?? "null"}
+													</Text>
+													<Text>
+														<b>Living Address : </b>
+														{user?.livingAddress ??
+															"null"}
+													</Text>
+												</PopoverBody>
+											</PopoverContent>
+										</Portal>
+									</Popover>
+								))
+							) : (
+								<Text border='1px' padding='3px' as='button'>
+									Council Members not found
+								</Text>
+							)}
+						</SimpleGrid>
+					</Center>
+				</>
+			)}
 		</Box>
 	);
 };

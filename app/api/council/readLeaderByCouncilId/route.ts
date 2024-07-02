@@ -14,14 +14,15 @@ export async function GET(request: Request) {
 			});
 		}
 
-		const ledaerInCouncil = await db.council.findUnique({
+        const ledaerInCouncil = await db.council.findUnique({
 			where: {
 				id: parseInt(councilId),
 			},
 			select: {
 				leaderEmail: true,
-			},
-		});
+			}
+		})
+
 
 		const leader = await db.user.findUnique({
 			where: {
@@ -33,8 +34,9 @@ export async function GET(request: Request) {
 				email: true,
 				role: true,
 				livingAddress: true,
-			},
-		});
+			}
+		})
+
 
 		if (!leader) {
 			return NextResponse.json({
@@ -43,9 +45,9 @@ export async function GET(request: Request) {
 			});
 		}
 		return NextResponse.json({
-			data: leader,
-			message: "Council's Leader loaded",
-			status: 200,
+            data: leader,
+            message: "Council's Leader loaded",
+            status: 200,
 		});
 	} catch (error) {
 		return NextResponse.json({
