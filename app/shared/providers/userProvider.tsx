@@ -71,6 +71,17 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}, [session, mutateUser]);
 
+	useEffect(() => {
+		localStorage.setItem("userData", JSON.stringify(userData));
+	}, [userData]);
+
+	useEffect(() => {
+		const storedUserData = localStorage.getItem("userData");
+		if (storedUserData) {
+			setUserData(JSON.parse(storedUserData));
+		}
+	}, []);
+
 	const value = {
 		userData,
 		setUserData,

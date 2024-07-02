@@ -29,7 +29,7 @@ type ScreeningVerificationListProps = {
 
 export default function ScreeningVerificationList() {
 	const [posts, setPosts] = useState<ScreeningVerificationListProps[]>([]);
-	const { userData, setUserData } = useUser();
+	const { userData } = useUser();
 	const [isLoadingSaving, setIsLoadingSaving] = useState(false);
 	const {
 		data: councilPostsResponse,

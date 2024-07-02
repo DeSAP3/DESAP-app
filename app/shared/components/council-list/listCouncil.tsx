@@ -30,13 +30,13 @@ const CouncilList = () => {
 	const toast = useToast();
 	const router = useRouter();
 	const [councils, setCouncils] = useState<CouncilListProps[]>([]);
-	const { userData, setUserData } = useUser();
+	const { userData, setUserData, mutateUser } = useUser();
 
 	const {
 		data: councilsResponse,
 		isLoading: isLoadingCouncilsResponse,
 		isValidating: isValidatingCouncils,
-		error,
+		
 	} = useSWR(
 		"/api/council/readAll",
 		(url: string | URL | Request): Promise<any> =>
@@ -111,7 +111,7 @@ const CouncilList = () => {
 					onClick={async () => {
 						const updatedUserData = {
 							...userData,
-							councilId: row.row.original.id.toString(),
+							councilId: row.row.original.id as any,
 						};
 						setUserData(updatedUserData);
 						const res = await fetch("/api/profile/update", {
@@ -123,6 +123,7 @@ const CouncilList = () => {
 								userData: updatedUserData,
 							}),
 						}).then((res) => res.json());
+						mutateUser();
 						toast({
 							title: res.status === 200 ? res.message : res.error,
 							status: res.status === 200 ? "success" : "error",
@@ -139,11 +140,6 @@ const CouncilList = () => {
 		),
 	});
 
-	// return councils ? (
-	// 	<MaterialReactTable table={table} />
-	// ) : (
-	// 	<NotFoundComponet notfound='No Councils' />
-	// );
 	return isLoadingCouncilsResponse || isValidatingCouncils ? (
 		<LoadingComponent text='Loading...' />
 	) : councils ? (

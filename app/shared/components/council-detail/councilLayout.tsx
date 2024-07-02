@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import LoadingComponent from "../loading";
 import ErrorComponent from "../error";
+import { error } from "console";
 
 interface CouncilLayoutProps {
 	userName: string;
@@ -65,29 +66,26 @@ export const CouncilLayout = () => {
 			fetch(url).then((res) => res.json())
 	);
 
+	if (membersError) {
+		return <ErrorComponent error={membersError} />;
+	}
+
+	if (isLoadingMembersResponse && isValidatingMembersResponse) {
+		return (
+			<LoadingComponent text='Constructing Council Layout...Searching members...' />
+		);
+	}
+
+	if (leaderError) {
+		return <ErrorComponent error={leaderError} />;
+	}
 	if (isLoadingLeaderResponse && isValidatingLeaderResponse) {
-		return <LoadingComponent text='Constructing Council Layout...Searching leader...' />;
-	} else if (isLoadingMembersResponse && isValidatingMembersResponse) {
-		return <LoadingComponent text='Constructing Council Layout...Searching members...' />;
-	}
-
-	if (membersResponse && membersResponse.status !== 200) {
-		console.log(membersResponse);
 		return (
-			<ErrorComponent
-				error={`Member not found.${membersResponse.error}`}
-			/>
-		);
-	} else if (leaderResponse && leaderResponse.status !== 200) {
-		return (
-			console.log(leaderResponse),
-			<ErrorComponent
-				error={`Leader not found.${leaderResponse.error}`}
-			/>
+			<LoadingComponent text='Constructing Council Layout...Searching leader...' />
 		);
 	}
 
-	if (!membersResponse || membersError || !leaderResponse || leaderError) {
+	if (!membersResponse || !leaderResponse) {
 		return <ErrorComponent error='Error.Something went wrong' />;
 	}
 
@@ -150,12 +148,12 @@ export const CouncilLayout = () => {
 						spacing='10px'
 						display={"flex"}
 					>
-						{membersResponse.data === null ? (
+						{membersResponse && membersResponse.data === null ||
+						membersResponse.data.length === 0 ? (
 							<Text border='1px' padding='3px' as='button'>
-								Council Leader not found
+								Council Members not found
 							</Text>
 						) : (
-							membersResponse.data &&
 							membersResponse.data.map((user) => (
 								<Popover key={user.email}>
 									<PopoverTrigger>

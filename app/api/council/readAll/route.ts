@@ -3,8 +3,18 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
 	try {
-		// find all
-		const councils = await db.council.findMany();
+		const councils = await db.council.findMany({
+			select: {
+				id: true,
+				name: true,
+				address: true,
+				city: true,
+				state: true,
+				leaderId: true,
+				createdBy: true,
+				createdAt: true,
+			},
+		});
 		if (!councils) {
 			return NextResponse.json({
 				data: null,
@@ -13,9 +23,9 @@ export async function GET(request: Request) {
 			});
 		}
 		return NextResponse.json({
-            data: councils,
-            message: "All councils loaded",
-            status: 200,
+			data: councils,
+			message: "All councils loaded",
+			status: 200,
 		});
 	} catch (error) {
 		return NextResponse.json({

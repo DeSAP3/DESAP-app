@@ -1,10 +1,10 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -35,17 +35,17 @@ datasource db {
 // }
 
 model User {
-  id            Int                   @id @default(autoincrement())
-  userName      String
-  email         String                @unique
-  role          Role                  
-  password      String
-  livingAddress String?
-  councilId     Int?
-  screenings    DengueScreeningPost[]
-  analytics     Analytics[]
-  council       Council?              @relation(fields: [councilId], references: [id])
-  elections     LeaderElection[]      @relation("CandidateToElection")
+  id             Int                   @id @default(autoincrement())
+  userName       String
+  email          String                @unique
+  role           Role
+  password       String
+  livingAddress  String?
+  councilId      Int?
+  screenings     DengueScreeningPost[]
+  analytics      Analytics[]
+  council        Council?              @relation(fields: [councilId], references: [id])
+  leadingCouncil Council?              @relation("CouncilLeader")
 }
 
 model DengueScreeningPost {
@@ -61,16 +61,16 @@ model DengueScreeningPost {
 }
 
 model Council {
-  id          Int              @id @default(autoincrement())
-  name        String
-  city        String
-  state       String?
-  address     String
-  leaderEmail String
-  createdAt   DateTime         @default(now())
-  createdBy   String
-  members     User[]        
-  elections   LeaderElection[]
+  id        Int      @id @default(autoincrement())
+  name      String
+  city      String
+  state     String?
+  address   String
+  leaderId  Int?     @unique
+  leader    User?    @relation("CouncilLeader", fields: [leaderId], references: [id])
+  createdAt DateTime @default(now())
+  createdBy String
+  members   User[]
 }
 
 model Analytics {
@@ -83,24 +83,10 @@ model Analytics {
   createdById Int
 }
 
-model LeaderElection {
-  id          Int      @id @default(autoincrement())
-  electionEnd DateTime
-  councilId   Int
-  council     Council  @relation(fields: [councilId], references: [id])
-  candidates  User[]   @relation("CandidateToElection")
-}
-
 enum Role {
   COMMUNITY_LEADER
   COMMUNITY_MEMBER
   OPERATION_TEAM
-}
-
-enum ElectionStatus {
-  OPEN
-  CLOSED
-  ONGOING
 }
 
 enum CheckingStatus {

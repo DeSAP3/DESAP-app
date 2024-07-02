@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
-		const { state, city, address, name, createdBy, leaderEmail } =
+		const { state, city, address, name, createdBy, leaderId } =
 			body.council;
 		if (!state || !city || !address || !name || !createdBy) {
 			return NextResponse.json({
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 				address: address,
 				name: name,
 				createdBy: createdBy,
-				leaderEmail: leaderEmail,
+				leaderId: leaderId,
 			},
 		});
 

@@ -4,9 +4,10 @@ import { NextResponse } from "next/server";
 export async function PUT(request: Request) {
 	try {
 		const body = await request.json();
-		const { userName, email, role, councilId, livingAddress } = body.userData;
+		const {id, userName, email, role, councilId, livingAddress } =
+			body.userData;
 
-		if (!userName || !email) {
+		if (!id) {
 			return NextResponse.json({
 				error: "Missing info",
 				status: 400,
@@ -15,13 +16,14 @@ export async function PUT(request: Request) {
 
 		const user = await db.user.update({
 			where: {
-				email: email,
+				id: id,
 			},
 			data: {
 				userName: userName,
+				email: email,
 				role: role,
-				councilId: councilId,
-				 livingAddress: livingAddress
+				councilId: councilId as number,
+				livingAddress: livingAddress,
 			},
 		});
 
@@ -37,5 +39,3 @@ export async function PUT(request: Request) {
 		});
 	}
 }
-
-

@@ -14,18 +14,26 @@ export async function GET(request: Request) {
 			});
 		}
 
-		const ledaerInCouncil = await db.council.findUnique({
+		const council = await db.council.findUnique({
 			where: {
 				id: parseInt(councilId),
 			},
 			select: {
-				leaderEmail: true,
+				leaderId: true,
 			},
 		});
 
+		if (!council || !council.leaderId) {
+			return NextResponse.json({
+				data: null,
+				message: "No leader in the council",
+				status: 200,
+			});
+		}
+
 		const leader = await db.user.findUnique({
 			where: {
-				email: ledaerInCouncil?.leaderEmail,
+				id: council.leaderId,
 			},
 			select: {
 				id: true,
@@ -39,10 +47,11 @@ export async function GET(request: Request) {
 		if (!leader) {
 			return NextResponse.json({
 				data: null,
-				message: "No leader in the council",
+				message: "Leader not found",
 				status: 200,
 			});
 		}
+
 		return NextResponse.json({
 			data: leader,
 			message: "Council's Leader loaded",
@@ -54,4 +63,5 @@ export async function GET(request: Request) {
 			status: 400,
 		});
 	}
+
 }

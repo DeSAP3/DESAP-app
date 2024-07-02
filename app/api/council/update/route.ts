@@ -11,7 +11,7 @@ export async function PUT(request: Request) {
 			city,
 			address,
 			createdBy,
-			leaderEmail,
+			leaderId,
 		} = body.council;
 
 		if (
@@ -21,7 +21,7 @@ export async function PUT(request: Request) {
 			!city ||
 			!address ||
 			!createdBy ||
-			!leaderEmail
+			!leaderId
 		) {
 			return NextResponse.json({
 				error: "Missing info",
@@ -39,7 +39,7 @@ export async function PUT(request: Request) {
 				address: address,
 				name: name,
 				createdBy: createdBy,
-				leaderEmail: leaderEmail,
+				leaderId: leaderId,
 			},
 		});
 

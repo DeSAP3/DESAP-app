@@ -43,26 +43,20 @@ export default function LandingPage() {
 							<Button
 								as={"a"}
 								href='/ento/calculator'
-								colorScheme={"green"}
-								bg={"#393E46"}
 								rounded={"full"}
 								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
+								colorScheme={"green"}
+								bg={"brand.acceptbutton"}
 							>
 								Analyze Larvae Count in Image
 							</Button>
 							<Button
 								as={"a"}
 								href='/ento/record'
-								colorScheme={"green"}
-								bg={"#393E46"}
 								rounded={"full"}
 								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
+								colorScheme={"green"}
+								bg={"brand.acceptbutton"}
 							>
 								Visualize Analyzed Image Result
 							</Button>
@@ -73,41 +67,34 @@ export default function LandingPage() {
 								as={"a"}
 								href='/community/dashboard'
 								colorScheme={"green"}
-								bg={"#393E46"}
+								bg={"brand.acceptbutton"}
 								rounded={"full"}
 								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
 							>
 								View Council Activity
 							</Button>
-							<Button
-								as={"a"}
-								href='/council/list'
-								colorScheme={"green"}
-								bg={"#393E46"}
-								rounded={"full"}
-								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
-							>
-								Join A Council
-							</Button>
+							{userData.councilId === null && (
+								<Button
+									as={"a"}
+									href='/council/list'
+									rounded={"full"}
+									px={6}
+									colorScheme={"green"}
+									bg={"brand.acceptbutton"}
+								>
+									Join A Council
+								</Button>
+							)}
 						</>
 					) : userData.role === Role.COMMUNITY_LEADER ? (
 						<>
 							<Button
 								as={"a"}
-								href='/community/dahsboard'
-								colorScheme={"green"}
-								bg={"#393E46"}
+								href='/community/dashboard'
 								rounded={"full"}
 								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
+								colorScheme={"green"}
+								bg={"brand.acceptbutton"}
 							>
 								View Council Activity
 							</Button>
@@ -116,12 +103,9 @@ export default function LandingPage() {
 									as={"a"}
 									href='/council/new'
 									colorScheme={"green"}
-									bg={"#393E46"}
+									bg={"brand.acceptbutton"}
 									rounded={"full"}
 									px={6}
-									_hover={{
-										bg: "#222831",
-									}}
 								>
 									Become A Manager of Council
 								</Button>
@@ -130,12 +114,9 @@ export default function LandingPage() {
 									as={"a"}
 									href='/council/detail'
 									colorScheme={"green"}
-									bg={"#393E46"}
+									bg={"brand.acceptbutton"}
 									rounded={"full"}
 									px={6}
-									_hover={{
-										bg: "#222831",
-									}}
 								>
 									View Your Council
 								</Button>
@@ -147,12 +128,9 @@ export default function LandingPage() {
 								as={"a"}
 								href='/ento/calculator'
 								colorScheme={"green"}
-								bg={"#393E46"}
+								bg={"brand.acceptbutton"}
 								rounded={"full"}
 								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
 							>
 								Try Out Analyze Larvae Count in Image
 							</Button>
@@ -160,12 +138,9 @@ export default function LandingPage() {
 								as={"a"}
 								href='/community/register'
 								colorScheme={"green"}
-								bg={"#393E46"}
+								bg={"brand.acceptbutton"}
 								rounded={"full"}
 								px={6}
-								_hover={{
-									bg: "#222831",
-								}}
 							>
 								Register An Account for DESAP@2022
 							</Button>

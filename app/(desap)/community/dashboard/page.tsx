@@ -55,19 +55,20 @@ export default function Dashboard() {
 	} = useSWR<ApiResponse>(
 		`/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`,
 		(url: string | URL | Request): Promise<any> =>
-			fetch(url).then((res) => res.json())
+			fetch(url).then((res) => res.json()),
+		{ revalidateOnMount: true }
 	);
 
+	if (error) {
+		return <ErrorComponent error={error} />;
+	}
+
 	if (!postResponse || isLoadingPostResponse || isValidating) {
-		return <LoadingComponent text='Retrieving councoul posts...' />;
+		return <LoadingComponent text='Retrieving council posts...' />;
 	}
 
-	if (error || postResponse.status !== 200) {
-		return <ErrorComponent error={postResponse.message} />;
-	}
-
-	if (!session) {
-		return <PageHeader title={`Dashboard`} />;
+	if (!postResponse) {
+		return <ErrorComponent error='Error. Something went wrong' />;
 	}
 
 	return (
@@ -145,7 +146,10 @@ export default function Dashboard() {
 								}
 							/>
 						)}
-						{userData.councilId !== null &&
+						{postResponse.data === null ||
+						postResponse.data === undefined ? (
+							<InformationCard title='No Post in this council yet' />
+						) : (
 							postResponse.data.map((post) => (
 								<InformationCard
 									key={post.postId}
@@ -159,7 +163,8 @@ export default function Dashboard() {
 									createdAt={post.createdAt}
 									updatedAt={post.updatedAt}
 								/>
-							))}
+							))
+						)}
 					</SimpleGrid>
 				</Container>
 			)}

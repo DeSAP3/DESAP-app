@@ -59,11 +59,15 @@ export async function GET(request: Request) {
 					},
 				},
 			},
+			orderBy: {
+				updatedAt: "desc",
+			}
 		});
 
 		if (!postList) {
 			return NextResponse.json({
-				error: "There are no post in the council",
+				data: null,
+				message: "There are no post in the council",
 				status: 200,
 			});
 		}

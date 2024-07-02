@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 				address: true,
 				createdAt: true,
 				createdBy: true,
-				leaderEmail: true,
+				leaderId: true,
 			},
 		});
 
@@ -34,6 +34,7 @@ export async function GET(request: Request) {
 				status: 200,
 			});
 		}
+
 		return NextResponse.json({
 			data: council,
 			message: "Council loaded",

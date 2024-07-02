@@ -5,6 +5,7 @@ import {
 	Avatar,
 	Box,
 	Button,
+	Center,
 	Drawer,
 	DrawerBody,
 	DrawerCloseButton,
@@ -71,13 +72,10 @@ export default function UserAccountNav() {
 		<>
 			<Button
 				colorScheme={"green"}
-				bg={"black"}
-				_hover={{
-					bg: "#222831",
-				}}
+				bg={"brand.acceptbutton"}
 				onClick={onOpen}
 			>
-				<CgProfile size={"1.5rem"} />
+				<CgProfile size={"1.2rem"} />
 			</Button>
 
 			<Drawer isOpen={isOpen} placement='right' onClose={onClose}>
@@ -85,11 +83,13 @@ export default function UserAccountNav() {
 				<DrawerContent>
 					<DrawerCloseButton />
 					<DrawerHeader>
-						<Avatar bg='#222831' />
-						<Text fontSize={"large"}>Welcome, </Text>
-						<Text fontWeight={"bold"} fontSize={"large"}>
-							{userData.userName}
-						</Text>
+						<Center display={"flex"} flexDirection={"column"}>
+							<Avatar bg='brand.acceptbutton' size='xl' />
+							<Text fontSize={"large"}>Welcome, </Text>
+							<Text fontWeight={"bold"} fontSize={"large"}>
+								{userData.userName}
+							</Text>
+						</Center>
 					</DrawerHeader>
 					<DrawerBody>
 						<Stack direction='column'>
@@ -124,11 +124,12 @@ export default function UserAccountNav() {
 							variant='solid'
 							colorScheme={"red"}
 							bg={"brand.rejectbutton"}
-							onClick={() =>
+							onClick={() => {
+								localStorage.removeItem("userData");
 								signOut({
 									callbackUrl: "/community/login",
-								})
-							}
+								});
+							}}
 						>
 							Logout
 						</Button>

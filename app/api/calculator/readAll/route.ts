@@ -16,7 +16,9 @@ export async function GET(request: Request) {
 						email: true,
 					},
 				},
-
+			},
+			orderBy: {
+				createdAt: "desc",
 			},
 		});
 		if (!analytics) {

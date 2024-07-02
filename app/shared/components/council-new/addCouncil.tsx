@@ -19,29 +19,37 @@ import { useEffect, useState } from "react";
 import LoadingComponent from "../loading";
 import { useRouter } from "next/navigation";
 
+interface Council {
+	state: string;
+	city: string;
+	address: string;
+	name: string;
+	createdBy: string;
+	leaderId: string | null;
+}
 
 const AddCouncil = () => {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const { userData, setUserData } = useUser();
-	const [council, setCouncil] = useState({
+	const [council, setCouncil] = useState<Council>({
 		state: "",
 		city: "",
 		address: "",
 		name: "",
 		createdBy: "",
-		leaderEmail: "",
+		leaderId: null,
 	});
 
 	useEffect(() => {
-		if (userData.email) {
+		if (userData && userData.id !== null) {
 			setCouncil((prevCouncil) => ({
 				...prevCouncil,
 				createdBy: userData.email,
-				leaderEmail: userData.email,
+				leaderId: userData.id,
 			}));
 		}
-	}, [userData.email]);
+	}, [userData]);
 
 	if (userData.councilId !== null) {
 		return (
@@ -61,7 +69,7 @@ const AddCouncil = () => {
 
 	const handleSubmit = async () => {
 		setIsLoading(true);
-
+		
 		await fetch("/api/council/create", {
 			method: "POST",
 			headers: {

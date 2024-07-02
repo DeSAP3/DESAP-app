@@ -29,6 +29,19 @@ interface ApiResponse {
 	error?: string;
 }
 
+interface CouncilLayoutProps {
+	userName: string;
+	email: string;
+	role: string;
+	livingAddress: string;
+}
+interface ApiResponseLeaders {
+	data: CouncilLayoutProps;
+	status: number;
+	message: string;
+	error?: string;
+}
+
 export default function CouncilDetail() {
 	const toast = useToast();
 	const router = useRouter();
@@ -47,18 +60,36 @@ export default function CouncilDetail() {
 		(url: string | URL | Request) => fetch(url).then((res) => res.json())
 	);
 
+	const {
+		data: leaderResponse,
+		isLoading: isLoadingLeaderResponse,
+		isValidating: isValidatingLeaderResponse,
+		error: leaderError,
+	} = useSWR<ApiResponseLeaders>(
+		userData.councilId !== null &&
+			`/api/council/readLeaderByCouncilId?councilId=${userData.councilId}`,
+		(url: string | URL | Request): Promise<any> =>
+			fetch(url).then((res) => res.json())
+	);
+
+	if (error) {
+		return <ErrorComponent error={error} />;
+	}
+
 	if (isLoadingCouncil || isValidatingCouncil || isLoadingUserResponse) {
 		return <LoadingComponent text='Retrieving council detail...' />;
 	}
-
-	if (councilResponse && councilResponse.status !== 200) {
-		console.log(councilResponse);
-		return <ErrorComponent error='Council not found. Please join one.' />;
+	if (!councilResponse) {
+		return <ErrorComponent error='Error. Something went wrong' />;
 	}
 
-	if (!councilResponse || error) {
-		console.log(userData.councilId);
-		return <ErrorComponent error='Error. Something went wrong' />;
+	if (leaderError) {
+		return <ErrorComponent error={leaderError} />;
+	}
+	if (isLoadingLeaderResponse && isValidatingLeaderResponse) {
+		return (
+			<LoadingComponent text='Constructing Council Layout...Searching leader...' />
+		);
 	}
 
 	const handleQuitCouncil = async () => {
@@ -132,13 +163,16 @@ export default function CouncilDetail() {
 											Council Leader Contact
 										</Td>
 										<Td>
-											{councilResponse.data.leaderEmail}
-											&nbsp;
-											{userData.email ===
-												councilResponse.data
-													.leaderEmail && (
-												<b>(YOU)</b>
+											{leaderResponse &&
+											leaderResponse.data ? (
+												leaderResponse.data.email
+											) : (
+												<i>Leader not found</i>
 											)}
+											&nbsp;
+											{userData.id ===
+												councilResponse.data
+													.leaderId && <b>(YOU)</b>}
 										</Td>
 									</Tr>
 									<Tr>
@@ -157,9 +191,9 @@ export default function CouncilDetail() {
 										<Td>
 											{councilResponse.data.createdBy}
 											&nbsp;
-											{userData.email ===
+											{userData.id ===
 												councilResponse.data
-													.createdBy && <b>(YOU)</b>}
+													.leaderId && <b>(YOU)</b>}
 										</Td>
 									</Tr>
 									<Tr>
