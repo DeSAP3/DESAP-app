@@ -1,5 +1,6 @@
 "use client";
 import InformationCard from "@/shared/components/community-dashboard/InformationCard";
+import ErrorComponent from "@/shared/components/error";
 import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
 import LoadingComponent from "@/shared/components/loading";
 import { useUser } from "@/shared/providers/userProvider";
@@ -22,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
-type DashboardProps = {
+interface DashboardProps {
 	postId: number;
 	title: string;
 	content: string;
@@ -33,27 +34,37 @@ type DashboardProps = {
 	authorUsername: string;
 	authorEmail: string;
 	authorRole: string;
-};
+}
+
+interface ApiResponse {
+	data: DashboardProps[];
+	status: number;
+	message: string;
+}
 
 export default function Dashboard() {
 	const router = useRouter();
 	const { data: session } = useSession();
 	const { userData, isLoadingUserResponse } = useUser();
-	const [postList, setPostList] = useState<DashboardProps[]>([]);
 
-	const { data: postResponse, isLoading: isLoadingPostResponse } = useSWR(
+	const {
+		data: postResponse,
+		isLoading: isLoadingPostResponse,
+		isValidating,
+		error,
+	} = useSWR<ApiResponse>(
 		`/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`,
 		(url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
 	);
 
-	useEffect(() => {
-		if (postResponse) {
-			setPostList(postResponse.data);
-		} else {
-			setPostList([]);
-		}
-	}, [postResponse]);
+	if (!postResponse || isLoadingPostResponse || isValidating) {
+		return <LoadingComponent text='Retrieving councoul posts...' />;
+	}
+
+	if (error || postResponse.status !== 200) {
+		return <ErrorComponent error={postResponse.message} />;
+	}
 
 	if (!session) {
 		return <PageHeader title={`Dashboard`} />;
@@ -134,11 +145,8 @@ export default function Dashboard() {
 								}
 							/>
 						)}
-						{isLoadingPostResponse ? (
-							<LoadingComponent text='Loading Posts...' />
-						) : userData.councilId !== null &&
-						  postList.length > 0 ? (
-							postList.map((post) => (
+						{userData.councilId !== null &&
+							postResponse.data.map((post) => (
 								<InformationCard
 									key={post.postId}
 									showAvatar={true}
@@ -151,10 +159,7 @@ export default function Dashboard() {
 									createdAt={post.createdAt}
 									updatedAt={post.updatedAt}
 								/>
-							))
-						) : (
-							<></>
-						)}
+							))}
 					</SimpleGrid>
 				</Container>
 			)}
