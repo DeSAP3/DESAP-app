@@ -31,6 +31,7 @@ import { FaArrowAltCircleDown } from "react-icons/fa";
 import useSWR from "swr";
 import NotFoundComponet from "../notfound";
 import ErrorComponent from "../error";
+import LoadingComponent from "../loading";
 
 type AnalysisTableProps = {
 	id: number;
@@ -119,7 +120,7 @@ const AnalysisTable = () => {
 		formData.append("predictions", JSON.stringify(row.predictions));
 		const annotatedImage = await axios({
 			method: "POST",
-			url: "https://larvae-calculator-api.vercel.app/calculate/larvae",
+			url: "https://larvae-calculator-api.onrender.com/calculate/larvae",
 			data: formData,
 			headers: {
 				"Content-Type": "multipart/form-data",
@@ -158,7 +159,6 @@ const AnalysisTable = () => {
 	};
 
 	useEffect(() => {
-	
 		if (analysisResponse) {
 			setAnalysis(analysisResponse.data);
 		} else {
@@ -171,13 +171,20 @@ const AnalysisTable = () => {
 			{
 				accessorKey: "createdAt",
 				header: "Analysis Datetime",
-				Cell : ({ cell }) => {
+				Cell: ({ cell }) => {
 					return new Date(cell.getValue() as string).toLocaleString();
-				}
+				},
 			},
 			{
-				accessorKey: "predictions.predictions.length",
+				accessorKey: "predictions.predictions",
 				header: "Larvae Count",
+				Cell: ({ cell }) => {
+					const array = cell.getValue() as any
+					const larvaeCount = array.filter(
+						(item: any) => item.class === "larvae"
+					);
+					return `${larvaeCount.length}`;
+				},
 			},
 			{
 				accessorKey: "status",
@@ -209,7 +216,10 @@ const AnalysisTable = () => {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingAnalyticsResponse || isLoadingSaving || isValidatingAnalyticsResponse,
+			isLoading:
+				isLoadingAnalyticsResponse ||
+				isLoadingSaving ||
+				isValidatingAnalyticsResponse,
 		},
 		renderRowActionMenuItems: ({ row }) => [
 			<MenuItem
@@ -264,7 +274,9 @@ const AnalysisTable = () => {
 		],
 	});
 
-	return analysis ? (
+	return isLoadingAnalyticsResponse || isValidatingAnalyticsResponse ? (
+		<LoadingComponent text='Loading...' />
+	) : analysisResponse && analysis ? (
 		<>
 			<MaterialReactTable table={table} />
 			{/* View Prediction Detail */}

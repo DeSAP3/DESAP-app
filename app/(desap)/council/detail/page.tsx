@@ -1,14 +1,34 @@
 "use client";
 import CouncilDetail from "@/shared/components/council-detail/councilDetail";
 import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
+import LoadingComponent from "@/shared/components/loading";
+import NotFoundComponet from "@/shared/components/notfound";
 import { useUser } from "@/shared/providers/userProvider";
 import { Center, Text } from "@chakra-ui/react";
 import { Role } from "@prisma/client";
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
 
 const CouncilDetailPage = () => {
-	const { userData } = useUser();
+	const { data: session } = useSession();
+	const {
+		data: userResponse,
+		isLoading: isLoadingUserResponse,
+		isValidating: isValidatingUserResponse,
+		mutate: mutateUser,
+		error,
+	} = useSWR(
+		session?.user?.email
+			? `/api/profile/readByEmail?email=${session.user.email}`
+			: null,
+		(url) => fetch(url).then((res) => res.json())
+	);
 
-	if (userData.councilId === null) {
+	if (error) return <NotFoundComponet notfound={userResponse.error} />;
+	if (!userResponse || isValidatingUserResponse)
+		return <LoadingComponent text='Retrieving user...' />;
+
+	if (userResponse.data && userResponse.data.role === null) {
 		return (
 			<>
 				<PageHeader title={`Council Detail`} />
@@ -20,7 +40,7 @@ const CouncilDetailPage = () => {
 				>
 					<Text>You have not joined any council.</Text>
 					<Text>
-						{userData.role === Role.COMMUNITY_MEMBER && (
+						{userResponse.data.role === Role.COMMUNITY_MEMBER && (
 							<>
 								To join a council as Community Member, please
 								visit the{" "}
@@ -31,7 +51,7 @@ const CouncilDetailPage = () => {
 								</i>
 							</>
 						)}
-						{userData.role === Role.COMMUNITY_LEADER && (
+						{userResponse.data.role === Role.COMMUNITY_LEADER && (
 							<>
 								{" "}
 								To join a council as Community Leader, please

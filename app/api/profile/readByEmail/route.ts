@@ -28,7 +28,8 @@ export async function GET(request: Request) {
 
 		if (!user) {
 			return NextResponse.json({
-				error: "User not found",
+				data: null,
+				message: "User not found",
 				status: 200,
 			});
 		}

@@ -5,7 +5,6 @@ export async function GET(request: Request) {
 	try {
 		const urlParams = new URL(request.url).searchParams;
 		const councilId = urlParams.get("councilId");
-
 		if (!councilId) {
 			return NextResponse.json({
 				error: "Missing council id",
@@ -25,13 +24,14 @@ export async function GET(request: Request) {
 				createdAt: true,
 				createdBy: true,
 				leaderEmail: true,
-			}
+			},
 		});
 
 		if (!council) {
 			return NextResponse.json({
-				error: "Council not found",
-				status: 404,
+				data: null,
+				message: "Council not found",
+				status: 200,
 			});
 		}
 		return NextResponse.json({

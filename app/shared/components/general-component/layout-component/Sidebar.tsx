@@ -26,114 +26,115 @@ import CouncilLeaderSidebarContent from "../sidebar-component/community/CouncilL
 import CouncilMemberSidebarContent from "../sidebar-component/community/CouncilMember";
 import OperationTeamSidebarContent from "../sidebar-component/ento/OperationTeam";
 import LoadingComponent from "../../loading";
+import useSWR from "swr";
+import NotFoundComponet from "../../notfound";
 
 export default function UserAccountNav() {
 	const { data: session } = useSession();
-	const { userData, isLoadingUserResponse } = useUser();
+	const { userData, isLoadingUserResponse, isValidatingUserResponse } =
+		useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	// const {
+	// 	data: userResponse,
+	// 	isLoading: isLoadingUserResponse,
+	// 	isValidating: isValidatingUserResponse,
+	// 	mutate: mutateUser,
+	// 	error,
+	// } = useSWR(
+	// 	session?.user
+	// 		? `/api/profile/readByEmail?email=${session.user.email}`
+	// 		: null,
+	// 	(url) => fetch(url).then((res) => res.json())
+	// );
 
-	return (
+	if (session === null) {
+		return (
+			<Button
+				as={"a"}
+				fontSize={"sm"}
+				fontWeight={400}
+				variant={"solid"}
+				href={"/community/login"}
+				bg={"brand.acceptbutton"}
+				colorScheme={"green"}
+			>
+				Login
+			</Button>
+		);
+	}
+
+	return isLoadingUserResponse || isValidatingUserResponse ? (
+		<Box width={"auto"} height={"auto"}>
+			<LoadingComponent text='' />
+		</Box>
+	) : (
 		<>
-			{session?.user?.email ? (
-				isLoadingUserResponse ? (
-					<Box width={"auto"} height={"auto"}>
-						<LoadingComponent text='' />
-					</Box>
-				) : (
-					<>
+			<Button
+				colorScheme={"green"}
+				bg={"black"}
+				_hover={{
+					bg: "#222831",
+				}}
+				onClick={onOpen}
+			>
+				<CgProfile size={"1.5rem"} />
+			</Button>
+
+			<Drawer isOpen={isOpen} placement='right' onClose={onClose}>
+				<DrawerOverlay />
+				<DrawerContent>
+					<DrawerCloseButton />
+					<DrawerHeader>
+						<Avatar bg='#222831' />
+						<Text fontSize={"large"}>Welcome, </Text>
+						<Text fontWeight={"bold"} fontSize={"large"}>
+							{userData.userName}
+						</Text>
+					</DrawerHeader>
+					<DrawerBody>
+						<Stack direction='column'>
+							<Accordion allowMultiple>
+								<GeneralSidebarContent />
+
+								{userData.role === Role.COMMUNITY_LEADER && (
+									<CommunityToolsSidebarContent />
+								)}
+								{userData.role === Role.COMMUNITY_MEMBER && (
+									<CommunityToolsSidebarContent />
+								)}
+
+								{userData.role === Role.COMMUNITY_LEADER && (
+									<CouncilLeaderSidebarContent />
+								)}
+
+								{userData.role === Role.COMMUNITY_MEMBER && (
+									<CouncilMemberSidebarContent />
+								)}
+
+								{userData.role === Role.OPERATION_TEAM && (
+									<OperationTeamSidebarContent />
+								)}
+							</Accordion>
+						</Stack>
+					</DrawerBody>
+					<DrawerFooter>
 						<Button
-							colorScheme={"green"}
-							bg={"black"}
-							_hover={{
-								bg: "#222831",
-							}}
-							onClick={onOpen}
+							fontSize={"sm"}
+							fontWeight={400}
+							variant='solid'
+							colorScheme={"red"}
+							bg={"brand.rejectbutton"}
+							onClick={() =>
+								signOut({
+									callbackUrl: "/community/login",
+								})
+							}
 						>
-							<CgProfile size={"1.5rem"} />
+							Logout
 						</Button>
-
-						<Drawer
-							isOpen={isOpen}
-							placement='right'
-							onClose={onClose}
-						>
-							<DrawerOverlay />
-							<DrawerContent>
-								<DrawerCloseButton />
-								<DrawerHeader>
-									<Avatar bg='#222831' />
-									<Text fontSize={"large"}>Welcome, </Text>
-									<Text
-										fontWeight={"bold"}
-										fontSize={"large"}
-									>
-										{userData.userName}
-									</Text>
-								</DrawerHeader>
-								<DrawerBody>
-									<Stack direction='column'>
-										<Accordion allowMultiple>
-											<GeneralSidebarContent />
-
-											{userData.role ===
-												Role.COMMUNITY_LEADER && (
-												<CommunityToolsSidebarContent />
-											)}
-											{userData.role ===
-												Role.COMMUNITY_MEMBER && (
-												<CommunityToolsSidebarContent />
-											)}
-
-											{userData.role ===
-												Role.COMMUNITY_LEADER && (
-												<CouncilLeaderSidebarContent />
-											)}
-
-											{userData.role ===
-												Role.COMMUNITY_MEMBER && (
-												<CouncilMemberSidebarContent />
-											)}
-
-											{userData.role ===
-												Role.OPERATION_TEAM && (
-												<OperationTeamSidebarContent />
-											)}
-										</Accordion>
-									</Stack>
-								</DrawerBody>
-								<DrawerFooter>
-									<Button
-										fontSize={"sm"}
-										fontWeight={400}
-										variant='solid'
-										colorScheme={"red"}
-										bg={"brand.rejectbutton"}
-										onClick={() =>
-											signOut({
-												callbackUrl: "/community/login",
-											})
-										}
-									>
-										Logout
-									</Button>
-								</DrawerFooter>
-							</DrawerContent>
-						</Drawer>
-					</>
-				)
-			) : (
-				<Button
-					as={"a"}
-					fontSize={"sm"}
-					fontWeight={400}
-					variant={"solid"}
-					href={"/community/login"}
-					bg={"brand.acceptbutton"}
-					colorScheme={"green"}
-				>
-					Login
-				</Button>
-			)}
+					</DrawerFooter>
+				</DrawerContent>
+			</Drawer>
 		</>
 	);
 }

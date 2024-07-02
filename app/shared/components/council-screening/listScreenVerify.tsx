@@ -12,6 +12,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import NotFoundComponent from "../notfound";
+import LoadingComponent from "../loading";
 
 type ScreeningVerificationListProps = {
 	postId: number;
@@ -35,7 +36,9 @@ export default function ScreeningVerificationList() {
 		mutate: mutatePostsResponse,
 		isValidating: isValidatingCouncilPostResponse,
 	} = useSWR(
-		`/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`,
+		userData?.councilId
+			? `/api/dashboard/readAllByCouncilId?councilId=${userData?.councilId}`
+			: null,
 		(url: string | URL | Request) => fetch(url).then((res) => res.json())
 	);
 
@@ -66,7 +69,7 @@ export default function ScreeningVerificationList() {
 	};
 
 	useEffect(() => {
-		if (councilPostsResponse) {
+		if (councilPostsResponse && councilPostsResponse.data) {
 			setPosts(councilPostsResponse.data);
 		} else {
 			setPosts([]);
@@ -117,7 +120,10 @@ export default function ScreeningVerificationList() {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingCouncilPostResponse || isLoadingSaving || isValidatingCouncilPostResponse,
+			isLoading:
+				isLoadingCouncilPostResponse ||
+				isLoadingSaving ||
+				isValidatingCouncilPostResponse,
 		},
 		renderRowActionMenuItems: ({ row }) => [
 			<MenuItem
@@ -170,7 +176,9 @@ export default function ScreeningVerificationList() {
 		],
 	});
 
-	return posts ? (
+	return isLoadingCouncilPostResponse || isValidatingCouncilPostResponse ? (
+		<LoadingComponent text='Loading...' />
+	) : posts ? (
 		<MaterialReactTable table={table} />
 	) : (
 		<NotFoundComponent notfound='No Councils' />

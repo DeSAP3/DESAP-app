@@ -38,7 +38,8 @@ export async function GET(request: Request) {
 
 		if (!leader) {
 			return NextResponse.json({
-				error: "No users in the council",
+				data: null,
+				message: "No leader in the council",
 				status: 200,
 			});
 		}

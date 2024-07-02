@@ -3,10 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
 	try {
+		// find all
 		const councils = await db.council.findMany();
 		if (!councils) {
 			return NextResponse.json({
-				error: "There are no councils",
+				data: null,
+				message: "There are no councils",
 				status: 200,
 			});
 		}

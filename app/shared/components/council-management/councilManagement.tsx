@@ -12,11 +12,12 @@ import {
 	Text,
 	useToast,
 } from "@chakra-ui/react";
+import { Role } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import ErrorComponent from "../error";
 import LoadingComponent from "../loading";
-import { Council, Role } from "@prisma/client";
 
 export default function CouncilManagement() {
 	const toast = useToast();
@@ -35,12 +36,14 @@ export default function CouncilManagement() {
 	const {
 		data: councilResponse,
 		isLoading: isLoadingCouncil,
+		isValidating: isValidatingCouncil,
 		mutate: mutateCouncilRes,
+		error,
 	} = useSWR(
 		`/api/council/readByCouncilId?councilId=${userData.councilId}`,
 		(url: string | URL | Request) => fetch(url).then((res) => res.json())
 	);
-
+	
 	useEffect(() => {
 		if (councilResponse) {
 			setCouncil(councilResponse.data);
@@ -55,6 +58,14 @@ export default function CouncilManagement() {
 			});
 		}
 	}, [councilResponse]);
+
+	if (!councilResponse || isLoadingCouncil || isValidatingCouncil) {
+		return <LoadingComponent text='Retrieving councoul information...' />;
+	}
+
+	if (error || councilResponse.status !== 200) {
+		return <ErrorComponent error={councilResponse.message} />;
+	}
 
 	if (userData.councilId === null) {
 		return (

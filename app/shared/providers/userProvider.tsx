@@ -1,8 +1,13 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+	use,
+} from "react";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
 
-// Assuming UserData and UserContextType are defined elsewhere
 interface UserData {
 	id: string | null;
 	userName: string;
@@ -16,6 +21,7 @@ interface UserContextType {
 	userData: UserData;
 	setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 	isLoadingUserResponse: boolean;
+	isValidatingUserResponse: boolean;
 	mutateUser: () => void;
 }
 
@@ -32,6 +38,7 @@ const UserContext = createContext<UserContextType>({
 	userData: initialUserData,
 	setUserData: () => {},
 	isLoadingUserResponse: false,
+	isValidatingUserResponse: false,
 	mutateUser: () => {},
 });
 
@@ -44,32 +51,30 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 	const {
 		data: userResponse,
 		isLoading: isLoadingUserResponse,
+		isValidating: isValidatingUserResponse,
 		mutate: mutateUser,
 	} = useSWR(
-		session?.user?.email
-			? `/api/profile/readByEmail?email=${session.user.email}`
-			: null,
+		session?.user && `/api/profile/readByEmail?email=${session.user.email}`,
 		(url) => fetch(url).then((res) => res.json())
 	);
 
 	useEffect(() => {
-		if (userResponse) {
+		if (userResponse && userResponse.data && session) {
 			setUserData(userResponse.data);
-		} else {
-			setUserData(initialUserData);
 		}
-	}, [userResponse]);
+	}, [userResponse, session]);
 
 	useEffect(() => {
-		if (session?.user?.email) {
+		if (session) {
 			mutateUser();
 		}
-	}, [session?.user?.email, mutateUser]);
+	}, [session, mutateUser]);
 
 	const value = {
 		userData,
 		setUserData,
 		isLoadingUserResponse,
+		isValidatingUserResponse,
 		mutateUser,
 	};
 

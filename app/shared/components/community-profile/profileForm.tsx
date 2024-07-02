@@ -76,7 +76,6 @@ const ProfileForm = () => {
 	const handleDelete = async () => {
 		if(confirm("Are you sure you want to delete your account?")) {
 			setIsLoading(true);
-			console.log("handle delete")
 			const res = await fetch(`/api/profile/delete?userId=${userData.id}`, {
 				method: "DELETE",
 				headers: {

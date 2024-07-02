@@ -44,7 +44,6 @@ const OpenCvForm = () => {
 	const useDemoImage = async () => {
 		try {
 			const response = await fetch("/002.jpg");
-			console.log(response);
 			const blob = await response.blob();
 
 			const file = new File([blob], "demo.jpg", {
@@ -102,7 +101,6 @@ const OpenCvForm = () => {
 				...response,
 				original: rawImage,
 			});
-			console.log(response);
 			onOpen();
 		} catch (error) {
 			alert("Error analyzing image");

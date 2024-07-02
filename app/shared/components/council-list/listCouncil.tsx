@@ -13,27 +13,45 @@ import { useUser } from "@/shared/providers/userProvider";
 import { useToast } from "@chakra-ui/react";
 import NotFoundComponet from "../notfound";
 import { useRouter } from "next/navigation";
+import LoadingComponent from "../loading";
+
+type CouncilListProps = {
+	id: number;
+	name: string;
+	city: string;
+	state: string;
+	address: string;
+	leaderEmail: string;
+	createdAt: Date;
+	createdBy: string;
+};
 
 const CouncilList = () => {
 	const toast = useToast();
 	const router = useRouter();
-	const [councils, setCouncils] = useState<Council[]>([]);
+	const [councils, setCouncils] = useState<CouncilListProps[]>([]);
 	const { userData, setUserData } = useUser();
 
-	const { data: councilsResponse, isLoading: isLoadingCouncilsResponse, isValidating: isValidatingCouncils } =
-		useSWR("/api/council/readAll", (url: string | URL | Request): Promise<any> =>
+	const {
+		data: councilsResponse,
+		isLoading: isLoadingCouncilsResponse,
+		isValidating: isValidatingCouncils,
+		error,
+	} = useSWR(
+		"/api/council/readAll",
+		(url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
-		);
+	);
 
 	useEffect(() => {
-		if (councilsResponse) {
+		if (councilsResponse && councilsResponse.data) {
 			setCouncils(councilsResponse.data);
 		} else {
 			setCouncils([]);
 		}
 	}, [councilsResponse]);
 
-	const columns = useMemo<MRT_ColumnDef<Council>[]>(
+	const columns = useMemo<MRT_ColumnDef<CouncilListProps>[]>(
 		() => [
 			{
 				accessorKey: "name",
@@ -78,14 +96,18 @@ const CouncilList = () => {
 		state: {
 			isLoading: isLoadingCouncilsResponse || isValidatingCouncils,
 		},
-		enableRowActions: userData.councilId === null && userData.role !== Role.COMMUNITY_LEADER ? true : false,
+		enableRowActions:
+			userData.councilId === null &&
+			userData.role !== Role.COMMUNITY_LEADER
+				? true
+				: false,
 		renderRowActions: (row) => (
-			<Box sx={{ display: "flex", gap: "1rem"}}>
+			<Box sx={{ display: "flex", gap: "1rem" }}>
 				<Button
 					endIcon={<ImEnter />}
 					color='success'
-					variant="contained"
-					size="small"
+					variant='contained'
+					size='small'
 					onClick={async () => {
 						const updatedUserData = {
 							...userData,
@@ -117,7 +139,14 @@ const CouncilList = () => {
 		),
 	});
 
-	return councils ? (
+	// return councils ? (
+	// 	<MaterialReactTable table={table} />
+	// ) : (
+	// 	<NotFoundComponet notfound='No Councils' />
+	// );
+	return isLoadingCouncilsResponse || isValidatingCouncils ? (
+		<LoadingComponent text='Loading...' />
+	) : councils ? (
 		<MaterialReactTable table={table} />
 	) : (
 		<NotFoundComponet notfound='No Councils' />

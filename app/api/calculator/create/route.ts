@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
-		console.log(body);
 		const { createdByEmail, predictions, imageURL } = body;
 		if (!createdByEmail || !predictions || !imageURL) {
 			return NextResponse.json({

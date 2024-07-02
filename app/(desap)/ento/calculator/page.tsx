@@ -55,7 +55,6 @@ export default function Calculator() {
 	const useDemoImage = async () => {
 		try {
 			const response = await fetch("/003.jpg");
-			console.log(response);
 			const blob = await response.blob();
 
 			const file = new File([blob], "demo.jpg", {
@@ -151,6 +150,7 @@ export default function Calculator() {
 					imageURL: data.path,
 				}),
 			}).then((res) => res.json());
+			setIsLoadingSaving(false);
 			if (res.status === 201) {
 				toast({
 					title: "Image saved successfully",
@@ -186,17 +186,19 @@ export default function Calculator() {
 			<PageHeader title='Analyze Image for Larvae' />
 			<Container maxW='container.md' paddingY={5}>
 				<Flex direction={"column"} gap={2} justifyContent={"center"}>
-					{rawImage === null && !userData && <Box display={"flex"} justifyContent={"flex-end"}>
-						<Button
-							onClick={useDemoImage}
-							gap={2}
-							size={"xs"}
-							bg={"brand.infobutton"}
-						>
-							Use Demo Image
-							<AttachmentIcon />
-						</Button>
-					</Box>}
+					{rawImage === null && !userData && (
+						<Box display={"flex"} justifyContent={"flex-end"}>
+							<Button
+								onClick={useDemoImage}
+								gap={2}
+								size={"xs"}
+								bg={"brand.infobutton"}
+							>
+								Use Demo Image
+								<AttachmentIcon />
+							</Button>
+						</Box>
+					)}
 
 					<Flex justifyContent={"center"} alignItems={"flex-start"}>
 						<Box

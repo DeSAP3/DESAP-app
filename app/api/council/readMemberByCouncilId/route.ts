@@ -30,7 +30,8 @@ export async function GET(request: Request) {
 
 		if (!members) {
 			return NextResponse.json({
-				error: "No users in the council",
+				data: null,
+				message: "No users in the council",
 				status: 200,
 			});
 		}

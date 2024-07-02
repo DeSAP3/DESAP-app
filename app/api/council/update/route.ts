@@ -6,22 +6,22 @@ export async function PUT(request: Request) {
 		const body = await request.json();
 		const {
 			councilId,
-			councilState,
-			councilCity,
-			councilAddress,
-			councilName,
-			councilCreatedBy,
-			councilLeaderEmail,
+			name,
+			state,
+			city,
+			address,
+			createdBy,
+			leaderEmail,
 		} = body.council;
 
 		if (
 			!councilId ||
-			!councilState ||
-			!councilCity ||
-			!councilAddress ||
-			!councilName ||
-			!councilCreatedBy ||
-			!councilLeaderEmail
+			!name ||
+			!state ||
+			!city ||
+			!address ||
+			!createdBy ||
+			!leaderEmail
 		) {
 			return NextResponse.json({
 				error: "Missing info",
@@ -34,12 +34,12 @@ export async function PUT(request: Request) {
 				id: councilId,
 			},
 			data: {
-				state: councilState,
-				city: councilCity,
-				address: councilAddress,
-				name: councilName,
-				createdBy: councilCreatedBy,
-				leaderEmail: councilLeaderEmail,
+				state: state,
+				city: city,
+				address: address,
+				name: name,
+				createdBy: createdBy,
+				leaderEmail: leaderEmail,
 			},
 		});
 

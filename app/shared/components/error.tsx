@@ -7,7 +7,7 @@ export default function ErrorComponent({ error }: Readonly<{ error: string }>) {
 			<Center pt={3}>
 				<Text
 					as={"u"}
-					fontSize='2xl'
+					fontSize='xl'
 					fontWeight='bold'
 					color={"red.500"}
 				>

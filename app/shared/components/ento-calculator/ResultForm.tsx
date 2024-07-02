@@ -69,7 +69,7 @@ const ResultForm = ({
 								<Button
 									type='submit'
 									onClick={onImageSave}
-									colorScheme='teal'
+									bg={"brand.acceptbutton"}
 								>
 									Save Image
 								</Button>

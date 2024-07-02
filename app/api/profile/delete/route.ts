@@ -17,7 +17,6 @@ export async function DELETE(request: Request) {
 				id: parseInt(userId),
 			},
 		});
-		console.log("Response", res)
 		return NextResponse.json({
 			message:
 				"User deleted successfully. You will be redirected to login page",
