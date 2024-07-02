@@ -1,3 +1,4 @@
+"use client";
 import { useUser } from "@/shared/providers/userProvider";
 import { useToast } from "@chakra-ui/react";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";

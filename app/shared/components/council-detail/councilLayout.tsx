@@ -1,3 +1,4 @@
+"use client";
 import { useUser } from "@/shared/providers/userProvider";
 import {
 	Box,
