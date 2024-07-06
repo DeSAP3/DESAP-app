@@ -4,7 +4,6 @@ import React, {
 	useContext,
 	useState,
 	useEffect,
-	use,
 } from "react";
 import { useSession } from "next-auth/react";
 import useSWR from "swr";
@@ -46,6 +45,7 @@ const UserContext = createContext<UserContextType>({
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+	// Set user data is needed since it will be use for the user management page
 	const [userData, setUserData] = useState<UserData>(initialUserData);
 	const { data: session } = useSession();
 

@@ -13,11 +13,7 @@ const authOptions: NextAuthOptions = {
 		CredentialsProvider({
 			name: "Credentials",
 			credentials: {
-				email: {
-					label: "Email",
-					type: "email",
-					placeholder: "john@gmail.com",
-				},
+				email: { label: "Email", type: "email" },
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(credentials) {
@@ -35,17 +31,17 @@ const authOptions: NextAuthOptions = {
 						email: true,
 						role: true,
 						password: true,
-					}
+					},
 				});
-				
+
 				if (!existingUser) {
 					return null;
 				}
-				
+
 				if (credentials.password !== existingUser.password) {
 					return null;
 				}
-				
+
 				return {
 					id: `${existingUser.id}`,
 					username: existingUser.userName,
@@ -58,10 +54,10 @@ const authOptions: NextAuthOptions = {
 	callbacks: {
 		async jwt({ token, user }) {
 			if (user) {
-				return { 
-                    ...token, 
-                    username: user.username 
-                };
+				return {
+					...token,
+					username: user.username,
+				};
 			}
 			return token;
 		},
@@ -69,9 +65,9 @@ const authOptions: NextAuthOptions = {
 			return {
 				...session,
 				user: {
-                    ...session.user,
-                    username: token.username
-                },
+					...session.user,
+					username: token.username,
+				},
 			};
 		},
 	},
@@ -83,4 +79,3 @@ const authOptions: NextAuthOptions = {
 const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
-
