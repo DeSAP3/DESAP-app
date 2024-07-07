@@ -1,0 +1,99 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+
+
+const roleBasedRoutes = {
+	COMMUNITY_LEADER: [
+		"/landing",
+		"/community/dashboard",
+		"/community/screening",
+		"/council/management",
+		"/council/detail",
+		"/council/list",
+		"/council/screening",
+		"/council/new",
+	],
+	COMMUNITY_MEMBER: [
+		"/landing",
+		"/community/dashboard",
+		"/community/screening",
+		"/council/detail",
+		"/council/list",
+	],
+	OPERATION_TEAM: [
+		"/landing",
+		"/ento/opencv",
+		"/ento/calculator",
+		"/ento/record",
+	],
+};
+
+
+const publicRoutes = [
+	"/",
+	"/ento/opencv",
+	"/ento/calculator",
+	"/community/profile",
+];
+
+const loginRoute = "/login";
+const registerRoute = "/register";
+const forbiddenRoute = "/forbidden";
+
+
+export async function middleware(req: NextRequest) {
+	const url = req.nextUrl.clone();
+	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
+	console.log("Pathname:", url.pathname);
+
+	
+	if (!token) {
+		if (
+			!publicRoutes.includes(url.pathname) &&
+			url.pathname !== loginRoute &&
+			url.pathname !== registerRoute
+		) {
+			url.pathname = loginRoute;
+			console.log("Redirecting to login:", url.pathname);
+			return NextResponse.redirect(url);
+		}
+		return NextResponse.next();
+	}
+
+	
+	const role = token.role;
+	console.log("User role:", role);
+
+	
+	const allowedRoutes =
+		roleBasedRoutes[role as keyof typeof roleBasedRoutes] || [];
+	console.log("Allowed routes:", allowedRoutes);
+	if (
+		allowedRoutes.includes(url.pathname) ||
+		publicRoutes.includes(url.pathname)
+	) {
+		return NextResponse.next();
+	}
+
+	if (!allowedRoutes.includes(url.pathname)) {
+		url.pathname = forbiddenRoute;
+		console.log("Redirecting to forbidden:", url.pathname);
+		return NextResponse.redirect(url);
+	}
+
+
+	return NextResponse.next();
+}
+
+
+export const config = {
+	matcher: [
+		"/landing",
+		"/community/:path*",
+		"/council/:path*",
+		"/ento/:path*",
+		"/((?!api|_next|static|favicon.ico).*)",
+	],
+};

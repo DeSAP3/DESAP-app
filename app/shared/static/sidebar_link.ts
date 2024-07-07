@@ -1,3 +1,4 @@
+// Open to all role
 export const accountProfileRoutes = [
 	{
 		name: "Profile Management",
@@ -5,6 +6,7 @@ export const accountProfileRoutes = [
 	},
 ];
 
+// Open to CommunityLeader and CommunityMember
 export const communityDashboardRoutes = [
 	{
 		name: "Community Dashboard",
@@ -16,6 +18,7 @@ export const communityDashboardRoutes = [
     }
 ];
 
+// Open to CommunityLeader
 export const leaderCouncilRoutes = [
 	{
 		name: "Council Management",
@@ -35,6 +38,7 @@ export const leaderCouncilRoutes = [
 	},
 ];
 
+// Open to CommunityLeader where the user.councilId is null
 export const optionalLeaderCouncilRoutes = [
 	{
 		name: "Create Council",
@@ -42,6 +46,7 @@ export const optionalLeaderCouncilRoutes = [
 	},
 ];
 
+// Open to CommunityMember
 export const memberCouncilRoutes = [
 	{
 		name: "Council Detail",
@@ -53,6 +58,7 @@ export const memberCouncilRoutes = [
 	},
 ];
 
+// Open to OperationTeam
 export const operationTeamRoutes = [
 	{
 		name: "Mosquito Eggs Calculator",

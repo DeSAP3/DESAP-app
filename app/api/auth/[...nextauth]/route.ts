@@ -1,12 +1,12 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import db from "@/shared/providers/dbProvider";
+import db from "@/shared/providers/dbProvider"; 
 
 const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(db),
 	pages: {
-		signIn: "/community/login",
+		signIn: "/login",
 	},
 	secret: process.env.NEXTAUTH_SECRET,
 	providers: [
@@ -18,7 +18,7 @@ const authOptions: NextAuthOptions = {
 			},
 			async authorize(credentials) {
 				if (!credentials?.email || !credentials?.password) {
-					return null;
+					throw new Error("Invalid credentials");
 				}
 
 				const existingUser = await db.user.findUnique({
@@ -30,16 +30,19 @@ const authOptions: NextAuthOptions = {
 						userName: true,
 						email: true,
 						role: true,
+						councilId: true,
 						password: true,
 					},
 				});
 
 				if (!existingUser) {
-					return null;
+					throw new Error("No user found with this email");
 				}
 
-				if (credentials.password !== existingUser.password) {
-					return null;
+				const isValidPassword = existingUser.password === credentials.password;
+
+				if (!isValidPassword) {
+					throw new Error("Invalid password");
 				}
 
 				return {
@@ -47,6 +50,7 @@ const authOptions: NextAuthOptions = {
 					username: existingUser.userName,
 					email: existingUser.email,
 					role: existingUser.role,
+					councilId: existingUser.councilId,
 				};
 			},
 		}),
@@ -54,21 +58,20 @@ const authOptions: NextAuthOptions = {
 	callbacks: {
 		async jwt({ token, user }) {
 			if (user) {
-				return {
-					...token,
-					username: user.username,
-				};
+				token.username = user.username;
+				token.role = user.role;
+				token.councilId = user.councilId;
 			}
 			return token;
 		},
 		async session({ session, token }) {
-			return {
-				...session,
-				user: {
-					...session.user,
-					username: token.username,
-				},
+			session.user = {
+				...session.user,
+				username: token.username,
+				role: token.role,
+				councilId: token.councilId,
 			};
+			return session;
 		},
 	},
 	session: {

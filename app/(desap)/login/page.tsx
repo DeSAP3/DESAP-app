@@ -57,7 +57,7 @@ export default function Login() {
 				isClosable: true,
 				position: "bottom-right",
 			});
-			router.push("/");
+			router.push("/landing");
 		}
 	};
 
@@ -140,7 +140,7 @@ export default function Login() {
 									Not a member?
 									<Link
 										color={"blue.400"}
-										href='/community/register'
+										href='/register'
 									>
 										&nbsp;Register
 									</Link>

@@ -29,7 +29,8 @@ import UserAccountNav from "./Sidebar";
 export default function Navbar() {
 	const { isOpen, onToggle } = useDisclosure();
 	const { data: session } = useSession();
-	const { isLoadingUserResponse, isValidatingUserResponse } = useUser();
+	const { isLoadingUserResponse, isValidatingUserResponse, userData } =
+		useUser();
 
 	return (
 		<Box>
@@ -80,7 +81,7 @@ export default function Navbar() {
 						<Spacer />
 					</>
 				)}
-				{session?.user && (
+				{session?.user && userData.id !== null && (
 					<>
 						<Logo />
 						<Spacer />
@@ -88,7 +89,7 @@ export default function Navbar() {
 				)}
 				{isLoadingUserResponse && isValidatingUserResponse ? (
 					<Spinner />
-				) : (
+				) :  (
 					<Flex display={{ base: "flex" }}>
 						<UserAccountNav />
 					</Flex>

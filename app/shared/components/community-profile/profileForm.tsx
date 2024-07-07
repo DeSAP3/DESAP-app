@@ -43,7 +43,7 @@ const ProfileForm = () => {
 				<Text fontWeight='bold'>
 					Please login to access your profile,
 				</Text>
-				<Link color='blue.500' href='/community/login'>
+				<Link color='blue.500' href='/login'>
 					&nbsp;[Login]
 				</Link>
 			</Center>
@@ -90,7 +90,7 @@ const ProfileForm = () => {
 				position: "bottom-right",
 			});
 			signOut({
-				callbackUrl: "/community/login",
+				callbackUrl: "/login",
 			});
 			setIsLoading(false);
 		}

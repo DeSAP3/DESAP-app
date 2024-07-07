@@ -61,7 +61,7 @@ export default function Register() {
 				isClosable: true,
 				position: "bottom-right",
 			});
-			router.push("/community/login");
+			router.push("/login");
 		}
 		setIsLoading(false);
 	};
@@ -178,7 +178,7 @@ export default function Register() {
 								Already a user?{" "}
 								<Link
 									color={"blue.400"}
-									href='/community/login'
+									href='/login'
 								>
 									&nbsp;Login
 								</Link>

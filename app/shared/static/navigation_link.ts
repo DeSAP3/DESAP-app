@@ -35,7 +35,7 @@ export const NAV_ITEMS: Array<NavItem> = [
 			{
 				label: "Register Now",
 				subLabel: "Register your community account",
-				href: "/community/register",
+				href: "/register",
 			},
 		],
 	},

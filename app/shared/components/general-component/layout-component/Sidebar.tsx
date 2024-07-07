@@ -19,35 +19,20 @@ import {
 } from "@chakra-ui/react";
 import { Role } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { CgProfile } from "react-icons/cg";
+import LoadingComponent from "../../loading";
 import GeneralSidebarContent from "../sidebar-component/General";
 import CommunityToolsSidebarContent from "../sidebar-component/community/CommunityTool";
 import CouncilLeaderSidebarContent from "../sidebar-component/community/CouncilLeader";
 import CouncilMemberSidebarContent from "../sidebar-component/community/CouncilMember";
 import OperationTeamSidebarContent from "../sidebar-component/ento/OperationTeam";
-import LoadingComponent from "../../loading";
-import useSWR from "swr";
-import NotFoundComponet from "../../notfound";
 
 export default function UserAccountNav() {
 	const { data: session } = useSession();
 	const { userData, isLoadingUserResponse, isValidatingUserResponse } =
 		useUser();
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	// const {
-	// 	data: userResponse,
-	// 	isLoading: isLoadingUserResponse,
-	// 	isValidating: isValidatingUserResponse,
-	// 	mutate: mutateUser,
-	// 	error,
-	// } = useSWR(
-	// 	session?.user
-	// 		? `/api/profile/readByEmail?email=${session.user.email}`
-	// 		: null,
-	// 	(url) => fetch(url).then((res) => res.json())
-	// );
-
+	
 	if (session === null) {
 		return (
 			<Button
@@ -55,7 +40,7 @@ export default function UserAccountNav() {
 				fontSize={"sm"}
 				fontWeight={400}
 				variant={"solid"}
-				href={"/community/login"}
+				href={"/login"}
 				bg={"brand.acceptbutton"}
 				colorScheme={"green"}
 			>
@@ -127,7 +112,7 @@ export default function UserAccountNav() {
 							onClick={() => {
 								localStorage.removeItem("userData");
 								signOut({
-									callbackUrl: "/community/login",
+									callbackUrl: "/login",
 								});
 							}}
 						>
