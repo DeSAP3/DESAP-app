@@ -18,7 +18,6 @@ export default function Logo (props: any) {
 					alt='DESAP Logo'
 				/>
 			</Link>
-			{props.children ? props.children : <></>}
 		</Flex>
 	);
 };
