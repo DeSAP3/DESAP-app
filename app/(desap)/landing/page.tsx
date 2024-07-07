@@ -42,6 +42,16 @@ export default function LandingPage() {
 						<>
 							<Button
 								as={"a"}
+								href='/ento/opencv'
+								rounded={"full"}
+								px={6}
+								colorScheme={"green"}
+								bg={"brand.acceptbutton"}
+							>
+								Analyze Mosquito Larvae Count in Image
+							</Button>
+							<Button
+								as={"a"}
 								href='/ento/calculator'
 								rounded={"full"}
 								px={6}
@@ -49,16 +59,6 @@ export default function LandingPage() {
 								bg={"brand.acceptbutton"}
 							>
 								Analyze Larvae Count in Image
-							</Button>
-							<Button
-								as={"a"}
-								href='/ento/record'
-								rounded={"full"}
-								px={6}
-								colorScheme={"green"}
-								bg={"brand.acceptbutton"}
-							>
-								Visualize Analyzed Image Result
 							</Button>
 						</>
 					) : userData.role === Role.COMMUNITY_MEMBER ? (
@@ -122,30 +122,7 @@ export default function LandingPage() {
 								</Button>
 							)}
 						</>
-					) : (
-						<>
-							<Button
-								as={"a"}
-								href='/ento/calculator'
-								colorScheme={"green"}
-								bg={"brand.acceptbutton"}
-								rounded={"full"}
-								px={6}
-							>
-								Try Out Analyze Larvae Count in Image
-							</Button>
-							<Button
-								as={"a"}
-								href='/register'
-								colorScheme={"green"}
-								bg={"brand.acceptbutton"}
-								rounded={"full"}
-								px={6}
-							>
-								Register An Account for DESAP@2022
-							</Button>
-						</>
-					)}
+					) : null}
 				</Stack>
 			</Stack>
 		</Container>

@@ -15,6 +15,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { VscCloudUpload } from "react-icons/vsc";
 import { FaFileUpload } from "react-icons/fa";
 import { ResponseImage } from "@/(desap)/ento/calculator/page";
+import LoadingComponent from "../loading";
 
 type ImageFormProps = {
 	onImageUpload: (image: string, rawImage: File | null) => Promise<void>;
@@ -22,6 +23,7 @@ type ImageFormProps = {
 	setRawImage: Dispatch<SetStateAction<File | null>>;
 	setResponseImage: Dispatch<SetStateAction<any>>;
 	responseImage?: ResponseImage;
+	isLoading: boolean;
 };
 
 const ImageForm = ({
@@ -29,6 +31,7 @@ const ImageForm = ({
 	rawImage,
 	setRawImage,
 	setResponseImage,
+	isLoading,
 	responseImage,
 }: ImageFormProps) => {
 	const toast = useToast();
@@ -62,6 +65,7 @@ const ImageForm = ({
 	};
 
 	const handleSubmit = async () => {
+		
 		if (!rawImage) {
 			toast({
 				title: "Please upload an image",
@@ -74,6 +78,7 @@ const ImageForm = ({
 		}
 		const base64 = await convertBase64(rawImage);
 		onImageUpload(base64, rawImage);
+		
 	};
 
 	return (
@@ -115,7 +120,7 @@ const ImageForm = ({
 									style={{ marginLeft: "0.5rem" }}
 								/>
 							</Flex>
-							<Text>File should be of format .JPG</Text>
+							<Text>File should be image format .JPG, .JPEG</Text>
 						</Box>
 						<FormControl isRequired padding={2}>
 							<Flex justify={"center"}>
@@ -135,7 +140,7 @@ const ImageForm = ({
 					</>
 				)}
 			</Box>
-			{!responseImage && rawImage && (
+			{rawImage && !isLoading && !responseImage && (
 				<Center padding={10}>
 					<Button
 						type='submit'

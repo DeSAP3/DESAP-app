@@ -5,23 +5,33 @@ import {
 	Button,
 	Container,
 	Flex,
+	IconButton,
+	Modal,
+	ModalBody,
+	ModalCloseButton,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalOverlay,
 	Spacer,
+	useDisclosure,
 	useToast,
+	Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState } from "react";
-
+import Image from "next/image";
 import ResultForm from "@/shared/components/ento-calculator/ResultForm";
 import LoadingComponent from "@/shared/components/loading";
 import { FaArrowAltCircleRight } from "react-icons/fa";
-
+import Image3 from "/public/003.jpg";
 import PageHeader from "@/shared/components/general-component/page-component/PageHeader";
 import supabase from "@/shared/providers/supabase";
 import { useUser } from "@/shared/providers/userProvider";
 import { Role } from "@prisma/client";
 import { JsonObject } from "@prisma/client/runtime/library";
 import { v4 as uuidv4 } from "uuid";
-import { AttachmentIcon } from "@chakra-ui/icons";
+import { AttachmentIcon, InfoIcon } from "@chakra-ui/icons";
 
 export type ResponseImage = {
 	imageDisplay?: string;
@@ -51,10 +61,13 @@ export default function Calculator() {
 	const [predictionsResponse, setPredictionsResponse] =
 		useState<JsonObject>();
 	const [responseImage, setResponseImage] = useState<ResponseImage>();
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	const useDemoImage = async () => {
 		try {
-			const response = await fetch("/003.jpg");
+			const response = await fetch(
+				"https://wilrhxiajoxjpezcfyfx.supabase.co/storage/v1/object/sign/static/003.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJzdGF0aWMvMDAzLmpwZyIsImlhdCI6MTcyMDM1ODk4NiwiZXhwIjoxNzUxODk0OTg2fQ.9D2dBW9hbf2hUHMKdaKbdnVA0AXweVD0i48yjIFpHxQ&t=2024-07-07T13%3A29%3A47.837Z"
+			);
 			const blob = await response.blob();
 
 			const file = new File([blob], "demo.jpg", {
@@ -184,22 +197,17 @@ export default function Calculator() {
 	return (
 		<>
 			<PageHeader title='Analyze Image for Larvae' />
+
+			<Box display={"flex"} justifyContent={"flex-end"} width={"90%"}>
+				<IconButton
+					variant={"ghost"}
+					aria-label='Help'
+					icon={<InfoIcon />}
+					onClick={onOpen}
+				/>
+			</Box>
 			<Container maxW='container.md' paddingY={5}>
 				<Flex direction={"column"} gap={2} justifyContent={"center"}>
-					{rawImage === null && !userData && (
-						<Box display={"flex"} justifyContent={"flex-end"}>
-							<Button
-								onClick={useDemoImage}
-								gap={2}
-								size={"xs"}
-								bg={"brand.infobutton"}
-							>
-								Use Demo Image
-								<AttachmentIcon />
-							</Button>
-						</Box>
-					)}
-
 					<Flex justifyContent={"center"} alignItems={"flex-start"}>
 						<Box
 							maxW='800px'
@@ -207,61 +215,119 @@ export default function Calculator() {
 							borderRadius='lg'
 							overflow='hidden'
 						>
-							<ImageForm
-								onImageUpload={analyseImage}
-								rawImage={rawImage}
-								setRawImage={setRawImage}
-								setResponseImage={setResponseImage}
-								responseImage={responseImage}
-							/>
-						</Box>
-						{isLoading ? (
-							<>
-								<Spacer paddingX={3} marginY={"auto"}>
-									<FaArrowAltCircleRight size={"2em"} />
-								</Spacer>
-								<Box
-									maxW='800px'
-									minW='400px'
-									borderWidth='1px'
-									borderRadius='lg'
-									overflow='hidden'
-									textAlign='center'
-									padding={2}
+							<Box
+								display={"flex"}
+								justifyContent={"flex-end"}
+								marginY={2}
+							>
+								<Button
+									onClick={useDemoImage}
+									gap={2}
+									size={"xs"}
+									bg={"brand.infobutton"}
 								>
-									<LoadingComponent text='Analyzing Image...' />
-								</Box>
-							</>
-						) : (
-							responseImage && (
-								<>
-									<Spacer paddingX={3} marginY={"auto"}>
-										<FaArrowAltCircleRight size={"2em"} />
-									</Spacer>
-									<Box
-										maxW='800px'
-										minW='400px'
-										borderWidth='1px'
-										borderRadius='lg'
-										overflow='hidden'
-										textAlign='center'
-										padding={2}
-									>
-										<ResultForm
-											response={responseImage}
-											predictionResponse={
-												predictionsResponse
-											}
-											onImageSave={handleSaveImage}
-											isLoadingSaving={isLoadingSaving}
-										/>
-									</Box>
-								</>
-							)
-						)}
+									Use Demo Image
+									<AttachmentIcon />
+								</Button>
+							</Box>
+							<Box display={"flex"} justifyContent={"center"}>
+								<ImageForm
+									onImageUpload={analyseImage}
+									rawImage={rawImage}
+									setRawImage={setRawImage}
+									setResponseImage={setResponseImage}
+									responseImage={responseImage}
+									isLoading={isLoading}
+								/>
+
+								{isLoading ? (
+									<>
+										<Spacer paddingX={3} marginY={"auto"}>
+											<FaArrowAltCircleRight
+												size={"2em"}
+											/>
+										</Spacer>
+										<Box
+											maxW='800px'
+											minW='400px'
+											borderWidth='1px'
+											borderRadius='lg'
+											overflow='hidden'
+											textAlign='center'
+											padding={2}
+										>
+											<LoadingComponent text='Analyzing Image...' />
+										</Box>
+									</>
+								) : (
+									responseImage && (
+										<>
+											<Spacer
+												paddingX={3}
+												marginY={"auto"}
+											>
+												<FaArrowAltCircleRight
+													size={"2em"}
+												/>
+											</Spacer>
+											<Box
+												maxW='800px'
+												minW='400px'
+												borderWidth='1px'
+												borderRadius='lg'
+												overflow='hidden'
+												textAlign='center'
+												padding={2}
+											>
+												<ResultForm
+													response={responseImage}
+													predictionResponse={
+														predictionsResponse
+													}
+													onImageSave={
+														handleSaveImage
+													}
+													isLoadingSaving={
+														isLoadingSaving
+													}
+												/>
+											</Box>
+										</>
+									)
+								)}
+							</Box>
+						</Box>
 					</Flex>
 				</Flex>
 			</Container>
+			<Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>What type of image can I analyze?</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody gap={2}>
+						<Text fontWeight='bold' mb='1rem'>
+							The image example below is an image of a mosquitos
+							egg
+						</Text>
+						<Image
+							src={Image3}
+							alt='mosquito egg image 1'
+							width={600}
+							height={800}
+						/>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							bg='brand.rejectbutton'
+							mr={3}
+							onClick={onClose}
+						>
+							Close
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
 		</>
 	);
 }

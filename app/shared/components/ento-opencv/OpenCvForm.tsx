@@ -7,7 +7,6 @@ import {
 	Flex,
 	FormControl,
 	Input,
-	Spacer,
 	Text,
 	useDisclosure,
 	useToast,
@@ -43,7 +42,9 @@ const OpenCvForm = () => {
 
 	const useDemoImage = async () => {
 		try {
-			const response = await fetch("/002.jpg");
+			const response = await fetch(
+				"https://wilrhxiajoxjpezcfyfx.supabase.co/storage/v1/object/sign/static/002.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJzdGF0aWMvMDAyLmpwZyIsImlhdCI6MTcyMDM1NTY3OSwiZXhwIjoxNzUxODkxNjc5fQ.bbT367x_RH-r3Av6gJCNe32w8sT5Bdz4HJm6Irvhn14&t=2024-07-07T12%3A34%3A40.560Z"
+			);
 			const blob = await response.blob();
 
 			const file = new File([blob], "demo.jpg", {
@@ -105,6 +106,7 @@ const OpenCvForm = () => {
 		} catch (error) {
 			alert("Error analyzing image");
 		}
+		setRawImage(null);
 		setIsLoading(false);
 	};
 
@@ -177,7 +179,7 @@ const OpenCvForm = () => {
 					</>
 				)}
 			</Box>
-			{rawImage && !isLoading && (
+			{rawImage && !isLoading &&  (
 				<Box textAlign={"center"} padding={2}>
 					<Button
 						onClick={handleSubmit}
@@ -194,7 +196,10 @@ const OpenCvForm = () => {
 			{openCvResponse && (
 				<OpenCVResponseModal
 					isOpen={isOpen}
-					onClose={onClose}
+					onClose={() => {
+						setOpenCvResponse(undefined);
+						onClose();
+					}}
 					data={openCvResponse}
 				/>
 			)}

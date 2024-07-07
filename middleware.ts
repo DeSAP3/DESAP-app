@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-
 const roleBasedRoutes = {
 	COMMUNITY_LEADER: [
 		"/landing",
@@ -29,7 +28,6 @@ const roleBasedRoutes = {
 	],
 };
 
-
 const publicRoutes = [
 	"/",
 	"/ento/opencv",
@@ -41,14 +39,19 @@ const loginRoute = "/login";
 const registerRoute = "/register";
 const forbiddenRoute = "/forbidden";
 
-
 export async function middleware(req: NextRequest) {
 	const url = req.nextUrl.clone();
+	if (
+		url.pathname.startsWith("/_next") ||
+		url.pathname.startsWith("/public") ||
+		url.pathname.startsWith("/favicon.ico")
+	) {
+		return NextResponse.next();
+	}
 	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
 	console.log("Pathname:", url.pathname);
 
-	
 	if (!token) {
 		if (
 			!publicRoutes.includes(url.pathname) &&
@@ -62,11 +65,9 @@ export async function middleware(req: NextRequest) {
 		return NextResponse.next();
 	}
 
-	
 	const role = token.role;
 	console.log("User role:", role);
 
-	
 	const allowedRoutes =
 		roleBasedRoutes[role as keyof typeof roleBasedRoutes] || [];
 	console.log("Allowed routes:", allowedRoutes);
@@ -83,10 +84,8 @@ export async function middleware(req: NextRequest) {
 		return NextResponse.redirect(url);
 	}
 
-
 	return NextResponse.next();
 }
-
 
 export const config = {
 	matcher: [
