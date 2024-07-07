@@ -100,7 +100,7 @@ export default function Dashboard() {
 						paddingBottom={2}
 					>
 						<Text>
-							Welcome <b> {session?.user.username}</b>,
+							Welcome <b> {session?.user.username as string}</b>,
 						</Text>
 						<Button
 							colorScheme={"green"}
