@@ -50,7 +50,7 @@ export default function Login() {
 				isClosable: true,
 				position: "bottom-right",
 			});
-		} else {
+		} else if (signInData?.ok) {
 			toast({
 				title: "Logged in successfully",
 				status: "success",
@@ -59,6 +59,14 @@ export default function Login() {
 				position: "bottom-right",
 			});
 			router.push("/landing");
+		} else {
+			toast({
+				title: "Something went wrong. Please try again",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
 		}
 	};
 

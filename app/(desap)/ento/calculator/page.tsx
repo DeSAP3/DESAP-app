@@ -137,7 +137,6 @@ export default function Calculator() {
 		if (
 			userData.email === undefined &&
 			userData.role === Role.OPERATION_TEAM
-			// userData.role !== "Operation Team"
 		) {
 			toast({
 				title: "Please login first",

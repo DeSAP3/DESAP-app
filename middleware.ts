@@ -70,7 +70,6 @@ export async function middleware(req: NextRequest) {
 
 	const allowedRoutes =
 		roleBasedRoutes[role as keyof typeof roleBasedRoutes] || [];
-	console.log("Allowed routes:", allowedRoutes);
 	if (
 		allowedRoutes.includes(url.pathname) ||
 		publicRoutes.includes(url.pathname)

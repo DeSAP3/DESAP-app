@@ -37,7 +37,7 @@ export default function LandingPage() {
 				>
 					<Button
 						as={"a"}
-						href='/ento/calculator'
+						href='/ento/opencv'
 						colorScheme={"green"}
 						bg={"brand.acceptbutton"}
 						rounded={"full"}
