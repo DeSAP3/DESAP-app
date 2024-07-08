@@ -80,10 +80,9 @@ const AnalysisTable = () => {
 		data: analysisResponse,
 		isLoading: isLoadingAnalyticsResponse,
 		mutate: mutateAnalytics,
-		error: analysisError,
 		isValidating: isValidatingAnalyticsResponse,
 	} = useSWR(
-		"/api/calculator/readAll",
+		`/api/calculator/readAll`,
 		(url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
 	);
