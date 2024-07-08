@@ -76,7 +76,6 @@ export default function Calculator() {
 
 			setRawImage(file);
 		} catch (error) {
-			console.error("Error loading demo image:", error);
 			toast({
 				title: "Error loading demo image",
 				description: "Unable to load the demo image.",
@@ -109,7 +108,7 @@ export default function Calculator() {
 			formData.append("predictions", JSON.stringify(predictions.data));
 			const annotatedImage = await axios({
 				method: "POST",
-				url: "https://larvae-calculator-api.onrender.com/calculate/larvae",
+				url: `${process.env.FLASK_API_URL}/calculate/larvae`,
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",

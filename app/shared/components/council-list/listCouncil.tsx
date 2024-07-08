@@ -37,15 +37,15 @@ const CouncilList = () => {
 		data: councilsResponse,
 		isLoading: isLoadingCouncilsResponse,
 		isValidating: isValidatingCouncils,
-		mutate,
+		mutate: mutateCouncilsRes,
 	} = useSWR(
 		"/api/council/readAll",
 		(url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
 	);
 	useEffect(() => {
-		mutate();
-	},[]);
+		mutateCouncilsRes();
+	}, [mutateCouncilsRes]);
 
 	useEffect(() => {
 		if (councilsResponse && councilsResponse.data) {
@@ -98,7 +98,8 @@ const CouncilList = () => {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingCouncilsResponse || isValidatingCouncils || isLoading,
+			isLoading:
+				isLoadingCouncilsResponse || isValidatingCouncils || isLoading,
 		},
 		enableRowActions:
 			userData.councilId === null &&
@@ -129,7 +130,10 @@ const CouncilList = () => {
 							}),
 						}).then((res) => res.json());
 						toast({
-							title: res.status === 200 ? `Successfully joined council: ${row.row.original.name}` : res.error,
+							title:
+								res.status === 200
+									? `Successfully joined council: ${row.row.original.name}`
+									: res.error,
 							status: res.status === 200 ? "success" : "error",
 							duration: 3000,
 							isClosable: true,

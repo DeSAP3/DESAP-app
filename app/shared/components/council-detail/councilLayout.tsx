@@ -2,6 +2,7 @@
 import { useUser } from "@/shared/providers/userProvider";
 import {
 	Box,
+	Button,
 	Center,
 	Popover,
 	PopoverArrow,
@@ -12,14 +13,17 @@ import {
 	Portal,
 	SimpleGrid,
 	Text,
+	useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
-import LoadingComponent from "../loading";
+import { useState } from "react";
+import { IoMdExit } from "react-icons/io";
+import useSWR, { mutate } from "swr";
 import ErrorComponent from "../error";
-import { error } from "console";
+import LoadingComponent from "../loading";
+import { Role } from "@prisma/client";
 
 interface CouncilLayoutProps {
+	id: number;
 	userName: string;
 	email: string;
 	role: string;
@@ -41,12 +45,15 @@ interface ApiResponseLeaders {
 }
 
 export const CouncilLayout = () => {
+	const toast = useToast();
 	const { userData } = useUser();
+	const [isLoading, setIsLoading] = useState(false);
 	const {
 		data: membersResponse,
 		isLoading: isLoadingMembersResponse,
 		isValidating: isValidatingMembersResponse,
 		error: membersError,
+		mutate: mutateMembersRes,
 	} = useSWR<ApiResponseMembers>(
 		userData.councilId !== null &&
 			`/api/council/readMemberByCouncilId?councilId=${userData.councilId}`,
@@ -148,7 +155,7 @@ export const CouncilLayout = () => {
 						spacing='10px'
 						display={"flex"}
 					>
-						{membersResponse && membersResponse.data === null ||
+						{(membersResponse && membersResponse.data === null) ||
 						membersResponse.data.length === 0 ? (
 							<Text border='1px' padding='3px' as='button'>
 								Council Members not found
@@ -183,6 +190,68 @@ export const CouncilLayout = () => {
 													{user.livingAddress ??
 														"null"}
 												</Text>
+												{userData.role ===
+													Role.COMMUNITY_LEADER && (
+													<Center>
+														<Button
+															colorScheme='red'
+															bg={
+																"brand.rejectbutton"
+															}
+															size={"sm"}
+															onClick={async () => {
+																setIsLoading(
+																	true
+																);
+																const response =
+																	await fetch(
+																		`/api/council/deleteMember?memberId=${user.id}`,
+																		{
+																			method: "PUT",
+																			headers:
+																				{
+																					"Content-Type":
+																						"application/json",
+																				},
+																		}
+																	).then(
+																		(res) =>
+																			res.json()
+																	);
+																toast({
+																	title:
+																		response.status ===
+																		200
+																			? response.message
+																			: response.error,
+																	status:
+																		response.status ===
+																		200
+																			? "success"
+																			: "error",
+																	duration: 3000,
+																	isClosable:
+																		true,
+																	position:
+																		"bottom-right",
+																});
+																if (
+																	response.status ===
+																	200
+																) {
+																	mutateMembersRes();
+																}
+																setIsLoading(
+																	false
+																);
+															}}
+														>
+															Remove
+															<Box width='5px' />
+															<IoMdExit />
+														</Button>
+													</Center>
+												)}
 											</PopoverBody>
 										</PopoverContent>
 									</Portal>

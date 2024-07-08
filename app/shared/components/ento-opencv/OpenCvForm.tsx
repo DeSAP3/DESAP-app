@@ -91,7 +91,7 @@ const OpenCvForm = () => {
 			formData.append("src", rawImage);
 			const response = await axios({
 				method: "POST",
-				url: "https://larvae-calculator-api.onrender.com/calculate-eggs",
+				url: `${process.env.FLASK_API_URL}/calculate-eggs`,
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",

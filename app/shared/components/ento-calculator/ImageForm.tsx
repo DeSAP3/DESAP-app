@@ -64,7 +64,6 @@ const ImageForm = ({
 	};
 
 	const handleSubmit = async () => {
-		
 		if (!rawImage) {
 			toast({
 				title: "Please upload an image",
@@ -77,7 +76,6 @@ const ImageForm = ({
 		}
 		const base64 = await convertBase64(rawImage);
 		onImageUpload(base64, rawImage);
-		
 	};
 
 	return (
