@@ -159,6 +159,10 @@ const AnalysisTable = () => {
 	};
 
 	useEffect(() => {
+		mutateAnalytics();
+	}, []);
+
+	useEffect(() => {
 		if (analysisResponse) {
 			setAnalysis(analysisResponse.data);
 		} else {
@@ -179,7 +183,7 @@ const AnalysisTable = () => {
 				accessorKey: "predictions.predictions",
 				header: "Larvae Count",
 				Cell: ({ cell }) => {
-					const array = cell.getValue() as any
+					const array = cell.getValue() as any;
 					const larvaeCount = array.filter(
 						(item: any) => item.class === "larvae"
 					);

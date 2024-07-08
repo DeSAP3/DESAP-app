@@ -46,7 +46,7 @@ const CouncilList = () => {
 	useEffect(() => {
 		mutate();
 	},[]);
-	
+
 	useEffect(() => {
 		if (councilsResponse && councilsResponse.data) {
 			setCouncils(councilsResponse.data);
@@ -98,7 +98,7 @@ const CouncilList = () => {
 			density: "comfortable",
 		},
 		state: {
-			isLoading: isLoadingCouncilsResponse || isValidatingCouncils,
+			isLoading: isLoadingCouncilsResponse || isValidatingCouncils || isLoading,
 		},
 		enableRowActions:
 			userData.councilId === null &&
