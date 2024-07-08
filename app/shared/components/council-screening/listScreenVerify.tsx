@@ -59,6 +59,7 @@ export default function ScreeningVerificationList() {
 				status: res.status === 200 ? "success" : "error",
 				duration: 3000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 			if (res.status === 200) mutatePostsResponse();
 			setIsLoadingSaving(false);
@@ -80,6 +81,7 @@ export default function ScreeningVerificationList() {
 				status: res.status === 200 ? "success" : "error",
 				duration: 3000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 			if (res.status === 200) mutatePostsResponse();
 			setIsLoadingSaving(false);

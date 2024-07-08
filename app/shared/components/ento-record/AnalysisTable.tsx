@@ -121,7 +121,7 @@ const AnalysisTable = () => {
 		formData.append("predictions", JSON.stringify(row.predictions));
 		const annotatedImage = await axios({
 			method: "POST",
-			url: "https://larvae-calculator-api.onrender.com/calculate/larvae",
+			url: "https://admijw.xyz/calculate/larvae",
 			data: formData,
 			headers: {
 				"Content-Type": "multipart/form-data",
@@ -149,6 +149,7 @@ const AnalysisTable = () => {
 				status: res.status === 200 ? "success" : "error",
 				duration: 3000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 			if (res.status === 200) mutateAnalytics();
 			setIsLoadingSaving(false);
@@ -169,6 +170,7 @@ const AnalysisTable = () => {
 				status: res.status === 200 ? "success" : "error",
 				duration: 3000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 			if (res.status === 200) mutateAnalytics();
 			setIsLoadingSaving(false);
@@ -182,6 +184,7 @@ const AnalysisTable = () => {
 	useEffect(() => {
 		if (analysisResponse && analysisResponse.data) {
 			setAnalysis(analysisResponse.data);
+			console.log(analysis);
 		} else {
 			setAnalysis([]);
 		}

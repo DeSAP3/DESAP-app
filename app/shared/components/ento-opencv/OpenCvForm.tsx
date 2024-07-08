@@ -60,6 +60,7 @@ const OpenCvForm = () => {
 				status: "error",
 				duration: 9000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 		}
 	};

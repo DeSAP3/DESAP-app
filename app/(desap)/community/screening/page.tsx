@@ -50,6 +50,7 @@ export default function Screening() {
 				status: "error",
 				duration: 9000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 			return;
 		}

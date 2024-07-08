@@ -82,6 +82,7 @@ export default function Calculator() {
 				status: "error",
 				duration: 9000,
 				isClosable: true,
+				position: "bottom-right",
 			});
 		}
 	};
