@@ -43,9 +43,6 @@ const CouncilList = () => {
 		(url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
 	);
-	useEffect(() => {
-		mutateCouncilsRes();
-	}, [mutateCouncilsRes]);
 
 	useEffect(() => {
 		if (councilsResponse && councilsResponse.data) {

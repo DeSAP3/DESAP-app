@@ -178,10 +178,6 @@ const AnalysisTable = () => {
 	};
 
 	useEffect(() => {
-		mutateAnalytics();
-	}, [mutateAnalytics]);
-
-	useEffect(() => {
 		if (analysisResponse && analysisResponse.data) {
 			setAnalysis(analysisResponse.data);
 		} else {
