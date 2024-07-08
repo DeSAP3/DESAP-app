@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { Role } from "@prisma/client";
 
 const roleBasedRoutes = {
 	COMMUNITY_LEADER: [
@@ -43,7 +44,6 @@ const forbiddenRoute = "/forbidden";
 export async function middleware(req: NextRequest) {
 	const url = req.nextUrl.clone();
 
-	
 	if (
 		url.pathname.startsWith("/_next") ||
 		url.pathname.startsWith("/static") ||
@@ -58,7 +58,6 @@ export async function middleware(req: NextRequest) {
 	console.log("Pathname:", url.pathname);
 
 	if (!token) {
-		
 		if (
 			!publicRoutes.includes(url.pathname) &&
 			url.pathname !== loginRoute &&
@@ -76,7 +75,16 @@ export async function middleware(req: NextRequest) {
 	const allowedRoutes =
 		roleBasedRoutes[role as keyof typeof roleBasedRoutes] || [];
 
-	
+	if (role === Role.COMMUNITY_MEMBER || role === Role.COMMUNITY_LEADER || role === Role.OPERATION_TEAM) {
+		if (url.pathname === loginRoute || url.pathname === registerRoute || url.pathname === "/") {
+			url.pathname = "/landing";
+			console.log("Redirecting to home:", url.pathname);
+			return NextResponse.redirect(url);
+		}
+
+		return NextResponse.next();
+	}
+
 	if (
 		allowedRoutes.includes(url.pathname) ||
 		publicRoutes.includes(url.pathname)
@@ -84,7 +92,6 @@ export async function middleware(req: NextRequest) {
 		return NextResponse.next();
 	}
 
-	
 	if (!allowedRoutes.includes(url.pathname)) {
 		url.pathname = forbiddenRoute;
 		console.log("Redirecting to forbidden:", url.pathname);

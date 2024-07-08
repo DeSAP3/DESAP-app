@@ -114,7 +114,7 @@ export default function Dashboard() {
 					<SimpleGrid columns={1} spacing='20px'>
 						{userData.councilId === null && (
 							<InformationCard
-								description='Click the button below to create or join a council.'
+								description='Click the button below to create or join a council. Joining a council will automatically share your infection status.'
 								component={
 									<ButtonGroup spacing='2'>
 										{userData.role ===
