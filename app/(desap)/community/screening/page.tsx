@@ -42,7 +42,6 @@ export default function Screening() {
 	};
 
 	const handleSubmit = async () => {
-		setIsLoading(true);
 		if (answers.includes(null)) {
 			toast({
 				title: "Error",
@@ -54,6 +53,7 @@ export default function Screening() {
 			});
 			return;
 		}
+		setIsLoading(true);
 		const threshold = 0.6;
 		const score = parseFloat(
 			(
