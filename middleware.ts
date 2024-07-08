@@ -108,5 +108,6 @@ export const config = {
 		"/council/:path*",
 		"/ento/:path*",
 		"/((?!api|_next|static|favicon.ico).*)",
+		
 	],
 };

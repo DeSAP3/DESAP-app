@@ -91,13 +91,13 @@ const OpenCvForm = () => {
 			formData.append("src", rawImage);
 			const response = await axios({
 				method: "POST",
-				url: `${process.env.FLASK_API_URL}/calculate-eggs`,
+				url: `https://admijw.xyz/calculate-eggs`,
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
 			}).then((res) => res.data);
-
+			console.log(response);
 			setOpenCvResponse({
 				...response,
 				original: rawImage,

@@ -108,7 +108,7 @@ export default function Calculator() {
 			formData.append("predictions", JSON.stringify(predictions.data));
 			const annotatedImage = await axios({
 				method: "POST",
-				url: `${process.env.FLASK_API_URL}/calculate/larvae`,
+				url: `https://admijw.xyz/calculate/larvae`,
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",
