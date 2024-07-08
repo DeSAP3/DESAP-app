@@ -1,4 +1,5 @@
 "use client";
+import { ResponseImage } from "@/(desap)/ento/calculator/page";
 import { DeleteIcon, ViewIcon } from "@chakra-ui/icons";
 import {
 	Box,
@@ -11,11 +12,9 @@ import {
 	useToast,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { VscCloudUpload } from "react-icons/vsc";
+import { Dispatch, SetStateAction } from "react";
 import { FaFileUpload } from "react-icons/fa";
-import { ResponseImage } from "@/(desap)/ento/calculator/page";
-import LoadingComponent from "../loading";
+import { VscCloudUpload } from "react-icons/vsc";
 
 type ImageFormProps = {
 	onImageUpload: (image: string, rawImage: File | null) => Promise<void>;
