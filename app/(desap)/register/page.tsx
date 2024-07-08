@@ -37,6 +37,17 @@ export default function Register() {
 	const handleRegister = async (e: any) => {
 		setIsLoading(true);
 		e.preventDefault();
+		if(data.password.length < 7) {
+			toast({
+				title: "Password must be at least 7 characters",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
+			setIsLoading(false);
+			return
+		}
 		const res = await fetch("/api/register", {
 			method: "POST",
 			headers: {

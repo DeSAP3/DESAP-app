@@ -19,6 +19,7 @@ import { useState } from "react";
 import ErrorComponet from "../error";
 import LoadingComponent from "../loading";
 import { roleOptions } from "@/shared/static/app_role";
+import { Role } from "@prisma/client";
 
 const ProfileForm = () => {
 	const toast = useToast();
@@ -74,14 +75,17 @@ const ProfileForm = () => {
 	};
 
 	const handleDelete = async () => {
-		if(confirm("Are you sure you want to delete your account?")) {
+		if (confirm("Are you sure you want to delete your account?")) {
 			setIsLoading(true);
-			const res = await fetch(`/api/profile/delete?userId=${userData.id}`, {
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}).then((res) => res.json());
+			const res = await fetch(
+				`/api/profile/delete?userId=${userData.id}`,
+				{
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			).then((res) => res.json());
 			toast({
 				title: res.status === 200 ? res.message : res.error,
 				status: res.status === 200 ? "success" : "error",
@@ -95,7 +99,6 @@ const ProfileForm = () => {
 			setIsLoading(false);
 		}
 	};
-		
 
 	return isLoadingUserResponse ? (
 		<LoadingComponent text='Getting user information...' />
@@ -103,7 +106,6 @@ const ProfileForm = () => {
 		<LoadingComponent text='Updating user information...' />
 	) : (
 		<>
-			
 			<Flex align={"center"} justify={"center"} width={"100%"}>
 				<Box rounded={"lg"} boxShadow={"lg"} p={8}>
 					<Stack spacing={4}>
@@ -123,7 +125,7 @@ const ProfileForm = () => {
 									/>
 								</FormControl>
 
-								<FormControl id='role' isRequired>
+								<FormControl id='role' isRequired isDisabled>
 									<FormLabel>Role</FormLabel>
 									<Select
 										placeholder={userData.role}
@@ -149,23 +151,30 @@ const ProfileForm = () => {
 											))}
 									</Select>
 								</FormControl>
+								{userData.role === Role.COMMUNITY_LEADER ||
+									(userData.role ===
+										Role.COMMUNITY_MEMBER && (
+										<FormControl id='address'>
+											<FormLabel>
+												Living Address
+											</FormLabel>
+											<Input
+												type='text'
+												placeholder={
+													"Please enter your living address"
+												}
+												value={userData.livingAddress}
+												onChange={(e) =>
+													setUserData({
+														...userData,
+														livingAddress:
+															e.target.value,
+													})
+												}
+											/>
+										</FormControl>
+									))}
 
-								<FormControl id='address'>
-									<FormLabel>Living Address</FormLabel>
-									<Input
-										type='text'
-										placeholder={
-											"Please enter your living address"
-										}
-										value={userData.livingAddress}
-										onChange={(e) =>
-											setUserData({
-												...userData,
-												livingAddress: e.target.value,
-											})
-										}
-									/>
-								</FormControl>
 								<FormControl id='email' isDisabled>
 									<FormLabel>Email address</FormLabel>
 									<Input

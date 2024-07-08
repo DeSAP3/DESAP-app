@@ -204,41 +204,57 @@ export default function Calculator() {
 					onClick={onOpen}
 				/>
 			</Box>
-			<Container maxW='container.md' paddingY={5}>
-				<Flex direction={"column"} gap={2} justifyContent={"center"}>
-					<Flex justifyContent={"center"} alignItems={"flex-start"}>
+			<Flex direction={"column"} gap={2} justifyContent={"center"} marginY={"2rem"}>
+				<Flex justifyContent={"center"} alignItems={"flex-start"}>
+					<Box
+						minW='400px'
+						borderRadius='lg'
+						overflow='hidden'
+					>
 						<Box
-							maxW='800px'
-							minW='400px'
-							borderRadius='lg'
-							overflow='hidden'
+							display={"flex"}
+							justifyContent={"flex-end"}
+							marginY={2}
 						>
-							<Box
-								display={"flex"}
-								justifyContent={"flex-end"}
-								marginY={2}
+							<Button
+								onClick={useDemoImage}
+								gap={2}
+								size={"xs"}
+								bg={"brand.infobutton"}
 							>
-								<Button
-									onClick={useDemoImage}
-									gap={2}
-									size={"xs"}
-									bg={"brand.infobutton"}
-								>
-									Use Demo Image
-									<AttachmentIcon />
-								</Button>
-							</Box>
-							<Box display={"flex"} justifyContent={"center"}>
-								<ImageForm
-									onImageUpload={analyseImage}
-									rawImage={rawImage}
-									setRawImage={setRawImage}
-									setResponseImage={setResponseImage}
-									responseImage={responseImage}
-									isLoading={isLoading}
-								/>
+								Use Demo Image
+								<AttachmentIcon />
+							</Button>
+						</Box>
+						<Box display={"flex"} justifyContent={"center"}>
+							<ImageForm
+								onImageUpload={analyseImage}
+								rawImage={rawImage}
+								setRawImage={setRawImage}
+								setResponseImage={setResponseImage}
+								responseImage={responseImage}
+								isLoading={isLoading}
+							/>
 
-								{isLoading ? (
+							{isLoading ? (
+								<>
+									<Spacer paddingX={3} marginY={"auto"}>
+										<FaArrowAltCircleRight size={"2em"} />
+									</Spacer>
+									<Box
+										maxW='800px'
+										minW='400px'
+										borderWidth='1px'
+										borderRadius='lg'
+										overflow='hidden'
+										textAlign='center'
+										padding={2}
+									>
+										<LoadingComponent text='Analyzing Image...' />
+									</Box>
+								</>
+							) : (
+								responseImage && (
 									<>
 										<Spacer paddingX={3} marginY={"auto"}>
 											<FaArrowAltCircleRight
@@ -254,50 +270,24 @@ export default function Calculator() {
 											textAlign='center'
 											padding={2}
 										>
-											<LoadingComponent text='Analyzing Image...' />
+											<ResultForm
+												response={responseImage}
+												predictionResponse={
+													predictionsResponse
+												}
+												onImageSave={handleSaveImage}
+												isLoadingSaving={
+													isLoadingSaving
+												}
+											/>
 										</Box>
 									</>
-								) : (
-									responseImage && (
-										<>
-											<Spacer
-												paddingX={3}
-												marginY={"auto"}
-											>
-												<FaArrowAltCircleRight
-													size={"2em"}
-												/>
-											</Spacer>
-											<Box
-												maxW='800px'
-												minW='400px'
-												borderWidth='1px'
-												borderRadius='lg'
-												overflow='hidden'
-												textAlign='center'
-												padding={2}
-											>
-												<ResultForm
-													response={responseImage}
-													predictionResponse={
-														predictionsResponse
-													}
-													onImageSave={
-														handleSaveImage
-													}
-													isLoadingSaving={
-														isLoadingSaving
-													}
-												/>
-											</Box>
-										</>
-									)
-								)}
-							</Box>
+								)
+							)}
 						</Box>
-					</Flex>
+					</Box>
 				</Flex>
-			</Container>
+			</Flex>
 			<Modal size={"xl"} isOpen={isOpen} onClose={onClose}>
 				<ModalOverlay />
 				<ModalContent>
