@@ -4,18 +4,8 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
 	try {
 		const analytics = await db.analytics.findMany({
-			select: {
-				id: true,
-				createdAt: true,
-				imageURL: true,
-				createdBy: {
-					select: {
-						userName: true,
-						email: true,
-					},
-				},
-				status: true,
-				predictions: true,
+			include: {
+				createdBy: true,
 			},
 			orderBy: {
 				createdAt: "desc",

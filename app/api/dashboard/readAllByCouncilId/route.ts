@@ -43,21 +43,8 @@ export async function GET(request: Request) {
 					in: users.map((user) => user.id),
 				},
 			},
-			select: {
-				id: true,
-				title: true,
-				content: true,
-				result: true,
-				status: true,
-				createdAt: true,
-				updatedAt: true,
-				author: {
-					select: {
-						email: true,
-						userName: true,
-						role: true,
-					},
-				},
+			include: {
+				author: true,
 			},
 			orderBy: {
 				updatedAt: "desc",

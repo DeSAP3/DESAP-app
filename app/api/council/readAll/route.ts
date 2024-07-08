@@ -4,21 +4,9 @@ import { NextResponse } from "next/server";
 export async function GET() {
 	try {
 		const councils = await db.council.findMany({
-			select: {
-				id: true,
-				name: true,
-				address: true,
-				city: true,
-				state: true,
-				leader: {
-					select: {
-						email: true,
-					},
-				},
-				leaderId: true,
-				createdBy: true,
-				createdAt: true,
-			},
+			include: {
+				leader: true,
+			}
 		});
 		if (!councils) {
 			return NextResponse.json({
