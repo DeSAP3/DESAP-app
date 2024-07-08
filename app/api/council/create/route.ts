@@ -4,9 +4,10 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
 	try {
 		const body = await request.json();
+		console.log(body);
 		const { state, city, address, name, createdBy, leaderId } =
 			body.council;
-		if (!state || !city || !address || !name || !createdBy) {
+		if (!state || !city || !address || !name || !createdBy || !leaderId) {
 			return NextResponse.json({
 				error: "Missing info",
 				status: 400,
@@ -20,7 +21,24 @@ export async function POST(request: Request) {
 				address: address,
 				name: name,
 				createdBy: createdBy,
-				leaderId: leaderId,
+				leader: {
+					connect: {
+						id: leaderId,
+					},
+				},
+			},
+		});
+
+		await db.user.update({
+			where: {
+				id: leaderId,
+			},
+			data: {
+				council: {
+					connect: {
+						id: council.id,
+					},
+				},
 			},
 		});
 

@@ -17,11 +17,17 @@ export async function GET(request: Request) {
 				id: parseInt(councilId),
 			},
 			select: {
+				id: true,
 				name: true,
 				city: true,
 				state: true,
 				address: true,
 				createdAt: true,
+				leader: {
+					select: {
+						email: true,
+					}
+				},
 				createdBy: true,
 				leaderId: true,
 			},

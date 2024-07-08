@@ -2,7 +2,6 @@
 import { useUser } from "@/shared/providers/userProvider";
 import { cities, states } from "@/shared/static/state";
 import {
-	Container,
 	Box,
 	Button,
 	Center,
@@ -14,10 +13,11 @@ import {
 	Select,
 	Stack,
 	Text,
+	useToast
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../loading";
-import { useRouter } from "next/navigation";
 
 interface Council {
 	state: string;
@@ -29,9 +29,10 @@ interface Council {
 }
 
 const AddCouncil = () => {
+	const toast = useToast();
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
-	const { userData, setUserData } = useUser();
+	const { userData, mutateUser } = useUser();
 	const [council, setCouncil] = useState<Council>({
 		state: "",
 		city: "",
@@ -69,8 +70,8 @@ const AddCouncil = () => {
 
 	const handleSubmit = async () => {
 		setIsLoading(true);
-		
-		await fetch("/api/council/create", {
+
+		const response = await fetch("/api/council/create", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -78,32 +79,23 @@ const AddCouncil = () => {
 			body: JSON.stringify({
 				council,
 			}),
-		}).then(async (res) => {
-			if (res.ok) {
-				const data = await res.json();
-				const updatedUserData = {
-					...userData,
-					councilId: data.data.id,
-				};
-				setUserData(updatedUserData);
-				await fetch("/api/profile/update", {
-					method: "PUT",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						userData: updatedUserData,
-					}),
-				});
-			}
+		}).then((res) => res.json());
+		toast({
+			title: response.message,
+			status: response.status === 201 ? "success" : "error",
+			duration: 3000,
+			isClosable: true,
+			position: "bottom-right",
 		});
+		mutateUser();
+		if (response.status === 201) {
+			router.push("/council/detail");
+		}
 		setIsLoading(false);
-		router.push("/council/detail");
 	};
 
 	return (
 		<>
-			
 			{isLoading ? (
 				<LoadingComponent text='Creating Council...' />
 			) : (
@@ -204,7 +196,7 @@ const AddCouncil = () => {
 								<Button
 									loadingText='Submitting'
 									size='lg'
-									bg="brand.acceptbutton"
+									bg='brand.acceptbutton'
 									color={"white"}
 									onClick={handleSubmit}
 								>

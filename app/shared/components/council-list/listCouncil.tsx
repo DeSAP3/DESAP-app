@@ -31,12 +31,12 @@ const CouncilList = () => {
 	const router = useRouter();
 	const [councils, setCouncils] = useState<CouncilListProps[]>([]);
 	const { userData, setUserData, mutateUser } = useUser();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const {
 		data: councilsResponse,
 		isLoading: isLoadingCouncilsResponse,
 		isValidating: isValidatingCouncils,
-		
 	} = useSWR(
 		"/api/council/readAll",
 		(url: string | URL | Request): Promise<any> =>
@@ -109,6 +109,7 @@ const CouncilList = () => {
 					variant='contained'
 					size='small'
 					onClick={async () => {
+						setIsLoading(true);
 						const updatedUserData = {
 							...userData,
 							councilId: row.row.original.id as any,
@@ -123,15 +124,18 @@ const CouncilList = () => {
 								userData: updatedUserData,
 							}),
 						}).then((res) => res.json());
-						mutateUser();
 						toast({
-							title: res.status === 200 ? res.message : res.error,
+							title: res.status === 200 ? `Successfully joined council: ${row.row.original.name}` : res.error,
 							status: res.status === 200 ? "success" : "error",
 							duration: 3000,
 							isClosable: true,
 							position: "bottom-right",
 						});
-						router.push("/community/dashboard");
+						if (res.status === 200) {
+							mutateUser();
+							router.push("/community/dashboard");
+						}
+						setIsLoading(false);
 					}}
 				>
 					Join

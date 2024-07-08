@@ -40,8 +40,7 @@ export default function Login() {
 			password: data.password,
 			redirect: false,
 		});
-		console.log(signInData);
-		setIsLoading(false);
+		
 		if (signInData?.error) {
 			toast({
 				title: "Logged in failed",
@@ -69,6 +68,7 @@ export default function Login() {
 				position: "bottom-right",
 			});
 		}
+		setIsLoading(false);
 	};
 
 	return (

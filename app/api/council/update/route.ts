@@ -4,8 +4,9 @@ import { NextResponse } from "next/server";
 export async function PUT(request: Request) {
 	try {
 		const body = await request.json();
+		console.log(body);
 		const {
-			councilId,
+			id,
 			name,
 			state,
 			city,
@@ -15,7 +16,7 @@ export async function PUT(request: Request) {
 		} = body.council;
 
 		if (
-			!councilId ||
+			!id ||
 			!name ||
 			!state ||
 			!city ||
@@ -31,7 +32,7 @@ export async function PUT(request: Request) {
 
 		const council = await db.council.update({
 			where: {
-				id: councilId,
+				id: id,
 			},
 			data: {
 				state: state,

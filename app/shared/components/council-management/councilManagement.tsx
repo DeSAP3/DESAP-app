@@ -19,8 +19,6 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import ErrorComponent from "../error";
 import LoadingComponent from "../loading";
-import PageHeader from "../general-component/page-component/PageHeader";
-
 type CouncilListProps = {
 	id: number;
 	name: string;
@@ -30,6 +28,7 @@ type CouncilListProps = {
 	leaderEmail: string;
 	createdAt: Date;
 	createdBy: string;
+	leaderId: number;
 };
 
 export default function CouncilManagement() {
@@ -52,7 +51,10 @@ export default function CouncilManagement() {
 
 	useEffect(() => {
 		if (councilResponse && councilResponse.data) {
-			setCouncil(councilResponse.data);
+			setCouncil({
+				...councilResponse.data,
+				leaderEmail: councilResponse.data.leader.email,
+			});
 		}
 	}, [councilResponse]);
 
@@ -94,17 +96,13 @@ export default function CouncilManagement() {
 
 	const handleSave = async () => {
 		setIsLoading(true);
-		const updatedCouncil = {
-			...council,
-			councilId: userData.councilId,
-		};
 		const res = await fetch("/api/council/update", {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				council: updatedCouncil,
+				council: council,
 			}),
 		}).then((res) => res.json());
 
@@ -119,28 +117,32 @@ export default function CouncilManagement() {
 	};
 
 	const handleDelete = async () => {
-		setIsLoading(true);
-		const res = await fetch(
-			`/api/council/delete?councilId=${userData.councilId}`,
-			{
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		).then((res) => res.json());
+		if (window.confirm("Are you sure you want to quit the council?")) {
+			setIsLoading(true);
+			const res = await fetch(
+				`/api/council/delete?councilId=${userData.councilId}`,
+				{
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			).then((res) => res.json());
 
-		mutateCouncilRes();
-		mutateUser();
-		toast({
-			title: res.status === 200 ? res.message : res.error,
-			status: res.status === 200 ? "success" : "error",
-			duration: 3000,
-			isClosable: true,
-			position: "bottom-right",
-		});
+			toast({
+				title: res.status === 200 ? res.message : res.error,
+				status: res.status === 200 ? "success" : "error",
+				duration: 3000,
+				isClosable: true,
+				position: "bottom-right",
+			});
+			if (res.status === 200) {
+				mutateCouncilRes();
+				mutateUser();
+				router.push("/council/new");
+			}
+		}
 		setIsLoading(false);
-		router.push("/council/new");
 	};
 
 	return (

@@ -93,14 +93,14 @@ export default function CouncilDetail() {
 	}
 
 	const handleQuitCouncil = async () => {
-		setIsLoading(true);
 		if (window.confirm("Are you sure you want to quit the council?")) {
+			setIsLoading(true);
 			const updatedUserData = {
 				...userData,
 				councilId: null,
 			};
 			setUserData(updatedUserData);
-			await fetch("/api/profile/update", {
+			const response = await fetch("/api/profile/update", {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -108,15 +108,36 @@ export default function CouncilDetail() {
 				body: JSON.stringify({
 					userData: updatedUserData,
 				}),
-			});
-			mutateUser();
-			toast({
-				title: `You have successfully quit the council: ${councilResponse.data.name}.`,
-				status: "success",
-				duration: 3000,
-				isClosable: true,
-				position: "bottom-right",
-			});
+			}).then((res) => res.json());
+			if (userData.role === "COMMUNITY_LEADER") {
+				await fetch(
+					`/api/council/removeLeader?councilId=${userData.councilId}`,
+					{
+						method: "PUT",
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}
+				);
+			}
+			if (response.status === 200) {
+				mutateUser();
+				toast({
+					title: `You have successfully quit the council: ${councilResponse.data.name}.`,
+					status: "success",
+					duration: 3000,
+					isClosable: true,
+					position: "bottom-right",
+				});
+			} else {
+				toast({
+					title: response.error,
+					status: "error",
+					duration: 3000,
+					isClosable: true,
+					position: "bottom-right",
+				});
+			}
 		}
 		router.push("/community/dashboard");
 		setIsLoading(false);

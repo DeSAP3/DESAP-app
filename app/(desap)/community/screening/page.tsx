@@ -90,8 +90,10 @@ export default function Screening() {
 			isClosable: true,
 			position: "bottom-right",
 		});
+		if (res.status === 201) {
+			router.push("/community/dashboard");
+		}
 		setIsLoading(false);
-		router.push("/community/dashboard");
 	};
 
 	if (!session) {

@@ -147,8 +147,7 @@ export default function Dashboard() {
 								}
 							/>
 						)}
-						{postResponse.data === null ||
-						postResponse.data === undefined ||
+						{ userData.councilId !== null &&
 						postResponse.data.length === 0 ? (
 							<Box padding={5} bgcolor={"#b1c8c8"}>
 								No Post in this council yet

@@ -54,14 +54,14 @@ export default function Register() {
 				position: "bottom-right",
 			});
 		} else {
+			router.push("/login");
 			toast({
-				title: userInfo.message,
+				title: `${userInfo.message}. Please login`,
 				status: "success",
 				duration: 3000,
 				isClosable: true,
 				position: "bottom-right",
 			});
-			router.push("/login");
 		}
 		setIsLoading(false);
 	};
