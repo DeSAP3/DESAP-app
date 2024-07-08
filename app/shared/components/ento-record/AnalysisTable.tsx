@@ -227,7 +227,7 @@ const AnalysisTable = () => {
 
 	const table = useMaterialReactTable({
 		columns,
-		data: analysisResponse.data,
+		data: analysis,
 		enableHiding: false,
 		enableDensityToggle: false,
 		enableRowActions: true,
@@ -301,6 +301,7 @@ const AnalysisTable = () => {
 		<LoadingComponent text='Loading...' />
 	) : analysis ? (
 		<>
+			{console.log(analysis)}
 			<MaterialReactTable table={table} />
 			{/* View Prediction Detail */}
 			<Dialog
