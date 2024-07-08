@@ -227,7 +227,7 @@ const AnalysisTable = () => {
 
 	const table = useMaterialReactTable({
 		columns,
-		data: analysis,
+		data: analysisResponse.data,
 		enableHiding: false,
 		enableDensityToggle: false,
 		enableRowActions: true,
