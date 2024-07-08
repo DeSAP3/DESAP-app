@@ -29,9 +29,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { FaArrowAltCircleDown } from "react-icons/fa";
 import useSWR from "swr";
-import NotFoundComponet from "../notfound";
-import ErrorComponent from "../error";
 import LoadingComponent from "../loading";
+import NotFoundComponet from "../notfound";
 
 type AnalysisTableProps = {
 	id: number;
@@ -163,7 +162,7 @@ const AnalysisTable = () => {
 	}, []);
 
 	useEffect(() => {
-		if (analysisResponse) {
+		if (analysisResponse && analysisResponse.data) {
 			setAnalysis(analysisResponse.data);
 		} else {
 			setAnalysis([]);
@@ -280,7 +279,7 @@ const AnalysisTable = () => {
 
 	return isLoadingAnalyticsResponse || isValidatingAnalyticsResponse ? (
 		<LoadingComponent text='Loading...' />
-	) : analysisResponse && analysis ? (
+	) : analysis ? (
 		<>
 			<MaterialReactTable table={table} />
 			{/* View Prediction Detail */}
