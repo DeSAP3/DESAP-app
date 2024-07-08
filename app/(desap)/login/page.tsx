@@ -20,12 +20,14 @@ import {
 } from "@chakra-ui/react";
 
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Login() {
 	const toast = useToast();
 	const [isLoading, setIsLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+	const router = useRouter();
 	const [data, setData] = useState({
 		email: "",
 		password: "",
@@ -49,6 +51,7 @@ export default function Login() {
 				position: "bottom-right",
 			});
 		} else if (signInData?.ok) {
+			router.push("/landing");
 			toast({
 				title: "Logged in successfully",
 				status: "success",
@@ -56,8 +59,7 @@ export default function Login() {
 				isClosable: true,
 				position: "bottom-right",
 			});
-			window.history.replaceState(null, "", "/landing");
-
+			
 		} else {
 			toast({
 				title: "Something went wrong. Please try again",

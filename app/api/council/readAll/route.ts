@@ -1,7 +1,7 @@
 import db from "@/shared/providers/dbProvider";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET() {
 	try {
 		const councils = await db.council.findMany({
 			select: {
@@ -10,7 +10,11 @@ export async function GET(request: Request) {
 				address: true,
 				city: true,
 				state: true,
-				leaderId: true,
+				leader: {
+					select: {
+						email: true,
+					},
+				},
 				createdBy: true,
 				createdAt: true,
 			},

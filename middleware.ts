@@ -30,6 +30,7 @@ const roleBasedRoutes = {
 
 const publicRoutes = [
 	"/",
+	"/landing",
 	"/ento/opencv",
 	"/ento/calculator",
 	"/community/profile",
@@ -56,11 +57,6 @@ export async function middleware(req: NextRequest) {
 	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 	console.log("Pathname:", url.pathname);
 
-	if(token && url.pathname === "/") {
-		console.log("User already logged in. Redirecting to landing");
-		return NextResponse.redirect(new URL('/landing', req.url))
-	}
-
 	if (!token) {
 		
 		if (
@@ -76,7 +72,6 @@ export async function middleware(req: NextRequest) {
 	}
 
 	const role = token.role;
-	console.log("User role:", role);
 
 	const allowedRoutes =
 		roleBasedRoutes[role as keyof typeof roleBasedRoutes] || [];

@@ -70,7 +70,7 @@ const CouncilList = () => {
 				header: "State",
 			},
 			{
-				accessorKey: "leaderEmail",
+				accessorKey: "leader.email",
 				header: "Leader Email",
 			},
 			{
