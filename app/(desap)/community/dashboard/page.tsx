@@ -17,6 +17,7 @@ import {
 	SimpleGrid,
 	Text,
 } from "@chakra-ui/react";
+import { Box } from "@mui/material";
 import { Role } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -147,8 +148,11 @@ export default function Dashboard() {
 							/>
 						)}
 						{postResponse.data === null ||
-						postResponse.data === undefined ? (
-							<InformationCard title='No Post in this council yet' />
+						postResponse.data === undefined ||
+						postResponse.data.length === 0 ? (
+							<Box padding={5} bgcolor={"#b1c8c8"}>
+								No Post in this council yet
+							</Box>
 						) : (
 							postResponse.data.map((post) => (
 								<InformationCard

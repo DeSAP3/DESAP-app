@@ -2,6 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import db from "@/shared/providers/dbProvider"; 
+import bcrypt from "bcrypt";
 
 const authOptions: NextAuthOptions = {
 	adapter: PrismaAdapter(db),
@@ -39,7 +40,10 @@ const authOptions: NextAuthOptions = {
 					throw new Error("No user found with this email");
 				}
 
-				const isValidPassword = existingUser.password === credentials.password;
+				const isValidPassword = await bcrypt.compare(
+					credentials.password,
+					existingUser.password
+				);
 
 				if (!isValidPassword) {
 					throw new Error("Invalid password");

@@ -41,18 +41,28 @@ const forbiddenRoute = "/forbidden";
 
 export async function middleware(req: NextRequest) {
 	const url = req.nextUrl.clone();
+
+	
 	if (
 		url.pathname.startsWith("/_next") ||
+		url.pathname.startsWith("/static") ||
 		url.pathname.startsWith("/public") ||
+		url.pathname.startsWith("/api") ||
 		url.pathname.startsWith("/favicon.ico")
 	) {
 		return NextResponse.next();
 	}
-	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
+	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 	console.log("Pathname:", url.pathname);
 
+	if(token && url.pathname === "/") {
+		console.log("User already logged in. Redirecting to landing");
+		return NextResponse.redirect(new URL('/landing', req.url))
+	}
+
 	if (!token) {
+		
 		if (
 			!publicRoutes.includes(url.pathname) &&
 			url.pathname !== loginRoute &&
@@ -70,6 +80,8 @@ export async function middleware(req: NextRequest) {
 
 	const allowedRoutes =
 		roleBasedRoutes[role as keyof typeof roleBasedRoutes] || [];
+
+	
 	if (
 		allowedRoutes.includes(url.pathname) ||
 		publicRoutes.includes(url.pathname)
@@ -77,6 +89,7 @@ export async function middleware(req: NextRequest) {
 		return NextResponse.next();
 	}
 
+	
 	if (!allowedRoutes.includes(url.pathname)) {
 		url.pathname = forbiddenRoute;
 		console.log("Redirecting to forbidden:", url.pathname);

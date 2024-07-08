@@ -1,6 +1,6 @@
 import db from "@/shared/providers/dbProvider";
-import supabase from "@/shared/providers/supabase";
 import { NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 
 
 export async function POST(request: Request) {
@@ -29,13 +29,16 @@ export async function POST(request: Request) {
 				},
 	
 			);
-		}
+		}	
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+
 
 		const user = await db.user.create({
 			data: {
 				userName: userName,
 				email: email,
-				password: password,
+				password: hashedPassword,
 				role: role,
 			},
 		});

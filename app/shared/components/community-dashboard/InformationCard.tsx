@@ -78,6 +78,7 @@ const InformationCard = ({
 			</CardHeader>
 			<CardBody>
 				<Text>{description}</Text>
+				<Box mt='2'>{component}</Box>
 			</CardBody>
 			<CardFooter justify='end'>
 				{status && (
