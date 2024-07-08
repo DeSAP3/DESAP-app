@@ -31,6 +31,7 @@ import { FaArrowAltCircleDown } from "react-icons/fa";
 import useSWR from "swr";
 import LoadingComponent from "../loading";
 import NotFoundComponet from "../notfound";
+import { useToast } from "@chakra-ui/react";
 
 type AnalysisTableProps = {
 	id: number;
@@ -73,6 +74,7 @@ const AnalysisTable = () => {
 	const [detail, setDetail] = useState<AnalysisTableProps | null>(null);
 	const [rawImage, setRawImage] = useState("");
 	const [annotatedImage, setAnnotatedImage] = useState("");
+	const toast = useToast();
 
 	const {
 		data: analysisResponse,
@@ -146,15 +148,25 @@ const AnalysisTable = () => {
 	};
 
 	const handleDeleteAnalysis = async (row: AnalysisTableProps) => {
-		setIsLoadingSaving(true);
-		const res = await fetch(`/api/calculator/delete?id=${row.id}`, {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-		mutateAnalytics();
-		setIsLoadingSaving(false);
+		if (window.confirm("Are you sure you want to delete?")) {
+			setIsLoadingSaving(true);
+			const res = await fetch(`/api/calculator/delete?id=${row.id}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}).then((res) => res.json());
+			toast({
+				title: res.message,
+				status: res.status === 200 ? "success" : "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			if (res.status === 200) {
+				mutateAnalytics();
+			}
+			setIsLoadingSaving(false);
+		}
 	};
 
 	useEffect(() => {

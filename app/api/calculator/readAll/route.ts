@@ -7,8 +7,6 @@ export async function GET(request: Request) {
 			select: {
 				id: true,
 				createdAt: true,
-				status: true,
-				predictions: true,
 				imageURL: true,
 				createdBy: {
 					select: {
@@ -16,6 +14,8 @@ export async function GET(request: Request) {
 						email: true,
 					},
 				},
+				status: true,
+				predictions: true,
 			},
 			orderBy: {
 				createdAt: "desc",
