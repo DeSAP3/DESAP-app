@@ -37,12 +37,16 @@ const CouncilList = () => {
 		data: councilsResponse,
 		isLoading: isLoadingCouncilsResponse,
 		isValidating: isValidatingCouncils,
+		mutate,
 	} = useSWR(
 		"/api/council/readAll",
 		(url: string | URL | Request): Promise<any> =>
 			fetch(url).then((res) => res.json())
 	);
-
+	useEffect(() => {
+		mutate();
+	},[]);
+	
 	useEffect(() => {
 		if (councilsResponse && councilsResponse.data) {
 			setCouncils(councilsResponse.data);
