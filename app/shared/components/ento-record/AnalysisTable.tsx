@@ -184,7 +184,6 @@ const AnalysisTable = () => {
 	useEffect(() => {
 		if (analysisResponse && analysisResponse.data) {
 			setAnalysis(analysisResponse.data);
-			console.log(analysis);
 		} else {
 			setAnalysis([]);
 		}
