@@ -31,6 +31,7 @@ export default function ScreeningVerificationList() {
 	const [posts, setPosts] = useState<ScreeningVerificationListProps[]>([]);
 	const { userData } = useUser();
 	const [isLoadingSaving, setIsLoadingSaving] = useState(false);
+	const toast = useToast();
 	const {
 		data: councilPostsResponse,
 		isLoading: isLoadingCouncilPostResponse,
@@ -44,29 +45,45 @@ export default function ScreeningVerificationList() {
 	);
 
 	const handleSavePost = async (row: ScreeningVerificationListProps) => {
-		setIsLoadingSaving(true);
-		const res = await fetch("/api/dashboard/updateStatus", {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(row),
-		});
-		mutatePostsResponse();
-		setIsLoadingSaving(false);
+		if (window.confirm("Are you sure?")) {
+			setIsLoadingSaving(true);
+			const res = await fetch("/api/dashboard/updateStatus", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(row),
+			}).then((res) => res.json());
+			toast({
+				title: res.message,
+				status: res.status === 200 ? "success" : "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			if (res.status === 200) mutatePostsResponse();
+			setIsLoadingSaving(false);
+		}
 	};
 
 	const handleSaveInfectionResult = async (id: number, result: string) => {
-		setIsLoadingSaving(true);
-		const res = await fetch("/api/dashboard/updateInfection", {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ postId: id, result: result }),
-		});
-		mutatePostsResponse();
-		setIsLoadingSaving(false);
+		if (window.confirm("Are you sure?")) {
+			setIsLoadingSaving(true);
+			const res = await fetch("/api/dashboard/updateInfection", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ postId: id, result: result }),
+			}).then((res) => res.json());
+			toast({
+				title: res.message,
+				status: res.status === 200 ? "success" : "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			if (res.status === 200) mutatePostsResponse();
+			setIsLoadingSaving(false);
+		}
 	};
 
 	useEffect(() => {

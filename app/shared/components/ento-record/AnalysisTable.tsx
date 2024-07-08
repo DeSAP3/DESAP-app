@@ -135,16 +135,24 @@ const AnalysisTable = () => {
 	};
 
 	const handleSaveAnalysis = async (row: AnalysisTableProps) => {
-		setIsLoadingSaving(true);
-		const res = await fetch("/api/calculator/updateStatus", {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(row),
-		});
-		mutateAnalytics();
-		setIsLoadingSaving(false);
+		if (window.confirm("Are you sure?")) {
+			setIsLoadingSaving(true);
+			const res = await fetch("/api/calculator/updateStatus", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(row),
+			}).then((res) => res.json());
+			toast({
+				title: res.message,
+				status: res.status === 200 ? "success" : "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			if (res.status === 200) mutateAnalytics();
+			setIsLoadingSaving(false);
+		}
 	};
 
 	const handleDeleteAnalysis = async (row: AnalysisTableProps) => {
@@ -162,9 +170,7 @@ const AnalysisTable = () => {
 				duration: 3000,
 				isClosable: true,
 			});
-			if (res.status === 200) {
-				mutateAnalytics();
-			}
+			if (res.status === 200) mutateAnalytics();
 			setIsLoadingSaving(false);
 		}
 	};
