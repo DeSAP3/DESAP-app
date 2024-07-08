@@ -125,6 +125,26 @@ const ProfileForm = () => {
 									/>
 								</FormControl>
 
+								{userData.role !== Role.OPERATION_TEAM && (
+									<FormControl id='address'>
+										<FormLabel>Living Address</FormLabel>
+										<Input
+											type='text'
+											placeholder={
+												"Please enter your living address"
+											}
+											value={userData.livingAddress}
+											onChange={(e) =>
+												setUserData({
+													...userData,
+													livingAddress:
+														e.target.value,
+												})
+											}
+										/>
+									</FormControl>
+								)}
+
 								<FormControl id='role' isRequired isDisabled>
 									<FormLabel>Role</FormLabel>
 									<Select
@@ -151,25 +171,6 @@ const ProfileForm = () => {
 											))}
 									</Select>
 								</FormControl>
-								{userData.role !== Role.OPERATION_TEAM && (
-									<FormControl id='address'>
-										<FormLabel>Living Address</FormLabel>
-										<Input
-											type='text'
-											placeholder={
-												"Please enter your living address"
-											}
-											value={userData.livingAddress}
-											onChange={(e) =>
-												setUserData({
-													...userData,
-													livingAddress:
-														e.target.value,
-												})
-											}
-										/>
-									</FormControl>
-								)}
 
 								<FormControl id='email' isDisabled>
 									<FormLabel>Email address</FormLabel>
