@@ -1,11 +1,12 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider  = "postgresql"
+  // url       = "postgresql://postgres.dhzgvdoywugiaikstrht:3dlLDNs62FnbydIC@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
   url       = env("DATABASE_URL")
   // directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
 }
 
 // model Account {

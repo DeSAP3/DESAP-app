@@ -43,7 +43,7 @@ const OpenCvForm = () => {
 	const useDemoImage = async () => {
 		try {
 			const response = await fetch(
-				"https://wilrhxiajoxjpezcfyfx.supabase.co/storage/v1/object/sign/static/002.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJzdGF0aWMvMDAyLmpwZyIsImlhdCI6MTcyMDM1NTY3OSwiZXhwIjoxNzUxODkxNjc5fQ.bbT367x_RH-r3Av6gJCNe32w8sT5Bdz4HJm6Irvhn14&t=2024-07-07T12%3A34%3A40.560Z"
+				"https://dhzgvdoywugiaikstrht.supabase.co/storage/v1/object/sign/demo-egg-image/002.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJkZW1vLWVnZy1pbWFnZS8wMDIuanBnIiwiaWF0IjoxNzI5NDk3MzUxLCJleHAiOjIwNDQ4NTczNTF9.EZ8ctrldKXiStGMQFrsRIP9vvsLuLmjijCD7gv4UJZM"
 			);
 			const blob = await response.blob();
 
@@ -92,7 +92,7 @@ const OpenCvForm = () => {
 			formData.append("src", rawImage);
 			const response = await axios({
 				method: "POST",
-				url: `https://admijw.xyz/calculate-eggs`,
+				url: `http://127.0.0.1:5000/calculate-eggs`, //https://admijw.xyz/calculate-eggs
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",

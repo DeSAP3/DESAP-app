@@ -66,7 +66,7 @@ export default function Calculator() {
 	const useDemoImage = async () => {
 		try {
 			const response = await fetch(
-				"https://wilrhxiajoxjpezcfyfx.supabase.co/storage/v1/object/sign/static/003.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJzdGF0aWMvMDAzLmpwZyIsImlhdCI6MTcyMDM1ODk4NiwiZXhwIjoxNzUxODk0OTg2fQ.9D2dBW9hbf2hUHMKdaKbdnVA0AXweVD0i48yjIFpHxQ&t=2024-07-07T13%3A29%3A47.837Z"
+				"https://dhzgvdoywugiaikstrht.supabase.co/storage/v1/object/public/demo-egg-image/003.jpg"
 			);
 			const blob = await response.blob();
 
@@ -109,7 +109,7 @@ export default function Calculator() {
 			formData.append("predictions", JSON.stringify(predictions.data));
 			const annotatedImage = await axios({
 				method: "POST",
-				url: `https://admijw.xyz/calculate/larvae`,
+				url: `http://127.0.0.1:5000/calculate/larvae`, //https://admijw.xyz/calculate/larvae
 				data: formData,
 				headers: {
 					"Content-Type": "multipart/form-data",
